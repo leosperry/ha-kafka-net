@@ -1,0 +1,45 @@
+version: "3"
+services:
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    restart: "unless-stopped"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+      - '9094:9094'
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://192.168.1.3:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    volumes:
+    # the binami image uses a non-root account
+    # this directory needs appropriate permissions set
+    # in linux, this should be for uid 1001
+    # - /Path/to/persisted/data:/bitnami/kafka 
+      - /home/leonard/MyData/kafka:/bitnami/kafka 
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    restart: "unless-stopped"
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
+
+  cache:
+    image: redis:alpine
+    container_name: my-home-automations-redis
+    restart: unless-stopped
+    command: redis-server
+    ports:
+      - 6379:6379  
