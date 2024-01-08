@@ -17,7 +17,7 @@ This project is still in an alpha state. No nuget pakage is yet created. More fe
 * MIT license
 
 ## How it works
-* Events are streamed to the `home_assistant` topic. Unfortunately, the key is not utilizied. 
+* Events are streamed from Home Assistant to the `home_assistant` topic. Unfortunately, the key is not utilizied by the provided home assistant kafka integration. 
 * The transformer reads the messages and then adds them to the `home_assistant_states` topic with the entity id set as a key.
   - This allows us to compact the topic and make some assurances about order.
 * A second consumer called the state handler reads from `home_assistant_states` topic and caches all state changes exposed by home assistant to Redis.
