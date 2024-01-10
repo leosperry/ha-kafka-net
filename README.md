@@ -55,4 +55,3 @@ At this point your environment is set up and ready for development. If you run t
 * CI/CD and Nuget package
 * More automated tests
 * Enhanced API functionality
-* Enhanced Logging

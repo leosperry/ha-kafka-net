@@ -4,6 +4,7 @@ using System.Text.Json;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using StackExchange.Redis;
 
@@ -14,19 +15,24 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     IDistributedCache _cache;
 
     IEnumerable<AutomationTriggerData> _automationData;
+
+    ILogger<HaStateHandler> _logger;
+
     DateTime _startTime = DateTime.Now;
     DistributedCacheEntryOptions _cacheOptions = new ();
     
-    public HaStateHandler(IDistributedCache cache, IEnumerable<IAutomation> automations)
+    public HaStateHandler(IDistributedCache cache, IEnumerable<IAutomation> automations, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
 
         _automationData = 
             (from a in automations
-            let hashSet = a.TriggerEntityIds().ToHashSet()
+            let hashSet = a.TriggerEntityIds().ToHashSet<string>()
             let executor = new Executor(
-                (stateChange, cancellationToken)=> new Func<Task?>(() => a.Execute(stateChange, cancellationToken)))
-            select new AutomationTriggerData(hashSet, a.EventTimings, executor)).ToArray();
+                (stateChange, cancellationToken)=> new Func<Task?>(() => ExecuteAutomation(stateChange, a, cancellationToken)))
+            select new AutomationTriggerData(a, hashSet, a.EventTimings, executor)).ToArray();
+        
+        _logger = logger;
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
@@ -58,26 +64,14 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             New = message,
             Old = cached
         };
-
-        var funcs =
-            from a in _automationData
-            where ShouldExecute(stateChange, a)
-            select a.Executor(stateChange, context.ConsumerContext.WorkerStopped);
         
-        Parallel.ForEach(funcs, excecutor =>
-            _ = Task.Run(excecutor)
+        var funcs = _automationData.Where(ad => ShouldExecute(stateChange, ad));
+
+        Parallel.ForEach(funcs, auto =>
+            _ = Task.Run(auto.Executor(stateChange, context.ConsumerContext.WorkerStopped))
             .ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    // minimal error handling,
-                    foreach (var ex in task.Exception.InnerExceptions)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                    //TODO: allow user to choose logger
-                }
-            }));
+                _logger.LogError(task.Exception, "Automation faulted")
+            , TaskContinuationOptions.OnlyOnFaulted));
     }
 
     private bool ShouldExecute(HaEntityStateChange stateChange, AutomationTriggerData a)
@@ -91,6 +85,15 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
                 (stateChange.EventTiming & a.EventTiming) == stateChange.EventTiming //pre startup
             );
     }
+
+    private Task ExecuteAutomation(HaEntityStateChange stateChange, IAutomation a, CancellationToken cancellationToken)
+    {
+        using (_logger!.BeginScope("Start [{automationType}] from entity [{entityId}] with context [{contextId}]", a.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
+        {
+            return a.Execute(stateChange, cancellationToken);
+        }
+    }
+
 
     EventTiming getStartupEventTiming(HaEntityState cached, HaEntityState current)
     {
@@ -107,7 +110,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         };
     }
 
-    record AutomationTriggerData(HashSet<string> TriggerIds, EventTiming EventTiming, Executor Executor);
+    record AutomationTriggerData(IAutomation Automation, HashSet<string> TriggerIds, EventTiming EventTiming, Executor Executor);
     delegate Func<Task?> Executor(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
 }

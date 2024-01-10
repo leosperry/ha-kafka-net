@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -11,8 +12,9 @@ public class SimpleAutomationTests
     {
         //arrange
         Mock<IHaApiProvider> mockApi = new Mock<IHaApiProvider>();
+        Mock<ILogger<AutomationWithPreStartup>> logger = new();
 
-        AutomationWithPreStartup sut = new AutomationWithPreStartup(mockApi.Object);
+        AutomationWithPreStartup sut = new AutomationWithPreStartup(mockApi.Object, logger.Object);
 
         var stateChange = getFakeStateChange();
 

@@ -1,8 +1,10 @@
 ﻿
 using System.Text.Json;
+using Castle.Core.Logging;
 using HaKafkaNet;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HaKafkaNet.Tests;
@@ -19,7 +21,9 @@ public class HaStateHandlerTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
 
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -52,7 +56,9 @@ public class HaStateHandlerTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
         
         //act
         await sut.Handle(null!, newState);
@@ -78,7 +84,9 @@ public class HaStateHandlerTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
         
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -115,7 +123,9 @@ public class HaStateHandlerTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
 
         var fakeState = TestHelpers.GetFakeState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -152,7 +162,9 @@ public class HaStateHandlerTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
 
         var fakeState = TestHelpers.GetFakeState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -169,12 +181,6 @@ public class HaStateHandlerTests
                 && sc.New == fakeState)
             ,cancellationToken), Times.Never);
     }
-
-    // [Theory()]
-    // public async Task WhenStateBeforeStartup_ShouldExecute(DateTime cachedTime, DateTime eventTime, EventTiming automationTiming)
-    // {
-
-    // }
 
     byte[]? getBytes<T>(T o)
     {

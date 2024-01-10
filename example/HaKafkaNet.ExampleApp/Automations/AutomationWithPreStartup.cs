@@ -16,10 +16,12 @@ namespace HaKafkaNet.ExampleApp;
 public class AutomationWithPreStartup : IAutomation
 {
     IHaApiProvider _api;
+    ILogger<AutomationWithPreStartup> _logger;
 
-    public AutomationWithPreStartup(IHaApiProvider haApiProvider)
+    public AutomationWithPreStartup(IHaApiProvider haApiProvider, ILogger<AutomationWithPreStartup> logger)
     {
         _api = haApiProvider;
+        _logger = logger;
     }
 
     public EventTiming EventTimings 
@@ -44,6 +46,7 @@ public class AutomationWithPreStartup : IAutomation
                 System.Console.WriteLine(message + $" - {stateChange.EventTiming}");
                 return Task.CompletedTask;
             case EventTiming.PostStartup:
+                _logger.LogInformation("Sending Persistent Notification");
                 return _api.PersistentNotification(message, cancellationToken);
             default:
                 throw new Exception("how did we get here?");
