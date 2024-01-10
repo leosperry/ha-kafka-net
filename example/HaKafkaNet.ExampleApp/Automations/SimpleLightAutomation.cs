@@ -38,7 +38,7 @@ public class SimpleLightAutomation : IAutomation
         await _services.Api.CallService("light", "turn_on", new {
             entity_id = _idOfLightToDim,
             brightness = brightness - 5
-        });
+        }, cancellationToken);
     }
 
     record LightAttributes

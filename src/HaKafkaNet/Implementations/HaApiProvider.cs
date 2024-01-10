@@ -19,36 +19,36 @@ internal class HaApiProvider : IHaApiProvider
             new AuthenticationHeaderValue("Bearer", _apiConfig.AccessToken);
     }
 
-    public async Task CallService(string domain, string service, object data)
+    public async Task CallService(string domain, string service, object data, CancellationToken cancellationToken)
     {
         using StringContent json = new StringContent(JsonSerializer.Serialize(data));
-        var response = await _client.PostAsync($"/api/services/{domain}/{service}",json);
+        var response = await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
         System.Console.WriteLine(response.StatusCode);
     }
 
-    public Task PersistentNotification(string message)
+    public Task PersistentNotification(string message, CancellationToken cancellationToken)
     {
-        return CallService("notify", "persistent_notification", new {message});
+        return CallService("notify", "persistent_notification", new {message}, cancellationToken);
     }
 
-    public Task SwitchTurnOff(string entity_id)
+    public Task SwitchTurnOff(string entity_id, CancellationToken cancellationToken)
     {
-        return CallService("switch", "turn_off", new { entity_id });
+        return CallService("switch", "turn_off", new { entity_id }, cancellationToken);
     }
 
-    public Task SwitchTurnOn(string entity_id)
+    public Task SwitchTurnOn(string entity_id, CancellationToken cancellationToken)
     {
-        return CallService("switch", "turn_on", new { entity_id });
+        return CallService("switch", "turn_on", new { entity_id }, cancellationToken);
     }
 
-    public Task LightSetBrightness(string entity_id, byte brightness = 255)
+    public Task LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken)
     {
-        return CallService("switch", "turn_on", new { entity_id, brightness });
+        return CallService("switch", "turn_on", new { entity_id, brightness }, cancellationToken);
     }
 
-    public Task GroupNotify(string groupName, string message)
+    public Task GroupNotify(string groupName, string message, CancellationToken cancellationToken)
     {
-        return CallService("notify", groupName, new { message });
+        return CallService("notify", groupName, new { message }, cancellationToken);
     }
 
     //TODO: add common service calls such as light.turn_on

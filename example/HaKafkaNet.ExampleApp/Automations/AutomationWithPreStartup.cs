@@ -44,7 +44,7 @@ public class AutomationWithPreStartup : IAutomation
                 System.Console.WriteLine(message + $" - {stateChange.EventTiming}");
                 return Task.CompletedTask;
             case EventTiming.PostStartup:
-                return _api.PersistentNotification(message);
+                return _api.PersistentNotification(message, cancellationToken);
             default:
                 throw new Exception("how did we get here?");
         }
