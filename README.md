@@ -51,6 +51,10 @@ At this point your environment is set up and ready for development. If you run t
 2. Modify the `example/HaKafkaNet.ExampleApp/Automations/SimpleLightAutomation.cs` file and set `_idOfLightToDim` to an id of a light that exists in your Home Assistant instance
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
 
+## Features added
+* Some common API calls
+* Contextual Logging
+
 ## TODO:
 * CI/CD and Nuget package
 * More automated tests
