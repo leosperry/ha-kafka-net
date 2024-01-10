@@ -22,7 +22,7 @@ public class AutomationWithPreStartup : IAutomation
         _api = haApiProvider;
     }
 
-    public EventTiming EventTiming 
+    public EventTiming EventTimings 
     { 
         get => EventTiming.PreStartupNotCached | EventTiming.PreStartupSameAsLastCached | EventTiming.PreStartupPostLastCached | EventTiming.PostStartup; 
     }

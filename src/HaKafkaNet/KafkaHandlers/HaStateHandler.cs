@@ -26,7 +26,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             let hashSet = a.TriggerEntityIds().ToHashSet()
             let executor = new Executor(
                 (stateChange, cancellationToken)=> new Func<Task?>(() => a.Execute(stateChange, cancellationToken)))
-            select new AutomationTriggerData(hashSet, a.EventTiming, executor)).ToArray();
+            select new AutomationTriggerData(hashSet, a.EventTimings, executor)).ToArray();
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
