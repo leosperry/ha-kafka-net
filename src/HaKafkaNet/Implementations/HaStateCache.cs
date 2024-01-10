@@ -12,7 +12,7 @@ public class HaStateCache : IHaStateCache
         _cache = cache;
     }
 
-    public async Task<HaEntityState?> Get(string id)
+    public async Task<HaEntityState?> Get(string id, CancellationToken cancellationToken = default)
     {
         var cached = await _cache.GetAsync(id);
         if(cached != null)
@@ -22,7 +22,7 @@ public class HaStateCache : IHaStateCache
         return null;
     }
 
-    public async Task<HaEntityState<T>?> Get<T>(string id)
+    public async Task<HaEntityState<T>?> Get<T>(string id, CancellationToken cancellationToken = default)
     {
         var cached = await _cache.GetAsync(id);
         if(cached != null)

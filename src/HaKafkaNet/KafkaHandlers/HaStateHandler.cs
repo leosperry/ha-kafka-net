@@ -42,7 +42,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         {
             // at startup, message could be older than cached
             var value = JsonSerializer.SerializeToUtf8Bytes(message);
-            _ = _cache.SetAsync(message.EntityId, value, _cacheOptions);
+            _ = _cache.SetAsync(message.EntityId, value, _cacheOptions, context.ConsumerContext.WorkerStopped);
         }
 
         //if no automations need trigger, return

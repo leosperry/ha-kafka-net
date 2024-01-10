@@ -21,9 +21,15 @@ public class HaStateHandlerTests
 
         HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
 
+        Mock<IMessageContext> context = new();
+        var cancellationToken = new CancellationToken();
+        Mock<IConsumerContext> consumerContext = new();
+        consumerContext.SetupGet(cc => cc.WorkerStopped).Returns(cancellationToken);
+
+        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
         var fakeState = TestHelpers.GetFakeState();
         //act
-        await sut.Handle(null!, fakeState);
+        await sut.Handle(context.Object, fakeState);
 
         //assert
         var bytes = JsonSerializer.SerializeToUtf8Bytes(fakeState);
@@ -74,8 +80,15 @@ public class HaStateHandlerTests
 
         HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object]);
         
+        Mock<IMessageContext> context = new();
+        var cancellationToken = new CancellationToken();
+        Mock<IConsumerContext> consumerContext = new();
+        consumerContext.SetupGet(cc => cc.WorkerStopped).Returns(cancellationToken);
+
+        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
+
         //act
-        await sut.Handle(null!, newState);
+        await sut.Handle(context.Object, newState);
 
         //assert
         cache.Verify(c =>  c.SetAsync("enterprise", It.IsAny<byte[]>(), 
