@@ -24,7 +24,7 @@ This project is still in an alpha state. No nuget pakage is yet created. More fe
   - This allows for faster retrieval later and minimizes our application memory footprint. It also allows us to have some knowledge about which events were not handled between restarts and which ones were. The framework will tell your automation about such timings to allow you to handle messages appropriately.
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
-  - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation erros it will only write a console message indicating the error(s).
+  - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation erros it will only write an ILogger message indicating the error.
 
 ## Current steps for Example App set up:
 1. Edit the `~/infrastructure/docker-compose.yml` for your environment and run it.
@@ -43,6 +43,7 @@ This project is still in an alpha state. No nuget pakage is yet created. More fe
    - At this point events should be streaming from Home Assistant into the `home_assistant` topic, which you can inspect via your kafka-ui instance.
 5. In the `~/example/HakafkaNet.ExampleApp` directory, create an `appsettings.Development.json` file.
    - Copy/paste the contents of the `appsettings.json` file and modify appropriately.
+   - You will need a long lived access token for Home Assistant, which you can get from Home Assitant UI or follow directions here: [Long Lived Access Tokens](https://developers.home-assistant.io/docs/auth_api/#long-lived-access-token) 
 
 At this point your environment is set up and ready for development. If you run the example app, you can watch the consumers via a dashboard provided at  `localhost:<port>/kafkaflow`. It is provided via [KafkaFlow](https://github.com/Farfetch/kafkaflow). You could also connect to redis to see events being cached. To see the example automations in action, continue with these steps:
 1. In your HomeAssistant UI, create two helper buttons named:
@@ -50,6 +51,11 @@ At this point your environment is set up and ready for development. If you run t
    - `Test Button 2`
 2. Modify the `example/HaKafkaNet.ExampleApp/Automations/SimpleLightAutomation.cs` file and set `_idOfLightToDim` to an id of a light that exists in your Home Assistant instance
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
+
+## Tips
+* Until a nuget package is created, you can add this repositor as a submodule to your own. Create an empty web app, add a reference, copy the config and code from `progarm.cs` in the example app.
+* During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
+* ILogger support has been added. When your automation is called, the name of your automation, the entity id of the entity change that triggered it, and the context id from Home Assistant will be added to the scope.
 
 ## Features added
 * Some common API calls
