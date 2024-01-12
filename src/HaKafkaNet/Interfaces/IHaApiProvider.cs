@@ -44,4 +44,5 @@ public interface IHaApiProvider
     Task SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default);
 
     Task LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
+    Task LightTurnOff(string entity_id, CancellationToken cancellationToken = default);
 }

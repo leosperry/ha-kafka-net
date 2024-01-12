@@ -43,12 +43,17 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)
     {
-        return CallService("switch", "turn_on", new { entity_id, brightness }, cancellationToken);
+        return CallService("light", "turn_on", new { entity_id, brightness }, cancellationToken);
     }
 
     public Task GroupNotify(string groupName, string message, CancellationToken cancellationToken = default)
     {
         return CallService("notify", groupName, new { message }, cancellationToken);
+    }
+
+    public Task LightTurnOff(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_off", new {entity_id = entity_id}, cancellationToken);
     }
 
     //TODO: add common service calls such as light.turn_on
