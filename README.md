@@ -17,7 +17,7 @@ This project is still in an alpha state. No nuget pakage is yet created. More fe
 * MIT license
 
 ## How it works
-* Events are streamed from Home Assistant to the `home_assistant` topic. Unfortunately, the key is not utilizied by the provided home assistant kafka integration. 
+* Events are streamed from Home Assistant to the `home_assistant` topic. Unfortunately, the key is not utilizied by the provided home assistant kafka integration. Please upvote [this feature request](https://community.home-assistant.io/t/set-key-in-kafka-topic/671757/2)
 * The transformer reads the messages and then adds them to the `home_assistant_states` topic with the entity id set as a key.
   - This allows us to compact the topic and make some assurances about order.
 * A second consumer called the state handler reads from `home_assistant_states` topic and caches all state changes exposed by home assistant to Redis.
@@ -56,6 +56,7 @@ At this point your environment is set up and ready for development. If you run t
 * Until a nuget package is created, you can add this repositor as a submodule to your own. Create an empty web app, add a reference, copy the config and code from `progarm.cs` in the example app.
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
 * ILogger support has been added. When your automation is called, the name of your automation, the entity id of the entity change that triggered it, and the context id from Home Assistant will be added to the scope.
+* You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date if your automations are shut down for development or other reasons.
 
 ## Features added
 * Some common API calls
