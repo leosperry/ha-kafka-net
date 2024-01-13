@@ -7,7 +7,8 @@ It was created with the following goals:
 * Provide a means to call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
 
-This project is still in an alpha state. No nuget pakage is yet created. More features are forthcoming.
+This project is still in an alpha state. 
+Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
@@ -52,8 +53,44 @@ At this point your environment is set up and ready for development. If you run t
 2. Modify the `example/HaKafkaNet.ExampleApp/Automations/SimpleLightAutomation.cs` file and set `_idOfLightToDim` to an id of a light that exists in your Home Assistant instance
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
 
+## Setup with nuget package
+1. Follow the infrastructure instructions above for Kafka and Redis
+2. Create a new web app: `dotnet new web`
+3. Add HaKafkaNet: `dotnet add package HaKafkaNet`
+4. Add an `IDistributedCache` implementation of your choosing. For example: `dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis`
+5. Copy the `appsettings.json` file from the `example/HaKafkaNet.ExampleApp` directory into your project and modify.
+6. Add the following code to your `program.cs`
+```
+using HaKafkaNet;
+
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+
+HaKafkaNetConfig config = new HaKafkaNetConfig();
+builder.Configuration.GetSection("HaKafkaNet").Bind(config);
+
+// provide an IDistributedCache implementation
+services.AddStackExchangeRedisCache(options => 
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConStr");
+});
+
+services.AddHaKafkaNet(config);
+
+// add your own services as needed
+
+var app = builder.Build();
+
+await app.StartHaKafkaNet(config);
+
+app.MapGet("/", () => "HaKafkaNet is running");
+
+app.Run();
+```
+7. Create your automations by implementing the `IAutomation` interface.
+
 ## Tips
-* Until a nuget package is created, you can add this repositor as a submodule to your own. Create an empty web app, add a reference, copy the config and code from `progarm.cs` in the example app.
+* You can optionally add this repository as a submodule to your own instead of using the nuget package.
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
 * ILogger support has been added. When your automation is called, the name of your automation, the entity id of the entity change that triggered it, and the context id from Home Assistant will be added to the scope.
 * You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date if your automations are shut down for development or other reasons.
@@ -63,6 +100,5 @@ At this point your environment is set up and ready for development. If you run t
 * Contextual Logging
 
 ## TODO:
-* CI/CD and Nuget package
 * More automated tests
 * Enhanced API functionality
