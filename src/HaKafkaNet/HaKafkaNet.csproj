@@ -5,7 +5,19 @@
     <RootNamespace>HaKafkaNet</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>HaKafkaNet</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Leonard Sperry</Authors>
+    <Product>HaKafkaNet</Product>
+    <Description>A library for creating Home Assistant automations using the Home Assistant Kafka integration.</Description>
+    <RepositoryUrl>https://github.com/leosperry/ha-kafka-net/</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="readme.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
