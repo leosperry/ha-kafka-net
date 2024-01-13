@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/leosperry/ha-kafka-net/</RepositoryUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,8 +39,6 @@
     <PackageReference Include="KafkaFlow.LogHandler.Console" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Serializer.JsonCore" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.1" />
-
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
 

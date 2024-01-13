@@ -6,7 +6,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
-using StackExchange.Redis;
 
 namespace HaKafkaNet;
 
