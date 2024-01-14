@@ -1,4 +1,5 @@
-﻿namespace HaKafkaNet;
+﻿
+namespace HaKafkaNet;
 
 public interface IHaApiProvider
 {
@@ -13,7 +14,9 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
-    Task<HttpResponseMessage> LightTurnOn(string entity_id, object setting = null!, CancellationToken cancellationToken = default);
+    
+    Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LightTurnOn(LightTurnOnModel settings, CancellationToken cancellationToken = default);
     
     Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default);
 

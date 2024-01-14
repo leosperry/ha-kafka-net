@@ -32,6 +32,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             select new AutomationTriggerData(a, hashSet, a.EventTimings, executor)).ToArray();
         
         _logger = logger;
+        _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
