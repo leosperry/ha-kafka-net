@@ -13,11 +13,52 @@ public interface IHaApiProvider
     /// <returns></returns>
     Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Gets the state of an entity
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
+    Task<(HttpResponseMessage response, HaEntityState entityState)> GetEntityState(string entity_id);
+    
+    /// <summary>
+    /// Gets the state of an entity with stronly type attributes
+    /// </summary>
+    /// <typeparam name="T">The type to construct from the attributes</typeparam>
+    /// <param name="entity_id"></param>
+    /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
+    Task<(HttpResponseMessage response, HaEntityState<T> entityState)> GetEntityState<T>(string entity_id);
+
+    /// <summary>
+    /// Sets the brightness of a light
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="brightness"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     
+    /// <summary>
+    /// Turns on a light
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// turns on a light with settings (e.g. color, brightness, etc.)
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> LightTurnOn(LightTurnOnModel settings, CancellationToken cancellationToken = default);
     
+    /// <summary>
+    /// Turns off a light
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -29,6 +70,14 @@ public interface IHaApiProvider
     /// <param name="message">message to send</param>
     /// <returns></returns>
     Task<HttpResponseMessage> NotifyGroupOrDevice(string groupName, string message, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Sends a message to play on an Alexa
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="targets">Names of your Alexa device (e.g. "Office", "Living Room", etc</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> NotifyAlexaMedia(string message, string[] targets, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -52,5 +101,12 @@ public interface IHaApiProvider
     /// <param name="brightness">Brightness to set</param>
     /// <returns></returns>
     Task<HttpResponseMessage> SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Toggles a switch
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> SwitchToggle(string entity_id, CancellationToken cancellationToken = default);
 }

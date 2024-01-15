@@ -1,6 +1,9 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.Http;
 
 namespace HaKafkaNet;
 
@@ -31,7 +34,6 @@ internal class HaApiProvider : IHaApiProvider
         
         _client.DefaultRequestHeaders.Authorization = 
             new AuthenticationHeaderValue("Bearer", _apiConfig.AccessToken);
-        
     }
 
     public async Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default)
@@ -40,6 +42,27 @@ internal class HaApiProvider : IHaApiProvider
         return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
     }
 
+    public async Task<(HttpResponseMessage response, HaEntityState entityState)> GetEntityState(string entity_id)
+    {
+        var response = await _client.GetAsync($"/api/states/{entity_id}");
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState>(response.Content.ReadAsStream())!),
+            _ => (response, null!)
+        };
+    }
+
+    public async Task<(HttpResponseMessage response, HaEntityState<T> entityState)> GetEntityState<T>(string entity_id)
+    {
+        var response = await _client.GetAsync($"/api/states/{entity_id}");
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<T>>(response.Content.ReadAsStream())!),
+            _ => (response, null!)
+        };
+    }
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)
     {
@@ -48,7 +71,7 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default)
     {
-        return CallService("light", "turn_off", new {entity_id = entity_id}, cancellationToken);
+        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
     }
 
     public Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default)
