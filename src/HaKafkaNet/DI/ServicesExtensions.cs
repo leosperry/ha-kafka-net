@@ -62,7 +62,6 @@ public static class ServicesExtensions
                     .WithGroupId(config.StateHandler.GroupId)
                     .WithWorkersCount(config.StateHandler.WorkerCount)
                     .WithBufferSize(config.StateHandler.BufferSize)
-                    .WithWorkerDistributionStrategy<FreeWorkerDistributionStrategy>()
                     .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                     .WithoutStoringOffsets()
                     .AddMiddlewares(middlewares => middlewares
@@ -74,6 +73,7 @@ public static class ServicesExtensions
 
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
+            services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
 
             // get all the automation types
             var automationTypes =

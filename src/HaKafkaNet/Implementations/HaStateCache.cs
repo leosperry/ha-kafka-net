@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace HaKafkaNet;
 
-public class HaStateCache : IHaStateCache
+internal class HaStateCache : IHaStateCache
 {   
     IDistributedCache _cache;
 

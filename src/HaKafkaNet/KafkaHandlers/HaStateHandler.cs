@@ -88,7 +88,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
     private Task ExecuteAutomation(HaEntityStateChange stateChange, IAutomation a, CancellationToken cancellationToken)
     {
-        using (_logger!.BeginScope("Start [{automationType}] from entity [{entityId}] with context [{contextId}]", a.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
+        using (_logger!.BeginScope("Start [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", a.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
         {
             return a.Execute(stateChange, cancellationToken);
         }
