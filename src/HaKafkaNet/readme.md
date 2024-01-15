@@ -7,8 +7,6 @@ It was created with the following goals:
 * Provide a means to call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
 
-This project is still in an alpha state. No nuget pakage is yet created. More features are forthcoming.
-
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
 * It gives you a easy-to-spin up infrastructure with management features out of the box. This includes docker images for both managing kafka and seeing the state of your consumers based on open source projects

@@ -20,12 +20,17 @@ public class HaApiConfig
 public class StateHandlerConfig
 {
     public bool Enabled { get; set; } = true;
+    public string GroupId { get; set; }= "hakafkanet-consumer";
+    public int BufferSize { get; set; } = 5;
     public int WorkerCount { get; set; } = 5;
 }
 
 public class TransformerConfig
 {
     public bool Enabled { get; set; } = true;
+    public string GroupId { get; set; }= "hakafkanet-transformer";
+
+    public int BufferSize { get; set; } = 5;
     public int WorkerCount { get; set; } = 5;
     public string HaRawTopic { get; set; } = "home_assistant";
 }

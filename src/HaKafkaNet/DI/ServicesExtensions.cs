@@ -59,9 +59,9 @@ public static class ServicesExtensions
             cluster
                 .AddConsumer(consumer => consumer
                     .Topic(config.TransofrmedTopic)
-                    .WithGroupId("hakafkanet-consumer")
+                    .WithGroupId(config.StateHandler.GroupId)
                     .WithWorkersCount(config.StateHandler.WorkerCount)
-                    .WithBufferSize(10)
+                    .WithBufferSize(config.StateHandler.BufferSize)
                     .WithWorkerDistributionStrategy<FreeWorkerDistributionStrategy>()
                     .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                     .WithoutStoringOffsets()
@@ -99,9 +99,9 @@ public static class ServicesExtensions
             cluster
                 .AddConsumer(consumer => consumer
                     .Topic(config.Transformer.HaRawTopic)
-                    .WithGroupId("hakafkanet-transformer")
+                    .WithGroupId(config.Transformer.GroupId)
                     .WithWorkersCount(config.Transformer.WorkerCount)
-                    .WithBufferSize(10)
+                    .WithBufferSize(config.Transformer.BufferSize)
                     .AddMiddlewares(middlewares => middlewares
                         .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
                         .AddTypedHandlers(h => h.
