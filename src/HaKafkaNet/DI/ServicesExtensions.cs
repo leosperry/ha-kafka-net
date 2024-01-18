@@ -1,4 +1,5 @@
-﻿using KafkaFlow;
+﻿using System.Reflection;
+using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
 using KafkaFlow.Consumers.DistributionStrategies;
@@ -74,20 +75,32 @@ public static class ServicesExtensions
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
+            services.AddSingleton<IAutomationCollector, AutomationCollector>();
+            services.AddSingleton<IAutomationFactory, AutomationFactory>();
 
             // get all the automation types
-            var automationTypes =
-                from a in AppDomain.CurrentDomain.GetAssemblies()
+            var eligibleTypes = 
+                (from a in AppDomain.CurrentDomain.GetAssemblies()
                 from t in a.GetTypes()
                 where
-                    typeof(IAutomation).IsAssignableFrom(t) &&
                     t.IsClass &&
-                    !t.IsAbstract
-                select t;
+                    !t.IsAbstract &&
+                    !t.GetCustomAttributes(typeof(ExcludeFromDiscoveryAttribute)).Any()
+                select t).ToArray();
 
-            foreach (var item in automationTypes)
+            foreach (var type in eligibleTypes.Where(t => typeof(IAutomation).IsAssignableFrom(t)))
             {
-                services.AddSingleton(typeof(IAutomation), item);
+                services.AddSingleton(typeof(IAutomation), type);
+            }
+
+            foreach (var type in eligibleTypes.Where(t => typeof(IConditionalAutomation).IsAssignableFrom(t)))
+            {
+                services.AddSingleton(typeof(IConditionalAutomation), type);
+            }
+
+            foreach (var type in eligibleTypes.Where(t => typeof(IAutomationRegistry).IsAssignableFrom(t)))
+            {
+                services.AddSingleton(typeof(IAutomationRegistry), type);
             }
         }
     }

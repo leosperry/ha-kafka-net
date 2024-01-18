@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using KafkaFlow;
@@ -20,16 +21,22 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     DateTime _startTime = DateTime.Now;
     DistributedCacheEntryOptions _cacheOptions = new ();
     
-    public HaStateHandler(IDistributedCache cache, IEnumerable<IAutomation> automations, ILogger<HaStateHandler> logger)
+    public HaStateHandler(
+        IDistributedCache cache, IAutomationCollector automationCollector,
+        ILogger<HaStateHandler> logger)
     {
         _cache = cache;
 
+        var combinedAutomations = automationCollector.GetAll();
+
         _automationData = 
-            (from a in automations
+            (from a in combinedAutomations
             let hashSet = a.TriggerEntityIds().ToHashSet<string>()
             let executor = new Executor(
                 (stateChange, cancellationToken)=> new Func<Task?>(() => ExecuteAutomation(stateChange, a, cancellationToken)))
-            select new AutomationTriggerData(a, hashSet, a.EventTimings, executor)).ToArray();
+            select new AutomationTriggerData(a, hashSet, a.EventTimings, executor
+            ))
+            .ToArray();
         
         _logger = logger;
         _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
@@ -80,7 +87,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             a.TriggerIds.Contains(stateChange.EntityId) // entity match
             && 
             (
-                stateChange.EventTiming == EventTiming.PostStartup // post startup
+                stateChange.EventTiming == EventTiming.PostStartup // post startup ?needed?
                 ||
                 (stateChange.EventTiming & a.EventTiming) == stateChange.EventTiming //pre startup
             );
