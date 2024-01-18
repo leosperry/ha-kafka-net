@@ -87,17 +87,23 @@ app.MapGet("/", () => "HaKafkaNet is running");
 
 app.Run();
 ```
-7. Create your automations by implementing the `IAutomation` interface.
+7. Create your automations by implementing either the the `IAutomation` or `IConditionalAutomation` interfaces.
+
+## Coming soon
+* More pre-built automations.
+* More Documentation
 
 ## Tips
 * You can optionally add this repository as a submodule to your own instead of using the nuget package.
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
-* ILogger support has been added. When your automation is called, the name of your automation, the entity id of the entity change that triggered it, and the context id from Home Assistant will be added to the scope.
+* ILogger support has been added. When your automation is called, the name of your automation, information about the automation will be added to the scope.
 * You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date if your automations are shut down for development or other reasons.
 
 ## Features added
 * Some common API calls
 * Contextual Logging
+* Conditional Automations
+* Automation Registry
 
 ## TODO:
 * More automated tests

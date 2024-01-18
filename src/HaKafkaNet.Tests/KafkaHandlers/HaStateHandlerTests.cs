@@ -18,12 +18,14 @@ public class HaStateHandlerTests
         Mock<IDistributedCache> cache = new Mock<IDistributedCache>();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(default(byte[])));
-
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
+
+        Mock<IAutomationCollector> collector = new();
+        collector.Setup(c => c.GetAll()).Returns([auto1.Object]);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector.Object, logger.Object);
 
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -56,9 +58,12 @@ public class HaStateHandlerTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
+        Mock<IAutomationCollector> collector = new();
+        collector.Setup(c => c.GetAll()).Returns([auto1.Object]);
+
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object,collector.Object, logger.Object);
         
         //act
         await sut.Handle(null!, newState);
@@ -84,9 +89,12 @@ public class HaStateHandlerTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
+        Mock<IAutomationCollector> collector = new();
+        collector.Setup(c => c.GetAll()).Returns([auto1.Object]);
+
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector.Object, logger.Object);
         
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -123,9 +131,12 @@ public class HaStateHandlerTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
 
+        Mock<IAutomationCollector> collector = new();
+        collector.Setup(c => c.GetAll()).Returns([auto1.Object]);
+
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector.Object, logger.Object);
 
         var fakeState = TestHelpers.GetFakeState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -162,9 +173,12 @@ public class HaStateHandlerTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
 
+        Mock<IAutomationCollector> collector = new();
+        collector.Setup(c => c.GetAll()).Returns([auto1.Object]);
+
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,[auto1.Object], logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector.Object, logger.Object);
 
         var fakeState = TestHelpers.GetFakeState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act

@@ -1,4 +1,5 @@
-﻿using KafkaFlow;
+﻿using System.Reflection;
+using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
 using KafkaFlow.Consumers.DistributionStrategies;
@@ -74,6 +75,8 @@ public static class ServicesExtensions
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
+            services.AddSingleton<IAutomationCollector, AutomationCollector>();
+            services.AddSingleton<IAutomationFactory, AutomationFactory>();
 
             // get all the automation types
             var eligibleTypes = 
@@ -82,17 +85,22 @@ public static class ServicesExtensions
                 where
                     t.IsClass &&
                     !t.IsAbstract &&
-                    t != typeof(ConditionalAutomationWrapper)// otherwise the container constructs one with a random inner conditional implementation
+                    !t.GetCustomAttributes(typeof(ExcludeFromDiscoveryAttribute)).Any()
                 select t).ToArray();
 
-            foreach (var item in eligibleTypes.Where(t => typeof(IAutomation).IsAssignableFrom(t)))
+            foreach (var type in eligibleTypes.Where(t => typeof(IAutomation).IsAssignableFrom(t)))
             {
-                services.AddSingleton(typeof(IAutomation), item);
+                services.AddSingleton(typeof(IAutomation), type);
             }
 
-            foreach (var item in eligibleTypes.Where(t => typeof(IConditionalAutomation).IsAssignableFrom(t)))
+            foreach (var type in eligibleTypes.Where(t => typeof(IConditionalAutomation).IsAssignableFrom(t)))
             {
-                services.AddSingleton(typeof(IConditionalAutomation), item);
+                services.AddSingleton(typeof(IConditionalAutomation), type);
+            }
+
+            foreach (var type in eligibleTypes.Where(t => typeof(IAutomationRegistry).IsAssignableFrom(t)))
+            {
+                services.AddSingleton(typeof(IAutomationRegistry), type);
             }
         }
     }

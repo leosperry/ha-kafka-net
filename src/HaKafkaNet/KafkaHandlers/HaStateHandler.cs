@@ -22,15 +22,12 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     DistributedCacheEntryOptions _cacheOptions = new ();
     
     public HaStateHandler(
-        IDistributedCache cache, IEnumerable<IAutomation> automations, IEnumerable<IConditionalAutomation> conditionalAutomations,
-        ILogger<HaStateHandler> logger, ILogger<ConditionalAutomationWrapper> conditionalWrapperlogger)
+        IDistributedCache cache, IAutomationCollector automationCollector,
+        ILogger<HaStateHandler> logger)
     {
         _cache = cache;
 
-        var combinedAutomations = automations.Union(
-            from ac in conditionalAutomations
-            select new ConditionalAutomationWrapper(ac, conditionalWrapperlogger)
-        );
+        var combinedAutomations = automationCollector.GetAll();
 
         _automationData = 
             (from a in combinedAutomations

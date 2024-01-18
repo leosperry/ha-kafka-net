@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
-public class ConditionalAutomationWrapper : IAutomation
+[ExcludeFromDiscovery]
+internal class ConditionalAutomationWrapper : IAutomation
 {
     private readonly IConditionalAutomation _automation;
 
