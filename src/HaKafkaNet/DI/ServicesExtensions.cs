@@ -76,18 +76,23 @@ public static class ServicesExtensions
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
 
             // get all the automation types
-            var automationTypes =
-                from a in AppDomain.CurrentDomain.GetAssemblies()
+            var eligibleTypes = 
+                (from a in AppDomain.CurrentDomain.GetAssemblies()
                 from t in a.GetTypes()
                 where
-                    typeof(IAutomation).IsAssignableFrom(t) &&
                     t.IsClass &&
-                    !t.IsAbstract
-                select t;
+                    !t.IsAbstract &&
+                    t != typeof(ConditionalAutomationWrapper)// otherwise the container constructs one with a random inner conditional implementation
+                select t).ToArray();
 
-            foreach (var item in automationTypes)
+            foreach (var item in eligibleTypes.Where(t => typeof(IAutomation).IsAssignableFrom(t)))
             {
                 services.AddSingleton(typeof(IAutomation), item);
+            }
+
+            foreach (var item in eligibleTypes.Where(t => typeof(IConditionalAutomation).IsAssignableFrom(t)))
+            {
+                services.AddSingleton(typeof(IConditionalAutomation), item);
             }
         }
     }
