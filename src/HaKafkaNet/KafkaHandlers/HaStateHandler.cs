@@ -46,12 +46,12 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     {
         var cachedBytes = await _cache.GetAsync(message.EntityId);
         HaEntityState cached = null!;
-        if (cachedBytes != null)
+        if (cachedBytes is not null)
         {
             cached = JsonSerializer.Deserialize<HaEntityState>(cachedBytes)!;
         }
 
-        if (cached == null || message.LastUpdated > cached.LastUpdated)
+        if (cached is null || message.LastUpdated > cached.LastUpdated)
         {
             // at startup, message could be older than cached
             var value = JsonSerializer.SerializeToUtf8Bytes(message);
@@ -85,12 +85,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     {
         return 
             a.TriggerIds.Contains(stateChange.EntityId) // entity match
-            && 
-            (
-                stateChange.EventTiming == EventTiming.PostStartup // post startup ?needed?
-                ||
-                (stateChange.EventTiming & a.EventTiming) == stateChange.EventTiming //pre startup
-            );
+            && (stateChange.EventTiming & a.EventTiming) == stateChange.EventTiming;
     }
 
     private Task ExecuteAutomation(HaEntityStateChange stateChange, IAutomation a, CancellationToken cancellationToken)

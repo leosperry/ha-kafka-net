@@ -17,7 +17,7 @@ public class HaTransformerHandlerTests
         
         HaTransformerHandler sut = new HaTransformerHandler(producerAccessor.Object);
         
-        var fakeSate = TestHelpers.GetFakeState();
+        var fakeSate = TestHelpers.GetState();
 
         //act
         await sut.Handle(null!, fakeSate);

@@ -12,7 +12,9 @@ public interface IAutomationFactory
         TimeSpan @for,
         Func<CancellationToken, Task> execute);
 
-    //TODO:
-    // IAutomation AfterNoMotionForTime_TurnOffLights(IEnumerable<string> motionEntities, IEnumerable<string> lightEntities);
-    // IAutomation OnMotion_TurnOnLight(IEnumerable<string> motionEntities, IEnumerable<string> lightEntities);
+    IAutomation LightOnMotion(string motionId, string lightId);
+    IAutomation LightOnMotion(IEnumerable<string> motionId, IEnumerable<string> lightId);
+    IConditionalAutomation LightOffOnNoMotion(string motionId, string lightId, TimeSpan duration);
+    IConditionalAutomation LightOffOnNoMotion(IEnumerable<string> motionIds, IEnumerable<string> lightIds, TimeSpan duration);
+
 }

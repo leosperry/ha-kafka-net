@@ -7,7 +7,7 @@ namespace HaKafkaNet.Tests;
 public class TestHelpers
 {
     
-    public static HaEntityState GetFakeState(string entityId = "enterprise", object atttributes = null!, 
+    public static HaEntityState GetState(string entityId = "enterprise", object atttributes = null!, 
         DateTime lastUpdated = default )
     {
         var atts = JsonSerializer.SerializeToElement(atttributes != null ? atttributes: new{ prop = "somevalue"});
@@ -19,6 +19,16 @@ public class TestHelpers
             State = "warp factor 1",
             LastUpdated = lastUpdated
         };
+    }
+
+    public static HaEntityStateChange GetStateChange(string entityId = "enterprise", object atttributes = null!, EventTiming timing = EventTiming.PostStartup)
+    {
+         return new HaEntityStateChange()
+         {
+            EntityId = entityId,
+            EventTiming = EventTiming.PostStartup,
+            New = GetState(entityId, atttributes)
+         };
     }
 
 

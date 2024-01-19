@@ -35,7 +35,7 @@ internal class AutomationCollector : IAutomationCollector
     public IEnumerable<IAutomation> GetAll()
     {
         var conditionals =
-            from ca in _conditionalAutomations
+            from ca in _conditionalAutomations.Union(GetRegisteredConditionals())
             select new ConditionalAutomationWrapper(ca, _conditionalWrapperlogger);
 
         IEnumerable<IAutomation> registered = GetRegistered();
@@ -43,6 +43,22 @@ internal class AutomationCollector : IAutomationCollector
         return _automations
             .Union(conditionals)
             .Union(registered);
+    }
+
+    private IEnumerable<IConditionalAutomation> GetRegisteredConditionals()
+    {
+        try
+        {
+            return 
+                from r in _registries
+                from a in r.RegisterContitionals(_automationFactory)
+                select a;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogCritical(ex, "Registration for conditionals Failed");
+            throw;
+        }    
     }
 
     private IEnumerable<IAutomation> GetRegistered()
@@ -59,6 +75,5 @@ internal class AutomationCollector : IAutomationCollector
             _logger.LogCritical(ex, "Registration Failed");
             throw;
         }
-        
     }
 }

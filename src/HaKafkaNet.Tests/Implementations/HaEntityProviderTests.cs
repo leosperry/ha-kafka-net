@@ -11,7 +11,7 @@ public class HaEntityProviderTests
     {
         // Given
         Mock<IHaStateCache> cache = new();
-        var fakeState = TestHelpers.GetFakeState();
+        var fakeState = TestHelpers.GetState();
         cache.Setup(c => c.Get(fakeState.EntityId, default))
             .ReturnsAsync(fakeState);
         
@@ -35,7 +35,7 @@ public class HaEntityProviderTests
     {
         // Given
         Mock<IHaStateCache> cache = new();
-        HaEntityState fakeState = TestHelpers.GetFakeState();
+        HaEntityState fakeState = TestHelpers.GetState();
         cache.Setup(c => c.Get(fakeState.EntityId, default))
             .ReturnsAsync(default(HaEntityState)).Verifiable();
         
@@ -61,7 +61,7 @@ public class HaEntityProviderTests
     {
         // Given
         Mock<IHaStateCache> cache = new();
-        HaEntityState fakeState = TestHelpers.GetFakeState();
+        HaEntityState fakeState = TestHelpers.GetState();
         cache.Setup(c => c.Get(fakeState.EntityId, default))
             .Throws(new Exception()).Verifiable();
         
