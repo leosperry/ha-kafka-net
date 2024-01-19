@@ -163,7 +163,7 @@ public class ConditionalAutomationWrapperTests
         await Task.WhenAll(
             sut.Execute(stateChange, default),
             Task.Delay(delay + delay).ContinueWith(t => sut.Execute(stateChange, default)),
-            Task.Delay(delay * 3)
+            Task.Delay(delay * 4)
         );
     
         // Then
