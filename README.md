@@ -7,7 +7,6 @@ It was created with the following goals:
 * Provide a means to call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
 
-This project is still in an alpha state. 
 Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
 
 Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
