@@ -9,6 +9,7 @@ It was created with the following goals:
 
 This project is still in an alpha state. 
 Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
+Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
