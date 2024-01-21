@@ -42,13 +42,13 @@ public class ConditionalAutomationExample : IConditionalAutomation
 
         LightTurnOnModel color1 = new LightTurnOnModel()
         {
-            EntityId = LIGHT_ID,
+            EntityId = [LIGHT_ID],
             RgbColor = (255, 255, 0)
         };
 
         LightTurnOnModel color2 = new LightTurnOnModel()
         {
-            EntityId = LIGHT_ID,
+            EntityId = [LIGHT_ID],
             RgbColor = (255, 0, 255)
         };
 

@@ -36,6 +36,7 @@ public interface IHaApiProvider
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LightSetBrightness(IEnumerable<string> entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Turns on a light
@@ -44,6 +45,7 @@ public interface IHaApiProvider
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LightTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// turns on a light with settings (e.g. color, brightness, etc.)
@@ -60,6 +62,7 @@ public interface IHaApiProvider
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_ids, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sends a notification to a "Notify Group" as documented here:
@@ -93,6 +96,7 @@ public interface IHaApiProvider
     /// <param name="entity_id">id of switch to turn off</param>
     /// <returns></returns>
     Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> SwitchTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns on a switch
@@ -101,6 +105,7 @@ public interface IHaApiProvider
     /// <param name="brightness">Brightness to set</param>
     /// <returns></returns>
     Task<HttpResponseMessage> SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> SwitchTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Toggles a switch
@@ -109,4 +114,5 @@ public interface IHaApiProvider
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<HttpResponseMessage> SwitchToggle(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 }

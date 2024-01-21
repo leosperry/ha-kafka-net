@@ -69,12 +69,26 @@ internal class HaApiProvider : IHaApiProvider
         return CallService("light", "turn_on", new { entity_id, brightness }, cancellationToken);
     }
 
+    public Task<HttpResponseMessage> LightSetBrightness(IEnumerable<string> entity_id, byte brightness, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_on", new { entity_id, brightness }, cancellationToken);
+    }
+
     public Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default)
     {
         return CallService("light", "turn_off", new {entity_id}, cancellationToken);
     }
 
+    public Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
+    }
+
     public Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_on", new { entity_id }, cancellationToken);
+    }
+    public Task<HttpResponseMessage> LightTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
     {
         return CallService("light", "turn_on", new { entity_id }, cancellationToken);
     }
@@ -102,13 +116,26 @@ internal class HaApiProvider : IHaApiProvider
     {
         return CallService("switch", "turn_off", new { entity_id }, cancellationToken);
     }
+    public Task<HttpResponseMessage> SwitchTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("switch", "turn_off", new { entity_id }, cancellationToken);
+    }
 
     public Task<HttpResponseMessage> SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default)
     {
         return CallService("switch", "turn_on", new { entity_id }, cancellationToken);
     }
 
+    public Task<HttpResponseMessage> SwitchTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("switch", "turn_on", new { entity_id }, cancellationToken);
+    }
+
     public Task<HttpResponseMessage> SwitchToggle(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("switch", "toggle", new { entity_id }, cancellationToken);
+    }
+    public Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
     {
         return CallService("switch", "toggle", new { entity_id }, cancellationToken);
     }
