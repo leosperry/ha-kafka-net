@@ -26,7 +26,7 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
   - This allows for faster retrieval later and minimizes our application memory footprint. It also allows us to have some knowledge about which events were not handled between restarts and which ones were. The framework will tell your automation about such timings to allow you to handle messages appropriately.
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
-  - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation erros it will only write an ILogger message indicating the error.
+  - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
 
 ## Current steps for Example App set up:
 1. Follow instructions [here](https://github.com/leosperry/ha-kafka-net/wiki/Setup-Instructions) for setting up your environment.
@@ -50,6 +50,13 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Features recently added
 * Some common API calls
-* Contextual Logging
-* Conditional Automations
-* Automation Registry
+* More API calls
+* Test helper methods
+* Sun model
+
+## More examples
+I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
+
+If you have some examples you would like to share, please start a [discussion](https://github.com/leosperry/ha-kafka-net/discussions). I'd be happy to link it here.
+
+Happy Automating!
