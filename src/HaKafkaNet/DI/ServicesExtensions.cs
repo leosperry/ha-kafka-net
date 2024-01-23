@@ -6,6 +6,7 @@ using KafkaFlow.Consumers.DistributionStrategies;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace HaKafkaNet;
 
@@ -39,11 +40,22 @@ public static class ServicesExtensions
             services.AddSingleton(config.Api);
             services.AddSingleton<IHaApiProvider, HaApiProvider>();
         }
+
         return services;
     }
 
     public static async Task StartHaKafkaNet(this WebApplication app, HaKafkaNetConfig config)
     {
+        if(config.UseDashboard)
+        {
+            var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                RequestPath = "",
+                FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www")),
+            });
+        }
+
         if (config.ExposeKafkaFlowDashboard)
         {
             app.UseKafkaFlowDashboard();

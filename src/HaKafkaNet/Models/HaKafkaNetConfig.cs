@@ -5,6 +5,7 @@ public class HaKafkaNetConfig
     public string[] KafkaBrokerAddresses { get; set; } = ["localhost:9094"];
     public string TransofrmedTopic { get; set; } = "home_assistant_states";
     public bool ExposeKafkaFlowDashboard { get; set; } = true;
+    public bool UseDashboard { get; set; } = false;
     public HaApiConfig Api { get; set; } = new();
     public StateHandlerConfig StateHandler { get; set; } = new();
     public TransformerConfig Transformer { get; set; } = new();
