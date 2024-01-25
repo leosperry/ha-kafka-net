@@ -20,7 +20,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
     {
         //base.Configure();
         Verbs(Http.GET);
-        Routes("systeminfo");
+        Routes("api/systeminfo");
         AllowAnonymous();
     }
 
