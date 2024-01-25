@@ -2,16 +2,46 @@
 
 public class HaKafkaNetConfig
 {
+    HomeAssistantConnectionInfo _haConnection = new();
+    //HomeAssistantConnectionInfo? _api;
+
     public string[] KafkaBrokerAddresses { get; set; } = ["localhost:9094"];
     public string TransofrmedTopic { get; set; } = "home_assistant_states";
     public bool ExposeKafkaFlowDashboard { get; set; } = true;
     public bool UseDashboard { get; set; } = false;
-    public HaApiConfig Api { get; set; } = new();
+
+    [Obsolete("Please rename your Api element to HaConnectionInfo. This will be deleted in Version 3", false)]
+    public HomeAssistantConnectionInfo? Api 
+    { 
+        get => null; 
+        set  
+        {
+            if (value is not null)
+            {
+                var foreground = Console.ForegroundColor;
+                var background = Console.BackgroundColor;
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.WriteLine("*****************************************************************************");
+                Console.WriteLine("Please rename your 'Api' element in your HaKafkaNetConfig to HaConnectionInfo");
+                Console.WriteLine("*****************************************************************************");
+                Console.BackgroundColor = background;
+                Console.ForegroundColor = foreground;
+                _haConnection = value!;
+            }
+        } 
+    }
+
+    public HomeAssistantConnectionInfo HaConnectionInfo 
+    { 
+        get => _haConnection; set => _haConnection = value; 
+    }
+
     public StateHandlerConfig StateHandler { get; set; } = new();
     public TransformerConfig Transformer { get; set; } = new();
 }
 
-public class HaApiConfig
+public class HomeAssistantConnectionInfo
 {
     public bool Enabled { get; set; } = true;
     public string BaseUri { get; set; } = "http://localhost:8123";

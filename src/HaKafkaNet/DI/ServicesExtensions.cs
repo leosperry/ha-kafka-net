@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FastEndpoints;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
@@ -34,11 +35,16 @@ public static class ServicesExtensions
             );
         });
 
-        if (config.Api.Enabled)
+        if (config.HaConnectionInfo.Enabled)
         {
             services.AddHttpClient();
-            services.AddSingleton(config.Api);
+            services.AddSingleton(config.HaConnectionInfo);
             services.AddSingleton<IHaApiProvider, HaApiProvider>();
+        }
+
+        if(config.UseDashboard)
+        {
+            services.AddFastEndpoints();
         }
 
         return services;
@@ -54,6 +60,7 @@ public static class ServicesExtensions
                 RequestPath = "",
                 FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www")),
             });
+            app.UseFastEndpoints();
         }
 
         if (config.ExposeKafkaFlowDashboard)
@@ -87,8 +94,9 @@ public static class ServicesExtensions
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
-            services.AddSingleton<IAutomationCollector, AutomationCollector>();
+            services.AddSingleton<IAutomationCollector, AutomationManager>();
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
+            services.AddSingleton<StateHandlerObserver>();
 
             // get all the automation types
             var eligibleTypes = 

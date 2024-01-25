@@ -7,6 +7,10 @@ namespace HaKafkaNet;
 internal class ConditionalAutomationWrapper : IAutomation
 {
     private readonly IConditionalAutomation _automation;
+    internal IConditionalAutomation WrappedConditional
+    {
+        get => _automation;
+    }
 
     private readonly ILogger<ConditionalAutomationWrapper> _logger;
 
@@ -17,6 +21,11 @@ internal class ConditionalAutomationWrapper : IAutomation
     {
         this._automation = automation;
         _logger = logger;
+    }
+
+    public string Name
+    {
+        get => _automation.Name;
     }
 
     public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)

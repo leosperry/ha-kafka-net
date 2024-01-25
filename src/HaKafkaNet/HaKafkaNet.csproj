@@ -30,10 +30,11 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>      
     </AssemblyAttribute>
-
+    
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.21.2" />
     <PackageReference Include="KafkaFlow" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Admin" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Admin.Dashboard" Version="3.0.1" />

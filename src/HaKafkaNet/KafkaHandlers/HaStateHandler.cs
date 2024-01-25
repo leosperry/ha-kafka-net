@@ -23,7 +23,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     
     public HaStateHandler(
         IDistributedCache cache, IAutomationCollector automationCollector,
-        ILogger<HaStateHandler> logger)
+        StateHandlerObserver observer, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
 
@@ -39,6 +39,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             .ToArray();
         
         _logger = logger;
+        observer.OnInitialized();
         _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
     }
 

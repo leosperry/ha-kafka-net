@@ -24,6 +24,8 @@ public class AutomationWithPreStartup : IAutomation
         _logger = logger;
     }
 
+    public string Name { get => "Automation with Pre-startup events handled"; }
+
     public EventTiming EventTimings 
     { 
         get => EventTiming.PreStartupNotCached | EventTiming.PreStartupSameAsLastCached | EventTiming.PreStartupPostLastCached | EventTiming.PostStartup; 

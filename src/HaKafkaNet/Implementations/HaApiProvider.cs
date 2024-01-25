@@ -10,7 +10,7 @@ namespace HaKafkaNet;
 internal class HaApiProvider : IHaApiProvider
 {
     readonly HttpClient _client;
-    readonly HaApiConfig _apiConfig;
+    readonly HomeAssistantConnectionInfo _apiConfig;
     readonly JsonSerializerOptions _options = new JsonSerializerOptions()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -25,7 +25,7 @@ internal class HaApiProvider : IHaApiProvider
         }
     };
 
-    public HaApiProvider(IHttpClientFactory clientFactory, HaApiConfig config)
+    public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config)
     {
         _client = clientFactory.CreateClient();
         _apiConfig = config;
