@@ -18,7 +18,6 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
 
     public override void Configure()
     {
-        //base.Configure();
         Verbs(Http.GET);
         Routes("api/systeminfo");
         AllowAnonymous();
