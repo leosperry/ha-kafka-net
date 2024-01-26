@@ -3,7 +3,6 @@ using FastEndpoints;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
-using KafkaFlow.Consumers.DistributionStrategies;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,7 +93,7 @@ public static class ServicesExtensions
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
-            services.AddSingleton<IAutomationCollector, AutomationManager>();
+            services.AddSingleton<IAutomationManager, AutomationManager>();
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
             services.AddSingleton<StateHandlerObserver>();
 

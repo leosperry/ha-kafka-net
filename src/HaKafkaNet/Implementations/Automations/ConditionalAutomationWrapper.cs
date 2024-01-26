@@ -12,12 +12,12 @@ internal class ConditionalAutomationWrapper : IAutomation
         get => _automation;
     }
 
-    private readonly ILogger<ConditionalAutomationWrapper> _logger;
+    private readonly ILogger _logger;
 
     private readonly object lockObj = new{};
     private CancellationTokenSource? _cts;
 
-    public ConditionalAutomationWrapper(IConditionalAutomation automation, ILogger<ConditionalAutomationWrapper> logger)
+    public ConditionalAutomationWrapper(IConditionalAutomation automation, ILogger logger)
     {
         this._automation = automation;
         _logger = logger;
