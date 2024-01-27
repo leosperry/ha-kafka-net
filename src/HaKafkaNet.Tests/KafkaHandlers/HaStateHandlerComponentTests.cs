@@ -265,6 +265,49 @@ public class HaStateHandlerComponentTests
     }
 
     [Fact]
+    public async Task WhenPostStartupSpecified_AndEventPostStartup_AndAutomationDisabled_ShouldNotTriggerAutomation()
+    {
+        // Given
+        Mock<IDistributedCache> cache= new();
+        cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
+        Mock<IAutomation> auto = new Mock<IAutomation>();
+        var autoWithMeta = auto.As<IAutomationMeta>();
+        autoWithMeta.Setup(a => a.GetMetaData())
+            .Returns(new AutomationMetaData()
+            {
+                Name = "fire photon torpedos",
+                Enabled = false
+            });
+        auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
+        auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
+        Mock<IMessageContext> fakeContext = new();
+        Mock<IConsumerContext> consumerContext = new();
+        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
+
+        HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
+
+        StateHandlerObserver fakeObserver = new();
+        Mock<ILogger<HaStateHandler>> logger = new();
+
+        Mock<IAutomationFactory> factory = new();
+        Mock<ILogger<AutomationManager>> mgrLogger = new();
+
+
+        AutomationManager collector = new(
+            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
+            Enumerable.Empty<IAutomationRegistry>(), factory.Object, mgrLogger.Object);
+
+
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        // When
+        await sut.Handle(fakeContext.Object, fakeState);
+        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+    
+        // Then
+        auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);
+    }
+
+    [Fact]
     public async Task WhenPostStartupSpecified_AndEventPreStartup_ShouldNotTriggerAutomation()
     {
         // Given
