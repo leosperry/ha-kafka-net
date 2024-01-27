@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
 internal interface IAutomationManager
 {
-    IEnumerable<IAutomation> GetAll();
-    IEnumerable<IAutomation> GetByTriggerEntityId(string entityId);
+    IEnumerable<AutomationWrapper> GetAll();
+    //IEnumerable<IAutomation> GetByTriggerEntityId(string entityId);
     bool HasAutomationsForEntity(string entityId);
     //IAutomation GetById(Guid id);
     Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken);
@@ -17,8 +16,8 @@ internal class AutomationManager : IAutomationManager
 
     private readonly ILogger<AutomationManager> _logger;
 
-    private readonly List<IAutomation> _internalAutomations = new List<IAutomation>();
-    private Dictionary<string, List<IAutomation>> _automationsByTrigger = new();
+    private readonly List<AutomationWrapper> _internalAutomations = new List<AutomationWrapper>();
+    private Dictionary<string, List<AutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
         IEnumerable<IAutomation> automations,
@@ -29,29 +28,15 @@ internal class AutomationManager : IAutomationManager
     {
         this._logger = logger;
 
-        Initialize(automations, conditionalAutomations, registries, automationFactory);
-    }
-
-    public IEnumerable<IAutomation> GetAll()
-    {
-        return _internalAutomations;
-    }
-
-    private void Initialize(
-        IEnumerable<IAutomation> automations, IEnumerable<IConditionalAutomation> conditionalAutomations, 
-        IEnumerable<IAutomationRegistry> registries, IAutomationFactory automationFactory)
-    {
         var conditionals =
             from ca in conditionalAutomations.Union(GetRegisteredConditionals(registries, automationFactory))
             select new ConditionalAutomationWrapper(ca, _logger);
 
         IEnumerable<IAutomation> registered = GetRegistered(registries, automationFactory);
 
-        //get all
-        _internalAutomations.AddRange( 
-            automations
-            .Union(conditionals)
-            .Union(registered));
+        _internalAutomations = 
+            (from a in automations.Union(conditionals).Union(registered)
+            select new AutomationWrapper(a, logger)).ToList();
 
         //get by trigger
         this._automationsByTrigger = (
@@ -62,6 +47,11 @@ internal class AutomationManager : IAutomationManager
             let key = autoGroup.Key
             let collection = autoGroup.ToList()
             select (key, collection)).ToDictionary();
+    }
+
+    public IEnumerable<AutomationWrapper> GetAll()
+    {
+        return _internalAutomations;
     }
 
     private IEnumerable<IConditionalAutomation> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries, IAutomationFactory automationFactory)
@@ -96,23 +86,21 @@ internal class AutomationManager : IAutomationManager
         }
     }
 
-    public IEnumerable<IAutomation> GetByTriggerEntityId(string entityId)
+    public IEnumerable<AutomationWrapper> GetByTriggerEntityId(string entityId)
     {
         if (_automationsByTrigger.TryGetValue(entityId, out var automations))
         {
             return automations;
         }
-        return Enumerable.Empty<IAutomation>();
+        return Enumerable.Empty<AutomationWrapper>();
     }
 
     public Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        var asdf = 
+        return Task.WhenAll(
             from a in GetByTriggerEntityId(stateChange.EntityId)
-            where TimingMatches(a.EventTimings, stateChange.EventTiming)
-            select Execute(a, stateChange, cancellationToken);
-        
-        return Task.WhenAll(asdf);
+            where TimingMatches(a.EventTimings, stateChange.EventTiming) && a.GetMetaData().Enabled
+            select a.Execute(stateChange, cancellationToken));
     }
 
     public bool HasAutomationsForEntity(string entityId)
@@ -121,22 +109,5 @@ internal class AutomationManager : IAutomationManager
     private bool TimingMatches(EventTiming automationTimings, EventTiming stateChangeTiming)
     {
         return (automationTimings & stateChangeTiming) == stateChangeTiming;
-    }
-
-    private Task Execute(IAutomation _auto, HaEntityStateChange stateChange, CancellationToken cancellationToken)
-    {
-        using (_logger.BeginScope("Start [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", 
-            _auto.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
-        {
-            try
-            {
-                return _auto.Execute(stateChange, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "automation fault");
-                throw;
-            }
-        }
     }
 }

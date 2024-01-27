@@ -40,8 +40,9 @@ class HaKafkaNetRoot extends React.Component {
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            {/* <th class="col-xs-1">Enabled</th> */}
+                            <th class="col-xs-1">Enabled</th>
                             <th class="col-xs-2">Name</th>
+                            <th class="col-xs-2">Description</th>
                             <th class="col-xs-1">Type</th>
                             <th class="col-xs-1">Trigger IDs</th>
                         </tr>
@@ -50,12 +51,13 @@ class HaKafkaNetRoot extends React.Component {
                         { this.state.systemInfo.data && 
                             this.state.systemInfo.data.automations.map((item) =>(
                                 <tr>
-                                    {/* <td>
+                                    <td>
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" />
                                         </div>
-                                    </td> */}
+                                    </td>
                                     <td>{item.name}</td>
+                                    <td>{item.description}</td>
                                     <td>{item.typeName}</td>
                                     <td>{item.triggerIds}</td>
                                 </tr>

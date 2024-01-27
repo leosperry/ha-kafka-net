@@ -30,11 +30,16 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
             Data = new SystemInfoResponse()
             {
                 StateHandlerInitialized = _observer.IsInitialized,
-                Automations = _manager.GetAll().Select( a => new AutomationInfo()
-                {
-                    Name = a.Name,
-                    TypeName = (a is ConditionalAutomationWrapper ca)? ca.WrappedConditional.GetType().Name : a.GetType().Name,
-                    TriggerIds = a.TriggerEntityIds()
+                Automations = _manager.GetAll().Select( a => {
+                    var meta = a.GetMetaData();
+                    return new AutomationInfo()
+                    {
+                        Name = meta.Name,
+                        Description = meta.Description ?? string.Empty,
+                        TypeName = meta.UnderlyingType ?? string.Empty,
+                        TriggerIds = a.TriggerEntityIds(),
+                        Enabled = meta.Enabled
+                    };
                 })
             }
         });

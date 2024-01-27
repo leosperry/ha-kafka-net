@@ -66,3 +66,17 @@ public interface IConditionalAutomation
     /// <returns></returns>
     Task Execute(CancellationToken cancellationToken);
 }
+
+public interface IAutomationMeta
+{
+    AutomationMetaData GetMetaData();
+}
+
+public record AutomationMetaData
+{
+    public bool Enabled { get; set; } = true;
+    public required string Name { get; init; }
+    public string? Description { get; init;}
+    public Guid Id { get; init; } = Guid.NewGuid();
+    internal string? UnderlyingType { get; set; }
+}
