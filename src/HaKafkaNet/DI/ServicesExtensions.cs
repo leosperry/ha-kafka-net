@@ -96,6 +96,7 @@ public static class ServicesExtensions
             services.AddSingleton<IAutomationManager, AutomationManager>();
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
             services.AddSingleton<StateHandlerObserver>();
+            services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
 
             // get all the automation types
             var eligibleTypes = 

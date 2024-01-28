@@ -9,7 +9,7 @@ namespace HaKafkaNet.ExampleApp;
 /// it assumes you have a helper button named "Test Button 2"
 /// change the id of the light for your setup
 /// </summary>
-public class SimpleLightAutomation : IAutomation
+public class SimpleLightAutomation : IAutomation, IAutomationMeta
 {
     IHaServices _services;
     string _idOfLightToDim;
@@ -39,6 +39,17 @@ public class SimpleLightAutomation : IAutomation
             entity_id = _idOfLightToDim,
             brightness = brightness - 5
         }, cancellationToken);
+    }
+
+    public AutomationMetaData GetMetaData()
+    {
+        return new()
+        {
+            Name = "Simple Automation",
+            Description = "When button is pressed, dims a light",
+            Enabled = false,
+            Id = Guid.NewGuid(),
+        };
     }
 
     record LightAttributes

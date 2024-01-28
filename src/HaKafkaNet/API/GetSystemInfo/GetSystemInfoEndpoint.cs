@@ -18,8 +18,8 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
 
     public override void Configure()
     {
-        Verbs(Http.GET);
-        Routes("api/systeminfo");
+        //Verbs(Http.GET);
+        Get("api/systeminfo");
         AllowAnonymous();
     }
 
@@ -34,13 +34,14 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                     var meta = a.GetMetaData();
                     return new AutomationInfo()
                     {
+                        Id = meta.Id,
                         Name = meta.Name,
                         Description = meta.Description ?? string.Empty,
                         TypeName = meta.UnderlyingType ?? string.Empty,
                         TriggerIds = a.TriggerEntityIds(),
                         Enabled = meta.Enabled
                     };
-                })
+                }).ToDictionary(item => item.Id)
             }
         });
     }

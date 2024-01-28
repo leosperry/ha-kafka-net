@@ -20,10 +20,15 @@ public class AutomationWrapper : IAutomation, IAutomationMeta
         _auto = automation;
         _log = logger;
         var underlyingType = automation is ConditionalAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
-        _meta = 
-            automation is IAutomationMeta metaAuto 
-            ? metaAuto.GetMetaData() // called only once
-            : new AutomationMetaData()
+        
+        if (automation is IAutomationMeta metaAuto)
+        {
+            _meta = metaAuto.GetMetaData();
+            _meta.UnderlyingType = underlyingType.Name;
+        }
+        else
+        {
+            _meta = new AutomationMetaData()
             {
                 Name = underlyingType.Name,
                 Description = underlyingType.FullName,
@@ -31,18 +36,26 @@ public class AutomationWrapper : IAutomation, IAutomationMeta
                 Id = Guid.NewGuid(),
                 UnderlyingType = underlyingType.Name
             };
+        }
+        
         _triggers = automation.TriggerEntityIds();
         _eventTimings = automation.EventTimings;
     }
 
-    public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    /// <summary>
+    /// this one is asyc becase we want to capture that log scope
+    /// </summary>
+    /// <param name="stateChange"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         using (_log.BeginScope("Start [{automationName}] of Type [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", 
             _meta.Name, _auto.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
         {
             try
             {
-                return _auto.Execute(stateChange, cancellationToken);
+                await _auto.Execute(stateChange, cancellationToken);
             }
             catch (System.Exception ex)
             {

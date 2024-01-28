@@ -5,44 +5,47 @@ namespace HaKafkaNet;
 internal interface IAutomationManager
 {
     IEnumerable<AutomationWrapper> GetAll();
-    //IEnumerable<IAutomation> GetByTriggerEntityId(string entityId);
     bool HasAutomationsForEntity(string entityId);
-    //IAutomation GetById(Guid id);
     Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Enables or disables an automation
+    /// </summary>
+    /// <param name="id">The ID of the automation to update</param>
+    /// <param name="Enable">true to enable; false to disable</param>
+    /// <returns>true if found and updated, otherwise false</returns>
+    bool EnableAutomation(Guid id, bool Enable);
 }
 
 internal class AutomationManager : IAutomationManager
 {
-
     private readonly ILogger<AutomationManager> _logger;
 
-    private readonly List<AutomationWrapper> _internalAutomations = new List<AutomationWrapper>();
+    private  Dictionary<Guid, AutomationWrapper> _internalAutomations = new();
     private Dictionary<string, List<AutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
         IEnumerable<IAutomation> automations,
         IEnumerable<IConditionalAutomation> conditionalAutomations,
         IEnumerable<IAutomationRegistry> registries,
-        IAutomationFactory automationFactory,
         ILogger<AutomationManager> logger)
     {
         this._logger = logger;
 
         var conditionals =
-            from ca in conditionalAutomations.Union(GetRegisteredConditionals(registries, automationFactory))
+            from ca in conditionalAutomations.Union(GetRegisteredConditionals(registries))
             select new ConditionalAutomationWrapper(ca, _logger);
 
-        IEnumerable<IAutomation> registered = GetRegistered(registries, automationFactory);
+        IEnumerable<IAutomation> registered = GetRegistered(registries);
 
         _internalAutomations = 
             (from a in automations.Union(conditionals).Union(registered)
-            select new AutomationWrapper(a, logger)).ToList();
+            select new AutomationWrapper(a, logger)).ToDictionary(a => a.GetMetaData().Id);
 
         //get by trigger
         this._automationsByTrigger = (
-            from a in _internalAutomations
+            from a in _internalAutomations.Values
             from t in a.TriggerEntityIds() ?? Enumerable.Empty<string>()
-            // this is the only place to call TriggerEntityIds
             group a by t into autoGroup
             let key = autoGroup.Key
             let collection = autoGroup.ToList()
@@ -51,39 +54,7 @@ internal class AutomationManager : IAutomationManager
 
     public IEnumerable<AutomationWrapper> GetAll()
     {
-        return _internalAutomations;
-    }
-
-    private IEnumerable<IConditionalAutomation> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries, IAutomationFactory automationFactory)
-    {
-        try
-        {
-            return 
-                from r in registries
-                from a in r.RegisterContitionals(automationFactory)
-                select a;
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogCritical(ex, "Registration for conditionals Failed");
-            throw;
-        }    
-    }
-
-    private IEnumerable<IAutomation> GetRegistered(IEnumerable<IAutomationRegistry> registries, IAutomationFactory automationFactory)
-    {
-        try
-        {
-            return 
-                from r in registries
-                from a in r.Register(automationFactory)
-                select a;
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogCritical(ex, "Registration Failed");
-            throw;
-        }
+        return _internalAutomations.Values;
     }
 
     public IEnumerable<AutomationWrapper> GetByTriggerEntityId(string entityId)
@@ -99,15 +70,55 @@ internal class AutomationManager : IAutomationManager
     {
         return Task.WhenAll(
             from a in GetByTriggerEntityId(stateChange.EntityId)
-            where TimingMatches(a.EventTimings, stateChange.EventTiming) && a.GetMetaData().Enabled
+            where 
+                (a.EventTimings & stateChange.EventTiming) == stateChange.EventTiming
+                && a.GetMetaData().Enabled
             select a.Execute(stateChange, cancellationToken));
     }
 
     public bool HasAutomationsForEntity(string entityId)
         => _automationsByTrigger.ContainsKey(entityId);
 
-    private bool TimingMatches(EventTiming automationTimings, EventTiming stateChangeTiming)
+    private IEnumerable<IConditionalAutomation> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries)
     {
-        return (automationTimings & stateChangeTiming) == stateChangeTiming;
+        try
+        {
+            return 
+                from r in registries
+                from a in r.RegisterContitionals()
+                select a;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogCritical(ex, "Registration for conditionals Failed");
+            throw;
+        }    
+    }
+
+    private IEnumerable<IAutomation> GetRegistered(IEnumerable<IAutomationRegistry> registries)
+    {
+        try
+        {
+            return 
+                from r in registries
+                from a in r.Register()
+                select a;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogCritical(ex, "Registration Failed");
+            throw;
+        }
+    }
+
+    public bool EnableAutomation(Guid id, bool enable)
+    {
+        if (_internalAutomations.TryGetValue(id, out var auto))
+        {
+            auto.GetMetaData().Enabled = enable;
+            return true;
+        }
+        //doesnt' exist / not found
+        return false;
     }
 }

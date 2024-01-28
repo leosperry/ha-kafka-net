@@ -2,20 +2,21 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public class LightOnMotionAutomation : IAutomation
+public class LightOnMotionAutomation : SimpleAutomationBase
 {
     private readonly List<string> _motionSensors = new();
     private readonly List<string> _lights = new();
     private readonly IHaServices _services;
 
     public LightOnMotionAutomation(IEnumerable<string> motionSensor, IEnumerable<string> light, IHaServices entityProvider)
+        : base(motionSensor, EventTiming.PostStartup)
     {
         _motionSensors.AddRange(motionSensor);
         _lights.AddRange(light);
         this._services = entityProvider;
     }
 
-    public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    public override Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         if (stateChange.New.State == "on")
         {
@@ -31,10 +32,5 @@ public class LightOnMotionAutomation : IAutomation
             );
         }
         return Task.CompletedTask;
-    }
-
-    public IEnumerable<string> TriggerEntityIds()
-    {
-        return _motionSensors;
     }
 }

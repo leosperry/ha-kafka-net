@@ -1,5 +1,3 @@
-'use strict';
-
 const e = React.createElement;
 
 class HaKafkaNetRoot extends React.Component {
@@ -9,6 +7,8 @@ class HaKafkaNetRoot extends React.Component {
             systemInfo: {},
             error:null
         };
+        //this.onToggleLoop = this.onToggleLoop.bind(this);
+        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     }
 
     componentDidMount(){
@@ -23,37 +23,68 @@ class HaKafkaNetRoot extends React.Component {
         })
     }
 
+    async handleCheckboxChange(evt)
+    {
+        var automationId = evt.target.getAttribute('data-id');
+        var checked = evt.target.checked;
+
+        var payload = {
+            id : automationId,
+            enable: checked
+        };
+
+        const response = await fetch('../api/automation/enable', {
+            method: 'POST',
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+           this.setState(prevState => {
+            prevState.systemInfo.data.automations[automationId].enabled = checked;
+            return {systemInfo: prevState.systemInfo};
+           });
+        }
+        else{
+            
+        }
+
+
+    }
+
     render() {
         return (
             <div>
                 <h1>Ha-Kafka-Net</h1>
                 {this.state.error &&
-                    <h3 class="bg-warning">{this.state.error}</h3>
+                    <h3 className="bg-warning">{this.state.error}</h3>
                 }
                 <div>State Handler Initialized:
                     {this.state.systemInfo.data &&
-                        <mark class="text-uppercase">{this.state.systemInfo.data.stateHandlerInitialized.toString()}</mark>
+                        <mark className="text-uppercase">{this.state.systemInfo.data.stateHandlerInitialized.toString()}</mark>
                     }
                 </div>
                 <hr />
                 <h3>Automations</h3>
-                <table class="table table-bordered table-hover">
+                <table className="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-1">Enabled</th>
-                            <th class="col-xs-2">Name</th>
-                            <th class="col-xs-2">Description</th>
-                            <th class="col-xs-1">Type</th>
-                            <th class="col-xs-1">Trigger IDs</th>
+                            <th className="col-1 text-wrap">Enabled</th>
+                            <th className="col-2 text-wrap">Name</th>
+                            <th className="col-1 text-wrap">Description</th>
+                            <th className="col-1 text-wrap">Type</th>
+                            <th className="col-1 text-wrap">Trigger IDs</th>
                         </tr>
                     </thead>
                     <tbody>
                         { this.state.systemInfo.data && 
-                            this.state.systemInfo.data.automations.map((item) =>(
-                                <tr>
+                            Object.entries(this.state.systemInfo.data.automations).map(([id, item]) =>(
+                                <tr key={item.id.toString()}>
                                     <td>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" />
+                                        <div className="form-check form-switch">
+                                            <input className="form-check-input" type="checkbox" checked={item.enabled ? 'checked' : ''} onChange={this.handleCheckboxChange} data-id={item.id} />
                                         </div>
                                     </td>
                                     <td>{item.name}</td>
