@@ -13,11 +13,10 @@ public class GetAllTests
         var conditionals = Enumerable.Empty<IConditionalAutomation>();
         var registries = Enumerable.Empty<IAutomationRegistry>();
         
-        Mock<IAutomationFactory> factory = new();
         Mock<ILogger<AutomationManager>> logger = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, factory.Object, logger.Object);
+            autos, conditionals, registries, logger.Object);
         // When
 
         var result = sut.GetAll();
@@ -36,28 +35,26 @@ public class GetAllTests
         Mock<IConditionalAutomation> conditional = new();
         IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
         
-        Mock<IAutomationFactory> factory = new();
-
         Mock<IAutomationRegistry> registry = new();
         Mock<IAutomation> registeredAuto = new();
-        registry.Setup(r => r.Register(factory.Object))
+        registry.Setup(r => r.Register())
             .Returns([registeredAuto.Object]);
         Mock<IConditionalAutomation> registeredConditional = new();
-        registry.Setup(r => r.RegisterContitionals(factory.Object))
+        registry.Setup(r => r.RegisterContitionals())
             .Returns([registeredConditional.Object]);
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
         Mock<ILogger<AutomationManager>> logger = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, factory.Object, logger.Object);
+            autos, conditionals, registries, logger.Object);
         // When
 
         var result = sut.GetAll();
     
         // Then
-        registry.Verify(r => r.Register(factory.Object), Times.Once);
-        registry.Verify(r => r.RegisterContitionals(factory.Object), Times.Once);
+        registry.Verify(r => r.Register(), Times.Once);
+        registry.Verify(r => r.RegisterContitionals(), Times.Once);
         Assert.Equal(4, result.Count());
     }
 }
