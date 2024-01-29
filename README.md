@@ -39,9 +39,10 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Coming soon
 * More pre-built automations.
+* builder for creating automations 
 * More Documentation
 * More enhanced HA API functionality
-* V2 is in development and will offer a UI to list out all your executing automations as well as the ability to disable/enable automations at run time.
+* V2 is in development and will offer a UI to list out all your executing automations as well as the ability to disable/enable automations at run time. Check out the V2 branch for details.
 
 ## Tips
 * You can optionally add this repository as a submodule to your own instead of using the nuget package.
