@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HaKafkaNet\HaKafkaNet.csproj" />
+    <ProjectReference Include="..\..\src\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,8 +14,8 @@ public class LightOnRegistry : IAutomationRegistry
     private readonly IAutomationBuilder _builder;
     private readonly IAutomationFactory _factory;
 
-    const string OFFICE_MOTION = "binary_sensor.office_motion";
-    const string OFFICE_LIGHT = "light.office_light";
+    public const string OFFICE_MOTION = "binary_sensor.office_motion";
+    public const string OFFICE_LIGHT = "light.office_light";
 
     public LightOnRegistry(IHaServices services, IAutomationBuilder builder, IAutomationFactory factory)
     {
@@ -52,6 +52,7 @@ public class LightOnRegistry : IAutomationRegistry
             });
         
         //create your own automations for reuse
+        //you could also put a manual construction like this in a facotry extension method
         yield return new LightOnCustomAutomation(_services.Api, OFFICE_MOTION, OFFICE_LIGHT, 200, "Office Light On Motion", "custom built");
         
         //the builder offers a more descriptive way create automations
@@ -62,7 +63,7 @@ public class LightOnRegistry : IAutomationRegistry
             .WithExecution(async (stateChange, ct) => {
                 if (stateChange.New.State == "on")
                 {
-                    //service reference comes from constructor
+                    //services reference comes from this class
                     await _services.Api.LightTurnOn(OFFICE_LIGHT, ct);
                 }
             })
@@ -76,7 +77,7 @@ public class LightOnRegistry : IAutomationRegistry
             .WithExecution(async (svc, stateChange, ct) =>{
                 if (stateChange.New.State == "on")
                 {
-                    //service reference injected into callback
+                    //services reference injected into callback
                     await svc.Api.LightTurnOn(OFFICE_LIGHT, ct);
                 }
             })
@@ -92,7 +93,7 @@ public class LightOnRegistry : IAutomationRegistry
             .WithName("Office Light On Motion")
             .WithDescription("from builder using conditional")
             .WithTriggers(OFFICE_MOTION)
-            .When(sc => sc.New.State == "on") // there is an asynchronous overload for this method
+            .When(sc => sc.New.State == "on") // there is an asynchronous overload for this method should you need to call services
             .Then(ct => _services.Api.LightTurnOn(OFFICE_LIGHT, ct))
             .Build();
     }
