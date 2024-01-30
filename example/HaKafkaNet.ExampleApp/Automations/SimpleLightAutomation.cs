@@ -47,7 +47,6 @@ public class SimpleLightAutomation : IAutomation, IAutomationMeta
         {
             Name = "Simple Automation",
             Description = "When button is pressed, dims a light",
-            Enabled = false,
             Id = Guid.NewGuid(),
         };
     }

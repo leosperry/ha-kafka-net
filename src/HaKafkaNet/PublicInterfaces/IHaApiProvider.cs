@@ -38,6 +38,10 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> LightSetBrightness(IEnumerable<string> entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     
+    Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+
+
     /// <summary>
     /// Turns on a light
     /// </summary>

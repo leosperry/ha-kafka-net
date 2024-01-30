@@ -2,6 +2,8 @@
 
 public interface IAutomationFactory
 {
+    IHaServices Services { get; }
+
     SimpleAutomation SimpleAutomation(
         IEnumerable<string> triggerEntities,
         Func<HaEntityStateChange, CancellationToken, Task> execute,

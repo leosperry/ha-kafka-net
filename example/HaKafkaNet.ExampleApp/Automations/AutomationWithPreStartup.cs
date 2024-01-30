@@ -1,6 +1,5 @@
 ﻿using HaKafkaNet;
 
-
 namespace HaKafkaNet.ExampleApp;
 
 /// <summary>

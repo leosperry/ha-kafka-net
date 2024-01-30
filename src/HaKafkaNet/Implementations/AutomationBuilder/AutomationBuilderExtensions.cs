@@ -31,6 +31,12 @@ public static class AutomationBuilderExtensions
         return info;
     }
 
+    public static SimpleAutomationWithServicesBuildingInfo WithExecution(this SimpleAutomationWithServicesBuildingInfo info, Func<IHaServices, HaEntityStateChange, CancellationToken, Task> execution)
+    {
+        info.ExecutionWithServcies = execution;
+        return info;
+    }    
+
     public static ConditionalAutomationWithServicesBuildingInfo When(
         this ConditionalAutomationWithServicesBuildingInfo info,
         Func<IHaServices, HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue)
@@ -63,25 +69,25 @@ public static class AutomationBuilderExtensions
         return info;
     }
 
-    public static ConditionalAutomationBuildingInfo For(this ConditionalAutomationBuildingInfo info, TimeSpan @for)
+    public static T For<T>(this T info, TimeSpan @for) where T : ConditionalAutomationBuildingInfoBase
     {
         info.For = @for;
         return info;
     }
 
-    public static ConditionalAutomationBuildingInfo ForSeconds(this ConditionalAutomationBuildingInfo info, int seconds)
+    public static T ForSeconds<T>(this T info, int seconds) where T : ConditionalAutomationBuildingInfoBase
     {
         info.For = TimeSpan.FromSeconds(seconds);
         return info;
     }
 
-    public static ConditionalAutomationBuildingInfo ForMinutes(this ConditionalAutomationBuildingInfo info, int minutes)
+    public static T ForMinutes<T>(this T info, int minutes) where T : ConditionalAutomationBuildingInfoBase
     {
         info.For = TimeSpan.FromMinutes(minutes);
         return info;
     }
 
-    public static ConditionalAutomationBuildingInfo ForHours(this ConditionalAutomationBuildingInfo info, int hours)
+    public static T ForHours<T>(this T info, int hours) where T : ConditionalAutomationBuildingInfoBase
     {
         info.For = TimeSpan.FromHours(hours);
         return info;
@@ -144,7 +150,7 @@ public static class AutomationBuilderExtensions
     {
         return new AutomationMetaData()
         {
-            Name = info.Name ?? nameof(SimpleAutomationWithServices),
+            Name = info.Name ?? nameof(SimpleAutomationWithServices), //fix
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
             Id = Guid.NewGuid(),

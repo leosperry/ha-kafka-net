@@ -2,8 +2,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.Http;
 
 namespace HaKafkaNet;
 
@@ -62,6 +60,16 @@ internal class HaApiProvider : IHaApiProvider
             HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<T>>(response.Content.ReadAsStream())!),
             _ => (response, null!)
         };
+    }
+
+    public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
+    }
+    
+    public Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
     }
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)

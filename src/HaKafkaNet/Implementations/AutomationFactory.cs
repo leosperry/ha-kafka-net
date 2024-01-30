@@ -14,6 +14,11 @@ internal class AutomationFactory : IAutomationFactory
         _logger = logger;
     }
 
+    public IHaServices Services
+    {
+        get => _services;
+    }
+
     public ConditionalAutomation ConditionalAutomation(
         IEnumerable<string> triggerEntities, Func<HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue, 
         TimeSpan @for, Func<CancellationToken, Task> execute)
