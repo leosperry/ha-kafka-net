@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
+using FastEndpoints;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
-using KafkaFlow.Consumers.DistributionStrategies;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace HaKafkaNet;
 
@@ -33,17 +34,34 @@ public static class ServicesExtensions
             );
         });
 
-        if (config.Api.Enabled)
+        if (config.HaConnectionInfo.Enabled)
         {
             services.AddHttpClient();
-            services.AddSingleton(config.Api);
+            services.AddSingleton(config.HaConnectionInfo);
             services.AddSingleton<IHaApiProvider, HaApiProvider>();
         }
+
+        if(config.UseDashboard)
+        {
+            services.AddFastEndpoints();
+        }
+
         return services;
     }
 
     public static async Task StartHaKafkaNet(this WebApplication app, HaKafkaNetConfig config)
     {
+        if(config.UseDashboard)
+        {
+            var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                RequestPath = "",
+                FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www")),
+            });
+            app.UseFastEndpoints();
+        }
+
         if (config.ExposeKafkaFlowDashboard)
         {
             app.UseKafkaFlowDashboard();
@@ -75,8 +93,10 @@ public static class ServicesExtensions
             services.AddSingleton<IHaServices, HaServices>();
             services.AddSingleton<IHaStateCache, HaStateCache>();
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
-            services.AddSingleton<IAutomationCollector, AutomationCollector>();
+            services.AddSingleton<IAutomationManager, AutomationManager>();
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
+            services.AddSingleton<StateHandlerObserver>();
+            services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
 
             // get all the automation types
             var eligibleTypes = 

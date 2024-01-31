@@ -3,10 +3,15 @@
 public interface IAutomation
 {
     /// <summary>
+    /// User friendly name to display
+    /// </summary>
+    string Name { get => GetType().Name; }
+
+    /// <summary>
     /// At startup, depending on the specifics of when events fired, timing of events relative to the cache can vary
     /// Use this setting to tell HaKafkaNet which events you care about
     /// </summary>
-    virtual EventTiming EventTimings { get => EventTiming.PostStartup; }
+    EventTiming EventTimings { get => EventTiming.PostStartup; }
 
     /// <summary>
     /// When a state change occurs, if the entity id of the state matches any value (case sensitive) in this collection,
@@ -26,6 +31,11 @@ public interface IAutomation
 
 public interface IConditionalAutomation
 {
+    /// <summary>
+    /// User friendly name to display
+    /// </summary>
+    string Name { get => GetType().Name; }
+
     /// <summary>
     /// When a state change occurs, if the entity id of the state matches any value (case sensitive) in this collection,
     /// the ContinuesToBeTrue method will be called
@@ -55,4 +65,19 @@ public interface IConditionalAutomation
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task Execute(CancellationToken cancellationToken);
+}
+
+public interface IAutomationMeta
+{
+    AutomationMetaData GetMetaData();
+}
+
+public record AutomationMetaData
+{
+    public bool Enabled { get; set; } = true;
+    public required string Name { get; init; }
+    public string? Description { get; init;}
+    public Guid Id { get; init; } = Guid.NewGuid();
+    internal string? UnderlyingType { get; set; }
+    internal string? Source { get; set; }
 }

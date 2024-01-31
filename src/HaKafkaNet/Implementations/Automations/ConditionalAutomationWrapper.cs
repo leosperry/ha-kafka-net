@@ -4,19 +4,46 @@ using Microsoft.Extensions.Logging;
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-internal class ConditionalAutomationWrapper : IAutomation
+internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
 {
+    AutomationMetaData _meta;
     private readonly IConditionalAutomation _automation;
+    internal IConditionalAutomation WrappedConditional
+    {
+        get => _automation;
+    }
 
-    private readonly ILogger<ConditionalAutomationWrapper> _logger;
+    private readonly ILogger _logger;
 
     private readonly object lockObj = new{};
     private CancellationTokenSource? _cts;
 
-    public ConditionalAutomationWrapper(IConditionalAutomation automation, ILogger<ConditionalAutomationWrapper> logger)
+    public ConditionalAutomationWrapper(IConditionalAutomation automation, ILogger logger)
     {
         this._automation = automation;
         _logger = logger;
+
+        if (automation is IAutomationMeta metaAuto)
+        {
+            _meta = metaAuto.GetMetaData();
+            _meta.UnderlyingType = _automation.GetType().Name;
+        }
+        else
+        {
+            _meta = new AutomationMetaData()
+            {
+                Name = _automation.GetType().Name,
+                Description = _automation.GetType().Name,
+                Enabled = true,
+                Id = Guid.NewGuid(),
+                UnderlyingType = _automation.GetType().Name
+            };
+        }
+    }
+
+    public string Name
+    {
+        get => _automation.Name;
     }
 
     public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
@@ -61,7 +88,7 @@ internal class ConditionalAutomationWrapper : IAutomation
         return Task.CompletedTask;
     }
 
-    private Task StopIfRunning()
+    internal Task StopIfRunning()
     {
         _logger.LogInformation("Canceling {automation}", _automation.GetType().Name);
         if (_cts is not null)
@@ -89,4 +116,6 @@ internal class ConditionalAutomationWrapper : IAutomation
     {
         return _automation.TriggerEntityIds();
     }
+
+    public AutomationMetaData GetMetaData() => _meta;
 }

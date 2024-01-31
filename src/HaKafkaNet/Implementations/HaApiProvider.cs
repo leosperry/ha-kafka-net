@@ -2,15 +2,13 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.Http;
 
 namespace HaKafkaNet;
 
 internal class HaApiProvider : IHaApiProvider
 {
     readonly HttpClient _client;
-    readonly HaApiConfig _apiConfig;
+    readonly HomeAssistantConnectionInfo _apiConfig;
     readonly JsonSerializerOptions _options = new JsonSerializerOptions()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -25,7 +23,7 @@ internal class HaApiProvider : IHaApiProvider
         }
     };
 
-    public HaApiProvider(IHttpClientFactory clientFactory, HaApiConfig config)
+    public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config)
     {
         _client = clientFactory.CreateClient();
         _apiConfig = config;
@@ -62,6 +60,16 @@ internal class HaApiProvider : IHaApiProvider
             HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<T>>(response.Content.ReadAsStream())!),
             _ => (response, null!)
         };
+    }
+
+    public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "toggle", new {entity_id}, cancellationToken);
+    }
+    
+    public Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+    {
+        return CallService("light", "toggle", new {entity_id}, cancellationToken);
     }
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)

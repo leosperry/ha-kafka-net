@@ -1,20 +1,14 @@
-﻿using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
+﻿using System.Text.Json;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 
 namespace HaKafkaNet;
 
 internal class HaStateHandler : IMessageHandler<HaEntityState>
 {
     IDistributedCache _cache;
-
-    IEnumerable<AutomationTriggerData> _automationData;
+    private readonly IAutomationManager _autoMgr;
 
     ILogger<HaStateHandler> _logger;
 
@@ -22,23 +16,15 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     DistributedCacheEntryOptions _cacheOptions = new ();
     
     public HaStateHandler(
-        IDistributedCache cache, IAutomationCollector automationCollector,
-        ILogger<HaStateHandler> logger)
+        IDistributedCache cache, IAutomationManager automationMgr,
+        StateHandlerObserver observer, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
-
-        var combinedAutomations = automationCollector.GetAll();
-
-        _automationData = 
-            (from a in combinedAutomations
-            let hashSet = a.TriggerEntityIds().ToHashSet<string>()
-            let executor = new Executor(
-                (stateChange, cancellationToken)=> new Func<Task?>(() => ExecuteAutomation(stateChange, a, cancellationToken)))
-            select new AutomationTriggerData(a, hashSet, a.EventTimings, executor
-            ))
-            .ToArray();
+        this._autoMgr = automationMgr;
         
         _logger = logger;
+
+        observer.OnInitialized();
         _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
     }
 
@@ -59,7 +45,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         }
 
         //if no automations need trigger, return
-        if (!_automationData.Any(a => a.TriggerIds.Contains(message.EntityId)))
+        if (!_autoMgr.HasAutomationsForEntity(message.EntityId))
         {
             return;
         }
@@ -72,30 +58,8 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             Old = cached
         };
         
-        var funcs = _automationData.Where(ad => ShouldExecute(stateChange, ad));
-
-        Parallel.ForEach(funcs, auto =>
-            _ = Task.Run(auto.Executor(stateChange, context.ConsumerContext.WorkerStopped))
-            .ContinueWith(task =>
-                _logger.LogError(task.Exception, "Automation faulted")
-            , TaskContinuationOptions.OnlyOnFaulted));
+        _ = _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped);
     }
-
-    private bool ShouldExecute(HaEntityStateChange stateChange, AutomationTriggerData a)
-    {
-        return 
-            a.TriggerIds.Contains(stateChange.EntityId) // entity match
-            && (stateChange.EventTiming & a.EventTiming) == stateChange.EventTiming;
-    }
-
-    private Task ExecuteAutomation(HaEntityStateChange stateChange, IAutomation a, CancellationToken cancellationToken)
-    {
-        using (_logger!.BeginScope("Start [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", a.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
-        {
-            return a.Execute(stateChange, cancellationToken);
-        }
-    }
-
 
     EventTiming getStartupEventTiming(HaEntityState cached, HaEntityState current)
     {
@@ -111,9 +75,4 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             _ => EventTiming.PreStartupSameTimeLastCached 
         };
     }
-
-    record AutomationTriggerData(IAutomation Automation, HashSet<string> TriggerIds, EventTiming EventTiming, Executor Executor);
-    delegate Func<Task?> Executor(HaEntityStateChange stateChange, CancellationToken cancellationToken);
-
 }
-

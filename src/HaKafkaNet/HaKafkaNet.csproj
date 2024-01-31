@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>HaKafkaNet</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1-prerelease</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
     <Description>A library for creating Home Assistant automations using the Home Assistant Kafka integration.</Description>
@@ -18,6 +18,9 @@
 
   <ItemGroup>
     <None Include="readme.md" Pack="true" PackagePath="\" />
+    <Content Include="www/**/*.*" CopyToOutputDirectory="Always">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,12 +28,16 @@
       <_Parameter1>HaKafkaNet.Tests</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>HaKafkaNet.TestHarness</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>      
     </AssemblyAttribute>
-
+    
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.21.2" />
     <PackageReference Include="KafkaFlow" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Admin" Version="3.0.1" />
     <PackageReference Include="KafkaFlow.Admin.Dashboard" Version="3.0.1" />
@@ -41,8 +48,5 @@
     <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.1" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
-
   </ItemGroup>
-
-
 </Project>

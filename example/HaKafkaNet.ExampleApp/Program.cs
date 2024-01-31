@@ -19,9 +19,10 @@ services.AddHaKafkaNet(config);
 
 var app = builder.Build();
 
-await app.StartHaKafkaNet(config);
+app.MapGet("/", () => Results.Redirect("dashboard.html"));
 
-app.MapGet("/", () => "Hello World!");
+
+await app.StartHaKafkaNet(config);
 
 app.Run();
 

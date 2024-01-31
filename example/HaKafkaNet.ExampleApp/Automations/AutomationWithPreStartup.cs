@@ -1,6 +1,5 @@
 ﻿using HaKafkaNet;
 
-
 namespace HaKafkaNet.ExampleApp;
 
 /// <summary>
@@ -23,6 +22,8 @@ public class AutomationWithPreStartup : IAutomation
         _api = haApiProvider;
         _logger = logger;
     }
+
+    public string Name { get => "Automation with Pre-startup events handled"; }
 
     public EventTiming EventTimings 
     { 

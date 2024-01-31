@@ -2,7 +2,7 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public class LightOffOnNoMotion : IConditionalAutomation
+public class LightOffOnNoMotion : ConditionalAutomationBase
 {
     private readonly List<string> _motionIds = new();
     private readonly List<string> _lightIds = new();
@@ -10,6 +10,7 @@ public class LightOffOnNoMotion : IConditionalAutomation
     private readonly IHaServices _services;
 
     public LightOffOnNoMotion(IEnumerable<string> motionIds, IEnumerable<string> lightIds, TimeSpan duration, IHaServices services)
+        : base(motionIds, duration)
     {
         this._motionIds.AddRange(motionIds);
         this._lightIds.AddRange(lightIds);
@@ -17,9 +18,8 @@ public class LightOffOnNoMotion : IConditionalAutomation
         this._services = services;
     }
 
-    public TimeSpan For => _duration;
 
-    public Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
+    public override Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
     {
         var motionStates = 
             from m in _motionIds
@@ -39,7 +39,7 @@ public class LightOffOnNoMotion : IConditionalAutomation
             ,cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current);        
     }
 
-    public Task Execute(CancellationToken cancellationToken)
+    public override Task Execute(CancellationToken cancellationToken)
     {
         return Task.WhenAll(
             from lightId in _lightIds
@@ -51,6 +51,4 @@ public class LightOffOnNoMotion : IConditionalAutomation
                 , cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current)
         );
     }
-
-    public IEnumerable<string> TriggerEntityIds() => _motionIds;
 }

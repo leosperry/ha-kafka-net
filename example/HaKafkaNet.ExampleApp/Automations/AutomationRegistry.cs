@@ -4,31 +4,23 @@ namespace HaKafkaNet.ExampleApp;
 public class AutomationRegistry : IAutomationRegistry
 {
     private readonly IHaServices _services;
+    private readonly IAutomationBuilder _builder;
+    IAutomationFactory _automationFactory;
 
-    public AutomationRegistry(IHaServices services)
+    public AutomationRegistry(IHaServices services, IAutomationBuilder builder, IAutomationFactory automationFactory)
     {
         _services = services;
+        _builder = builder;
+        _automationFactory = automationFactory;
     }
 
-    public IEnumerable<IAutomation> Register(IAutomationFactory automationFactory)
+    public IEnumerable<IAutomation> Register()
     {
-        yield return GetSimpleAutomation(automationFactory);
+        return Enumerable.Empty<IAutomation>();
     }
 
-    public IEnumerable<IConditionalAutomation> RegisterContitionals(IAutomationFactory automationFactory)
+    public IEnumerable<IConditionalAutomation> RegisterContitionals()
     {
-        yield return automationFactory.LightOffOnNoMotion("binary_sensor.office_motion","light.office_led_light", TimeSpan.FromSeconds(20));
-    }
-
-    private IAutomation GetSimpleAutomation(IAutomationFactory automationFactory)
-    {
-        return automationFactory.SimpleAutomation(
-            ["input_button.test_button"],
-            (stateChange, CancellationToken) =>
-            {
-                // access services if needed
-                Console.WriteLine($"simple automation triggered from factory");
-                return Task.CompletedTask;
-            });
+        return Enumerable.Empty<IConditionalAutomation>();
     }
 }
