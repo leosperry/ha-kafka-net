@@ -21,11 +21,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+
+
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HaKafkaNet\HaKafkaNet.csproj" />
-    <ProjectReference Include="..\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj" />
   </ItemGroup>
 
 </Project>

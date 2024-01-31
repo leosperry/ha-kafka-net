@@ -4,27 +4,25 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
+    <RootNamespace>HaKafkaNet</RootNamespace>
+    <PackageId>HaKafkaNet.TestHarness</PackageId>
+    <Version>1.1.1-prerelease</Version>
+    <Authors>Leonard Sperry</Authors>
+    <Product>HaKafkaNet.TestHarness</Product>
+    <Description>A library containing test helpers for HaKafkaNet.</Description>
+    <RepositoryUrl>https://github.com/leosperry/ha-kafka-net/</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="HaKafkaNet" Version="1.1.1-prerelease" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\HaKafkaNet\HaKafkaNet.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>

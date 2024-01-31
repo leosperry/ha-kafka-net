@@ -1,4 +1,5 @@
-﻿using HaKafkaNet.Tests;
+﻿using HaKafkaNet;
+using HaKafkaNet.Tests;
 using Moq;
 
 namespace HaKafkaNet.ExampleApp.Tests;
