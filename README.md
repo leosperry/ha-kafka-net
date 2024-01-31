@@ -1,6 +1,6 @@
 # ha-kafka-net
 ***
-Version 2 changes have been merged which contain some breaking changes. A version 2 nuget package has not been released yet, but is in the works.
+Version 2 Released! see [release](https://github.com/leosperry/ha-kafka-net/releases/tag/v2.0.0) for details, and check out the image of the dashboard below!
 ***
 Integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -21,6 +21,10 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 * Full unit testability
 * MIT license
 
+### Dashboard
+![Image of dashboard](/images/HaKafkaNetDashboard.png?raw=true)
+This is an image of the dashboard from the example app.
+
 ## How it works
 * Events are streamed from Home Assistant to the `home_assistant` topic. Unfortunately, the key is not utilizied by the provided home assistant kafka integration. Please upvote [this feature request](https://community.home-assistant.io/t/set-key-in-kafka-topic/671757/2)
 * The transformer reads the messages and then adds them to the `home_assistant_states` topic with the entity id set as a key.
@@ -30,6 +34,8 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
+ 
+
 
 ## Current steps for Example App set up:
 1. Follow instructions [here](https://github.com/leosperry/ha-kafka-net/wiki/Setup-Instructions) for setting up your environment.
