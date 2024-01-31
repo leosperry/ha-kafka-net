@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="HaKafkaNet" />
+    <PackageReference Include="HaKafkaNet" Version="2.*" />
   </ItemGroup>
 
   <!-- <ItemGroup>
