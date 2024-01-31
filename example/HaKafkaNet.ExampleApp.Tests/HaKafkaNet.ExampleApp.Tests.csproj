@@ -21,7 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="HaKafkaNet.TestHarness" Version="1.1.1-prerelease" />
+    <PackageReference Include="HaKafkaNet.TestHarness" />
   </ItemGroup>
 
   <ItemGroup>
