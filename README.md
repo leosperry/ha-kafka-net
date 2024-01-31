@@ -1,4 +1,7 @@
 # ha-kafka-net
+***
+Version 2 changes have been merged which contain some breaking changes. A version 2 nuget package has not been released yet, but is in the works.
+***
 Integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
 * Create Home Assistant automations in .NET
