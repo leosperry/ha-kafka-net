@@ -1,7 +1,6 @@
 name: publish test harness to nuget
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
       
 jobs:
   publish:
