@@ -32,15 +32,25 @@ internal class AutomationManager : IAutomationManager
     {
         this._logger = logger;
 
-        var conditionals =
-            from ca in conditionalAutomations.Union(GetRegisteredConditionals(registries))
-            select new ConditionalAutomationWrapper(ca, _logger);
+        var discoveredConditionals =
+            from ca in conditionalAutomations
+            let wrapped = new ConditionalAutomationWrapper(ca, _logger)
+            select new AutomationWrapper(wrapped, logger, "Discovered");
 
-        IEnumerable<IAutomation> registered = GetRegistered(registries);
+        var registeredConditionals = GetRegisteredConditionals(registries);
+
+        var discoverdAutomations = 
+            from a in automations
+            select new AutomationWrapper(a, logger, "Discovered");
+
+        IEnumerable<AutomationWrapper> registered = GetRegistered(registries);
 
         _internalAutomations = 
-            (from a in automations.Union(conditionals).Union(registered)
-            select new AutomationWrapper(a, logger)).ToDictionary(a => a.GetMetaData().Id);
+            discoverdAutomations
+            .Union(discoveredConditionals)
+            .Union(registered)
+            .Union(registeredConditionals)
+            .ToDictionary(a => a.GetMetaData().Id);
 
         //get by trigger
         this._automationsByTrigger = (
@@ -79,14 +89,15 @@ internal class AutomationManager : IAutomationManager
     public bool HasAutomationsForEntity(string entityId)
         => _automationsByTrigger.ContainsKey(entityId);
 
-    private IEnumerable<IConditionalAutomation> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries)
+    private IEnumerable<AutomationWrapper> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries)
     {
         try
         {
             return 
                 from r in registries
                 from a in r.RegisterContitionals()
-                select a;
+                let conditionalWrapper = new ConditionalAutomationWrapper(a, _logger)
+                select new AutomationWrapper(conditionalWrapper,_logger, r.GetType().Name);
         }
         catch (System.Exception ex)
         {
@@ -95,14 +106,14 @@ internal class AutomationManager : IAutomationManager
         }    
     }
 
-    private IEnumerable<IAutomation> GetRegistered(IEnumerable<IAutomationRegistry> registries)
+    private IEnumerable<AutomationWrapper> GetRegistered(IEnumerable<IAutomationRegistry> registries)
     {
         try
         {
             return 
                 from r in registries
                 from a in r.Register()
-                select a;
+                select new AutomationWrapper(a, _logger, r.GetType().Name);
         }
         catch (System.Exception ex)
         {
@@ -116,6 +127,11 @@ internal class AutomationManager : IAutomationManager
         if (_internalAutomations.TryGetValue(id, out var auto))
         {
             auto.GetMetaData().Enabled = enable;
+            if (!enable && auto.WrappedAutomation is ConditionalAutomationWrapper conditional)
+            {
+                //diable any running conditionals
+                conditional.StopIfRunning();
+            }
             return true;
         }
         //doesnt' exist / not found

@@ -39,7 +39,6 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
                 UnderlyingType = _automation.GetType().Name
             };
         }
-
     }
 
     public string Name
@@ -89,7 +88,7 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
         return Task.CompletedTask;
     }
 
-    private Task StopIfRunning()
+    internal Task StopIfRunning()
     {
         _logger.LogInformation("Canceling {automation}", _automation.GetType().Name);
         if (_cts is not null)

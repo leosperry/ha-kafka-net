@@ -7,7 +7,6 @@ class HaKafkaNetRoot extends React.Component {
             systemInfo: {},
             error:null
         };
-        //this.onToggleLoop = this.onToggleLoop.bind(this);
         this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     }
 
@@ -47,16 +46,12 @@ class HaKafkaNetRoot extends React.Component {
             return {systemInfo: prevState.systemInfo};
            });
         }
-        else{
-            
-        }
-
-
     }
 
     render() {
         return (
             <div>
+                <div className="float-end"><a href="/kafkaflow">Kafka Flow Admin</a></div>
                 <h1>Ha-Kafka-Net</h1>
                 {this.state.error &&
                     <h3 className="bg-warning">{this.state.error}</h3>
@@ -71,11 +66,12 @@ class HaKafkaNetRoot extends React.Component {
                 <table className="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th className="col-1 text-wrap">Enabled</th>
-                            <th className="col-2 text-wrap">Name</th>
-                            <th className="col-1 text-wrap">Description</th>
-                            <th className="col-1 text-wrap">Type</th>
-                            <th className="col-1 text-wrap">Trigger IDs</th>
+                            <th>Enabled</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Source</th>
+                            <th>Trigger IDs</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,7 +86,8 @@ class HaKafkaNetRoot extends React.Component {
                                     <td>{item.name}</td>
                                     <td>{item.description}</td>
                                     <td>{item.typeName}</td>
-                                    <td>{item.triggerIds}</td>
+                                    <td>{item.source}</td>
+                                    <td>{item.triggerIds.map(trigger =>(<span key={trigger}>{trigger} </span>))}</td>
                                 </tr>
                             ))
                         }

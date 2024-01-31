@@ -38,6 +38,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                         Name = meta.Name,
                         Description = meta.Description ?? string.Empty,
                         TypeName = meta.UnderlyingType ?? string.Empty,
+                        Source = meta.Source ?? string.Empty,
                         TriggerIds = a.TriggerEntityIds(),
                         Enabled = meta.Enabled
                     };

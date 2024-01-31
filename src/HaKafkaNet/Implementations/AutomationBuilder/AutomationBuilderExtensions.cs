@@ -141,9 +141,8 @@ public static class AutomationBuilderExtensions
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             info.ContinuesToBeTrueWithServices ?? throw new AutomationBuilderException("when clause must be defined"),
             info.For ?? TimeSpan.Zero,
-            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"),
-            GetMeta(info)
-        );
+            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"))
+            .WithMeta(GetMeta(info));
     }
 
     private static AutomationMetaData GetMeta(AutomationBuildingInfo info)

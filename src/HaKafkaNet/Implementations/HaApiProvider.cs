@@ -64,12 +64,12 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
     {
-        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
+        return CallService("light", "toggle", new {entity_id}, cancellationToken);
     }
     
     public Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
     {
-        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
+        return CallService("light", "toggle", new {entity_id}, cancellationToken);
     }
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)

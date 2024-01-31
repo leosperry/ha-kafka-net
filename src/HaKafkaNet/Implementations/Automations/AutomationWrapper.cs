@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public class AutomationWrapper : IAutomation, IAutomationMeta
+internal class AutomationWrapper : IAutomation, IAutomationMeta
 {
     readonly IAutomation _auto;
     readonly ILogger _log;
@@ -15,7 +15,12 @@ public class AutomationWrapper : IAutomation, IAutomationMeta
    
     public EventTiming EventTimings { get => _eventTimings; }
 
-    public AutomationWrapper(IAutomation automation, ILogger logger)
+    internal IAutomation WrappedAutomation
+    {
+        get => _auto;
+    }
+
+    public AutomationWrapper(IAutomation automation, ILogger logger, string source)
     {
         _auto = automation;
         _log = logger;
@@ -37,6 +42,7 @@ public class AutomationWrapper : IAutomation, IAutomationMeta
                 UnderlyingType = underlyingType.Name
             };
         }
+        _meta.Source = source;
         
         _triggers = automation.TriggerEntityIds();
         _eventTimings = automation.EventTimings;

@@ -79,4 +79,5 @@ public record AutomationMetaData
     public string? Description { get; init;}
     public Guid Id { get; init; } = Guid.NewGuid();
     internal string? UnderlyingType { get; set; }
+    internal string? Source { get; set; }
 }

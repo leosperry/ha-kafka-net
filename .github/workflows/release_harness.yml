@@ -1,4 +1,4 @@
-name: publish HaKafkaNet to nuget
+name: publish test harness to nuget
 on:
   release:
     types: [published]
@@ -14,13 +14,13 @@ jobs:
       uses: actions/setup-dotnet@v1
     - name: Build
       run: dotnet build -c Release
-      working-directory: ./src/HaKafkaNet
+      working-directory: ./src/HaKafkaNet.TestHarness
     - name: Test
       run: dotnet test -c Release --no-build
-      working-directory: ./src/HaKafkaNet
+      working-directory: ./src/HaKafkaNet.TestHarness
     - name: Pack nugets
       run: dotnet pack -c Release --no-build --output .
-      working-directory: ./src/HaKafkaNet
+      working-directory: ./src/HaKafkaNet.TestHarness
     - name: Push to NuGet
       run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET}} --source https://api.nuget.org/v3/index.json
-      working-directory: ./src/HaKafkaNet
+      working-directory: ./src/HaKafkaNet.TestHarness

@@ -54,7 +54,7 @@ public class ConditionalAutomation : ConditionalAutomationBase
     public ConditionalAutomation(
         IEnumerable<string> triggerEntities, Func<HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue, 
         TimeSpan @for, Func<CancellationToken, Task> execute) 
-        : base(triggerEntities, @for)
+            : base(triggerEntities, @for)
     {
         this._triggerEntities = triggerEntities;
         this._continuesToBeTrue = continuesToBeTrue;
@@ -83,8 +83,8 @@ public class ConditionalAutomationWithServices : ConditionalAutomationBase
     public ConditionalAutomationWithServices(
         IHaServices services,IEnumerable<string> triggerEntities, 
         Func<IHaServices, HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue, 
-        TimeSpan @for, Func<IHaServices, CancellationToken, Task> execute, AutomationMetaData meta
-    ) : base(triggerEntities, @for)
+        TimeSpan @for, Func<IHaServices, CancellationToken, Task> execute) 
+            : base(triggerEntities, @for)
     {
         this._services = services;
         this._continuesToBeTrue = continuesToBeTrue;
