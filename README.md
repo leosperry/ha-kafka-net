@@ -16,7 +16,7 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
-* It gives you a easy-to-spin up infrastructure with management features out of the box. This includes docker images for both managing kafka and seeing the state of your consumers based on open source projects
+* It gives you a UI to manage your automations and inspect Kafka consumers
 * You have an easy way to respond to events during start up which means you are guarenteed to see/handle all events at least once, even if your application has been down.
 * Full unit testability
 * MIT license
@@ -42,21 +42,22 @@ Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Coming soon
 * More pre-built automations.
-* builder for creating automations 
 * More Documentation
 * More enhanced HA API functionality
-* V2 is in development and will offer a UI to list out all your executing automations as well as the ability to disable/enable automations at run time. Check out the V2 branch for details.
 
 ## Tips
 * You can optionally add this repository as a submodule to your own instead of using the nuget package.
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
 * ILogger support has been added. When your automation is called, the name of your automation, information about the automation will be added to the scope.
 * You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date if your automations are shut down for development or other reasons.
+* If you are running a dev instance alongside your production instance, you can reuse the same kafka instance, but it is recommended to change the 'GroupId' in your appsettings.json. This will ensure your development instance does not steal events from your production instance.
 
 ## Features recently added
-* Some common API calls
-* More API calls
-* Test helper methods
+* A brand new UI! Currently it lists all your automations, where they came from and an ability do enable/disable them at runtime
+* API which supports the UI
+* More Home Assistant API calls
+* Test helper methods and a test harness for component level testing of your registries
+* Automation Builder with fluent syntax
 * Sun model
 
 ## More examples
