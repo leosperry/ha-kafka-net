@@ -14,9 +14,13 @@ jobs:
       uses: actions/setup-dotnet@v1
     - name: Build
       run: dotnet build -c Release
+      working-directory: ./src/HaKafkaNet
     - name: Test
       run: dotnet test -c Release --no-build
+      working-directory: ./src/HaKafkaNet
     - name: Pack nugets
       run: dotnet pack -c Release --no-build --output .
+      working-directory: ./src/HaKafkaNet
     - name: Push to NuGet
       run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET}} --source https://api.nuget.org/v3/index.json
+      working-directory: ./src/HaKafkaNet
