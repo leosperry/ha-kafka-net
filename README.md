@@ -36,15 +36,13 @@ This is an image of the dashboard from the example app.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
  
-
-
-## Current steps for Example App set up:
+## Getting started with the Example App:
 1. Follow instructions [here](https://github.com/leosperry/ha-kafka-net/wiki/Setup-Instructions) for setting up your environment.
 2. In your HomeAssistant UI, create helper buttons named:
    - `Test Button`
    - `Test Button 2`
    - `Test Button 3`
-2. Look through the provided examples for ID's of lights to set to match your environment.
+2. Look through the provided examples for ID's of lights/sensors and set them to match your environment.
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
 
 ## Coming soon
