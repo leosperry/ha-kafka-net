@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using HaKafkaNet.Tests;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HaKafkaNet;
@@ -25,11 +28,12 @@ public class TestHarness
     IAutomationManager? _autoMgr;
 
     /// <summary>
-    ///     /// Sets up the harness so that you can get the mock services.
+    /// Creates a new instance of the TestHarness.
     /// You must call Initialize with one of the available overloads to 
     /// set up your automations.
     /// </summary>
-    public TestHarness()
+    /// <param name="defaultState">If specified, sets up non-generic get methods of services to return objects with the specified value as the state property</param>
+    public TestHarness(string? defaultState = null)
     {
         ApiProvider = new();
         Cache = new();
@@ -37,10 +41,24 @@ public class TestHarness
         Services = new();
         Services.Setup(s => s.Api).Returns(ApiProvider.Object);
         Services.Setup(s => s.Cache).Returns(Cache.Object);
-        Services.Setup(s => s.EntityProvider).Returns(EntityProvider.Object);  
+        Services.Setup(s => s.EntityProvider).Returns(EntityProvider.Object);
 
         Factory = new AutomationFactory(Services.Object, _wrapperLogger.Object);
         Builder = new AutomationBuilder(Services.Object);
+
+        if (defaultState is not null)
+        {
+            ApiProvider.Setup(ep => ep.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState(entityId, defaultState)));
+
+            Func<string, CancellationToken, HaEntityState> valueFunction = (string entityId, CancellationToken _) => TestHelpers.GetState(entityId, defaultState);
+
+            EntityProvider.Setup(ep => ep.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(valueFunction);
+
+            Cache.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(valueFunction);
+        }
     }
 
     public void Initialize(IAutomation automation)
@@ -70,6 +88,24 @@ public class TestHarness
             [registry],
             _logger.Object
         );
+    }
+
+    public void SetServiceGenericDefaults<T>(string state) where T : new()
+    {
+        SetServiceGenericDefaults<T>(state, new());
+    }
+
+    public void SetServiceGenericDefaults<T>(string state, T atttributes)
+    {
+        ApiProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState<T>(entityId, state, atttributes)));
+
+        Func<string, CancellationToken, HaEntityState<T>> valueFunction = (string entityId, CancellationToken _) => TestHelpers.GetState<T>(entityId, state, atttributes);
+
+        EntityProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(valueFunction);
+        Cache.Setup(ep => ep.Get<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(valueFunction);
     }
 
     /// <summary>
