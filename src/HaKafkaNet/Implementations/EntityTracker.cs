@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿using Microsoft.Extensions.Options;
+
+namespace HaKafkaNet;
 
 internal class EntityTracker : IDisposable
 {
@@ -12,11 +14,11 @@ internal class EntityTracker : IDisposable
     readonly PeriodicTimer _timer;
     Task? _timerTask;
     
-    readonly SystemObserver _observer;
+    readonly ISystemObserver _observer;
     readonly IAutomationManager _automationMgr;
     readonly IHaServices _services;
     
-    public EntityTracker(SystemObserver observer, IAutomationManager automationManager, IHaServices services)
+    public EntityTracker(IOptions<EntityTrackerConfig> config, ISystemObserver observer, IAutomationManager automationManager, IHaServices services)
     {
         _observer = observer;
         _automationMgr = automationManager;
@@ -69,7 +71,7 @@ internal class EntityTracker : IDisposable
     {
         foreach (var item in entityIds)
         {
-            // check the cache, if they've been updated in the interval, ignore
+            // check the cache, if it has been updated in the interval, ignore
             var cached = await _services.Cache.Get(item, _cancelSource.Token);
             if (cached is null || DateTime.Now - cached.LastUpdated > _maxEntityReportTime)
             {

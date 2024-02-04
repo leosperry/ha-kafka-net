@@ -15,14 +15,26 @@ services.AddStackExchangeRedisCache(options =>
     //options.InstanceName = "HaKafkaNet";
 });
 
-services.AddHaKafkaNet(config);
+//services.AddHaKafkaNet(config);
+services.AddHaKafkaNet(options =>{
+    var haConfif = options.HaConnectionInfo;
+    haConfif.AccessToken = config.HaConnectionInfo.AccessToken;
+    haConfif.BaseUri = config.HaConnectionInfo.BaseUri;
+
+    options.KafkaBrokerAddresses = config.KafkaBrokerAddresses;
+
+    options.Transformer.Enabled = false;
+    options.StateHandler.Enabled = true;
+    options.EntityTracker.Enabled = true;
+    options.UseDashboard = false;
+});
 
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Redirect("dashboard.html"));
 
 
-await app.StartHaKafkaNet(config);
+await app.StartHaKafkaNet();
 
 app.Run();
 

@@ -13,8 +13,18 @@ namespace HaKafkaNet;
 
 public static class ServicesExtensions
 {
+    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IClusterConfigurationBuilder>? kafabuilder = null)
+    {
+        HaKafkaNetConfig config = new();
+        options(config);
+
+        AddHaKafkaNet(services, config, kafabuilder);
+        return services;
+    }
+
     public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IClusterConfigurationBuilder>? kafabuilder = null)
     {
+        services.AddSingleton(config);
         services.AddKafka(kafka => 
         {
             kafka
@@ -35,6 +45,11 @@ public static class ServicesExtensions
             );
         });
 
+        if (config.EntityTracker.Enabled)
+        {
+            services.AddSingleton(config.EntityTracker);
+        }
+
         if (config.HaConnectionInfo.Enabled)
         {
             services.AddHttpClient();
@@ -50,8 +65,9 @@ public static class ServicesExtensions
         return services;
     }
 
-    public static async Task StartHaKafkaNet(this WebApplication app, HaKafkaNetConfig config)
+    public static async Task StartHaKafkaNet(this WebApplication app)
     {
+        var config = app.Services.GetRequiredService<HaKafkaNetConfig>();
         if(config.UseDashboard)
         {
             var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
@@ -60,7 +76,10 @@ public static class ServicesExtensions
                 RequestPath = "",
                 FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www")),
             });
-            app.UseFastEndpoints();
+            if (config.UseDashboard)
+            {
+                app.UseFastEndpoints();
+            }
         }
 
         if (config.ExposeKafkaFlowDashboard)
@@ -71,9 +90,11 @@ public static class ServicesExtensions
         var kafkaBus = app.Services.CreateKafkaBus();
         await kafkaBus.StartAsync();
 
-        var entityTracker = app.Services.GetRequiredService<EntityTracker>();
-        
-        app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
+        if (config.EntityTracker.Enabled)
+        {
+            var entityTracker = app.Services.GetRequiredService<EntityTracker>();
+            app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
+        }
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)

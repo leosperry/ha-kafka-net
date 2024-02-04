@@ -3,6 +3,7 @@
 internal interface ISystemObserver
 {
     bool IsInitialized{get;}
+    event Action? StateHandlerInitialized;
     void OnStateHandlerInitialized();
     void OnUnhandledException(AutomationMetaData automationMetaData, Exception exception);
     void OnBadStateDiscovered(IEnumerable<BadEntityState> badStates);
@@ -17,7 +18,7 @@ internal class SystemObserver : ISystemObserver
     readonly ISystemMonitor[] _monitors;
     public bool IsInitialized { get; private set; }
 
-    internal event Action? StateHandlerInitialized;
+    public event Action? StateHandlerInitialized;
     internal event Action<AutomationMetaData, Exception>? UnhandledException;
     internal event Action<IEnumerable<BadEntityState>>? BadEntityState;
 
