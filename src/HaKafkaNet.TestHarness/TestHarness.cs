@@ -18,12 +18,12 @@ public class TestHarness
     public Mock<IHaApiProvider> ApiProvider { get; private set; }
     public Mock<IHaStateCache> Cache { get; private set; }
     public Mock<IHaServices> Services { get; private set; }
-
     public IAutomationFactory Factory { get; private set; }
     public IAutomationBuilder Builder { get; private set; }
 
     static Mock<ILogger<AutomationManager>> _logger = new();
     static Mock<ILogger<ConditionalAutomationWrapper>> _wrapperLogger = new();
+    static Mock<ISystemObserver> _observer = new();
 
     IAutomationManager? _autoMgr;
 
@@ -66,7 +66,8 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             [automation], 
             Enumerable.Empty<IConditionalAutomation>(), 
-            Enumerable.Empty<IAutomationRegistry>(), 
+            Enumerable.Empty<IAutomationRegistry>(),
+            _observer.Object,
             _logger.Object);
     }
 
@@ -76,6 +77,7 @@ public class TestHarness
             Enumerable.Empty<IAutomation>(),
             [automation],
             Enumerable.Empty<IAutomationRegistry>(),
+            _observer.Object,
             _logger.Object
         );
     }
@@ -86,6 +88,7 @@ public class TestHarness
             Enumerable.Empty<IAutomation>(),
             Enumerable.Empty<IConditionalAutomation>(),
             [registry],
+            _observer.Object,
             _logger.Object
         );
     }

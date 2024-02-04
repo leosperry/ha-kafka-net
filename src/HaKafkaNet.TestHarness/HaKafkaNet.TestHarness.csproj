@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>HaKafkaNet</RootNamespace>
     <PackageId>HaKafkaNet.TestHarness</PackageId>
-    <Version>2.0.2</Version>
+    <Version>2.1.1</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet.TestHarness</Product>
     <Description>A library containing test helpers for HaKafkaNet.</Description>
@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="HaKafkaNet" Version="2.*" />
+    <PackageReference Include="HaKafkaNet" Version="2.1.*" />
   </ItemGroup>
 
   <!-- <ItemGroup>

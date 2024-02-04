@@ -10,7 +10,6 @@ public class LightOnRegistryTests
     [Fact]
     public async Task LightOnRegistry_TurnsOnLights()
     {
-
         // Given
         TestHarness harness = new TestHarness("off");
 
@@ -25,7 +24,7 @@ public class LightOnRegistryTests
 
         // Then
         harness.ApiProvider.Verify(api => api.LightTurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));
-        harness.ApiProvider.Verify(api => api.LightSetBrightness(LightOnRegistry.OFFICE_LIGHT, 200, default));
+        harness.ApiProvider.Verify(api => api.LightSetBrightness(LightOnRegistry.OFFICE_LIGHT, 200, It.IsAny<CancellationToken>()));
         // six of the same automation set up different ways
     }
 }
