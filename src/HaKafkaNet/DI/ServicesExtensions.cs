@@ -65,6 +65,12 @@ public static class ServicesExtensions
         return services;
     }
 
+    [Obsolete("config is no no longer needed for this method",true)]
+    public static Task StartHaKafkaNet(this WebApplication app, HaKafkaNetConfig config)
+    {
+        throw new Exception("please call overload without configuration passed in");
+    }
+
     public static async Task StartHaKafkaNet(this WebApplication app)
     {
         var config = app.Services.GetRequiredService<HaKafkaNetConfig>();

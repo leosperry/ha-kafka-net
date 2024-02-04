@@ -15,19 +15,15 @@ services.AddStackExchangeRedisCache(options =>
     //options.InstanceName = "HaKafkaNet";
 });
 
-//services.AddHaKafkaNet(config);
-services.AddHaKafkaNet(options =>{
-    var haConfif = options.HaConnectionInfo;
-    haConfif.AccessToken = config.HaConnectionInfo.AccessToken;
-    haConfif.BaseUri = config.HaConnectionInfo.BaseUri;
+services.AddHaKafkaNet(config);
 
-    options.KafkaBrokerAddresses = config.KafkaBrokerAddresses;
-
-    options.Transformer.Enabled = false;
-    options.StateHandler.Enabled = true;
-    options.EntityTracker.Enabled = true;
-    options.UseDashboard = false;
-});
+// services.AddHaKafkaNet(options =>{
+//     //minimum amount of config
+//     options.KafkaBrokerAddresses = ["your kafka instance"];
+//     options.HaConnectionInfo.AccessToken = "your access token";
+//     options.HaConnectionInfo.BaseUri = "your Home Assistant location";
+//     //set additional options
+// });
 
 var app = builder.Build();
 

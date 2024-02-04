@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.Options;
-
+﻿
 namespace HaKafkaNet;
 
 internal class EntityTracker : IDisposable
 {
-
     HashSet<string> badStates = ["unknown","unavailable","none"];
 
     TimeSpan _interval;
@@ -16,16 +14,19 @@ internal class EntityTracker : IDisposable
     
     readonly ISystemObserver _observer;
     readonly IAutomationManager _automationMgr;
-    readonly IHaServices _services;
+    readonly IHaStateCache _cache;
+    readonly IHaApiProvider _provider;
     
-    public EntityTracker(IOptions<EntityTrackerConfig> config, ISystemObserver observer, IAutomationManager automationManager, IHaServices services)
+    public EntityTracker(EntityTrackerConfig config, ISystemObserver observer, IAutomationManager automationManager, 
+        IHaStateCache cache, IHaApiProvider provider)
     {
         _observer = observer;
         _automationMgr = automationManager;
-        _services = services;
+        _cache = cache;
+        _provider = provider;
         
-        _interval = TimeSpan.FromHours(1); // make configurable?
-        _maxEntityReportTime = TimeSpan.FromHours(12); // make configurable?
+        _interval = TimeSpan.FromMinutes(config.IntervalMinutes); 
+        _maxEntityReportTime = TimeSpan.FromHours(config.MaxEntityNonresponsiveHours);
         _timer = new PeriodicTimer(_interval);
 
         observer.StateHandlerInitialized += () => StartTracking();
@@ -41,7 +42,7 @@ internal class EntityTracker : IDisposable
     {
         try
         {
-            while (await _timer.WaitForNextTickAsync(_cancelSource.Token) 
+            while (await _timer.WaitForNextTickAsync(_cancelSource.Token)
                 && !_cancelSource.IsCancellationRequested)
             {
                 await CheckEntities();
@@ -72,10 +73,10 @@ internal class EntityTracker : IDisposable
         foreach (var item in entityIds)
         {
             // check the cache, if it has been updated in the interval, ignore
-            var cached = await _services.Cache.Get(item, _cancelSource.Token);
+            var cached = await _cache.Get(item, _cancelSource.Token);
             if (cached is null || DateTime.Now - cached.LastUpdated > _maxEntityReportTime)
             {
-                var (response, entityState) = await _services.Api.GetEntityState(item, _cancelSource.Token);
+                var (response, entityState) = await _provider.GetEntityState(item, _cancelSource.Token);
                 if(response.StatusCode != System.Net.HttpStatusCode.OK || entityState is null || badStates.Contains(entityState.State))
                 {
                     yield return new(item, entityState);
