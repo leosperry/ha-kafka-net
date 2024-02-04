@@ -3,7 +3,6 @@
 public class HaKafkaNetConfig
 {
     HomeAssistantConnectionInfo _haConnection = new();
-    //HomeAssistantConnectionInfo? _api;
 
     public string[] KafkaBrokerAddresses { get; set; } = ["localhost:9094"];
     public string TransofrmedTopic { get; set; } = "home_assistant_states";
@@ -39,6 +38,8 @@ public class HaKafkaNetConfig
 
     public StateHandlerConfig StateHandler { get; set; } = new();
     public TransformerConfig Transformer { get; set; } = new();
+
+    public EntityTrackerConfig EntityTracker { get; set; } = new();
 }
 
 public class HomeAssistantConnectionInfo
@@ -64,5 +65,12 @@ public class TransformerConfig
     public int BufferSize { get; set; } = 5;
     public int WorkerCount { get; set; } = 5;
     public string HaRawTopic { get; set; } = "home_assistant";
+}
+
+public class EntityTrackerConfig
+{
+    public bool Enabled { get; set; } = false;
+    public int IntervalMinutes { get; set; } = 60;
+    public int MaxEntityNonresponsiveHours { get; set; } = 12;
 }
 

@@ -17,10 +17,17 @@ services.AddStackExchangeRedisCache(options =>
 
 services.AddHaKafkaNet(config);
 
+// services.AddHaKafkaNet(options =>{
+//     //minimum amount of config
+//     options.KafkaBrokerAddresses = ["your kafka instance"];
+//     options.HaConnectionInfo.AccessToken = "your access token";
+//     options.HaConnectionInfo.BaseUri = "your Home Assistant location";
+//     //set additional options
+// });
+
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Redirect("dashboard.html"));
-
 
 await app.StartHaKafkaNet(config);
 

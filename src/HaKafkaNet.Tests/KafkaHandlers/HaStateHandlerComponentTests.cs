@@ -1,10 +1,7 @@
 ﻿using System.Text.Json;
-using Castle.Core.Logging;
-using HaKafkaNet;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace HaKafkaNet.Tests;
 
@@ -21,14 +18,12 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
-        AutomationManager collector = new(
+        Mock<ISystemObserver> observer = new();
+        AutomationManager manager = new(
             Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
-
-        StateHandlerObserver fakeObserver = new();
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
-
 
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -38,8 +33,9 @@ public class HaStateHandlerComponentTests
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
         var fakeState = TestHelpers.GetState();
         //act
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
-        Assert.True(fakeObserver.IsInitialized);
+        HaStateHandler sut = new HaStateHandler(cache.Object, manager, observer.Object, logger.Object);
+        
+        observer.Verify(o => o.OnStateHandlerInitialized(), Times.Once);
 
         await sut.Handle(context.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -48,7 +44,6 @@ public class HaStateHandlerComponentTests
         var bytes = JsonSerializer.SerializeToUtf8Bytes(fakeState);
         cache.Verify(c => c.SetAsync("enterprise", bytes, 
             It.IsAny<DistributedCacheEntryOptions>(), default));
-        
     }
 
     [Fact]
@@ -68,14 +63,14 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
+        Mock<ISystemObserver> observer = new();
         AutomationManager collector = new(
             Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        StateHandlerObserver fakeObserver = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object,collector, observer.Object, logger.Object);
         
         //act
         await sut.Handle(null!, newState);
@@ -104,14 +99,15 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
+        Mock<ISystemObserver> observer = new();
+
         AutomationManager collector = new(
             Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        StateHandlerObserver fakeObserver = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -142,22 +138,21 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
 
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
-        
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
 
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
             [auto1.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        StateHandlerObserver fakeObserver = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -194,16 +189,16 @@ public class HaStateHandlerComponentTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
 
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
             [auto1.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        StateHandlerObserver fakeObserver = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -238,18 +233,17 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
-
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -280,18 +274,16 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
-
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -314,16 +306,16 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(-1));
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -344,7 +336,7 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(1));
@@ -354,9 +346,9 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -378,7 +370,7 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(-1));
@@ -387,15 +379,14 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
     
         // Then
-
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default));    
     }
 
@@ -412,7 +403,7 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(1));
@@ -421,9 +412,9 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -446,7 +437,7 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1));
@@ -455,9 +446,9 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -478,7 +469,7 @@ public class HaStateHandlerComponentTests
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        StateHandlerObserver fakeObserver = new();
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1));
@@ -488,9 +479,9 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, fakeObserver, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
@@ -503,6 +494,5 @@ public class HaStateHandlerComponentTests
     {
         return JsonSerializer.SerializeToUtf8Bytes(o);
     }
-
 }
 

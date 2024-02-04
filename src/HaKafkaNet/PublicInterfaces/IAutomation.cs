@@ -78,6 +78,7 @@ public record AutomationMetaData
     public required string Name { get; init; }
     public string? Description { get; init;}
     public Guid Id { get; init; } = Guid.NewGuid();
-    internal string? UnderlyingType { get; set; }
+    public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
+    public string? UnderlyingType { get; internal set; }
     internal string? Source { get; set; }
 }

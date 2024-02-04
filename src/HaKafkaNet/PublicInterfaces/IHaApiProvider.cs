@@ -18,7 +18,7 @@ public interface IHaApiProvider
     /// </summary>
     /// <param name="entity_id"></param>
     /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
-    Task<(HttpResponseMessage response, HaEntityState entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default);
+    Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Gets the state of an entity with stronly type attributes
@@ -26,7 +26,7 @@ public interface IHaApiProvider
     /// <typeparam name="T">The type to construct from the attributes</typeparam>
     /// <param name="entity_id"></param>
     /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
-    Task<(HttpResponseMessage response, HaEntityState<T> entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
+    Task<(HttpResponseMessage response, HaEntityState<T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets the brightness of a light

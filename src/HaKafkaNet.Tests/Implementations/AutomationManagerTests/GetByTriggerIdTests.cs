@@ -1,5 +1,4 @@
-﻿using FastEndpoints;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Tests;
 
@@ -24,9 +23,11 @@ public class GetByTriggerIdTests
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
         Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ISystemObserver> observer = new();
+
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, logger.Object);
+            autos, conditionals, registries, observer.Object, logger.Object);
         // When
         var result = sut.GetByTriggerEntityId(string.Empty);
 
@@ -58,9 +59,11 @@ public class GetByTriggerIdTests
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
         Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ISystemObserver> observer = new();
+
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, logger.Object);
+            autos, conditionals, registries, observer.Object, logger.Object);
         // When
         var result = sut.GetByTriggerEntityId(triggerId);
 
@@ -93,9 +96,10 @@ public class GetByTriggerIdTests
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
         Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, logger.Object);
+            autos, conditionals, registries, observer.Object, logger.Object);
         // When
         var enterpriseResult = sut.GetByTriggerEntityId(enterprise);
         var excelsiorResult = sut.GetByTriggerEntityId(excelsior);

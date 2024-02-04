@@ -15,10 +15,13 @@ internal interface IAutomationManager
     /// <param name="Enable">true to enable; false to disable</param>
     /// <returns>true if found and updated, otherwise false</returns>
     bool EnableAutomation(Guid id, bool Enable);
+
+    IEnumerable<string> GetAllEntitiesToTrack();
 }
 
 internal class AutomationManager : IAutomationManager
 {
+    readonly ISystemObserver _observer;
     private readonly ILogger<AutomationManager> _logger;
 
     private  Dictionary<Guid, AutomationWrapper> _internalAutomations = new();
@@ -28,8 +31,10 @@ internal class AutomationManager : IAutomationManager
         IEnumerable<IAutomation> automations,
         IEnumerable<IConditionalAutomation> conditionalAutomations,
         IEnumerable<IAutomationRegistry> registries,
+        ISystemObserver observer,
         ILogger<AutomationManager> logger)
     {
+        _observer = observer;
         this._logger = logger;
 
         var discoveredConditionals =
@@ -83,7 +88,9 @@ internal class AutomationManager : IAutomationManager
             where 
                 (a.EventTimings & stateChange.EventTiming) == stateChange.EventTiming
                 && a.GetMetaData().Enabled
-            select a.Execute(stateChange, cancellationToken));
+            select a.Execute(stateChange, cancellationToken).ContinueWith(t => {
+                _observer.OnUnhandledException(a.GetMetaData(), t.Exception!);
+            }, cancellationToken, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current));
     }
 
     public bool HasAutomationsForEntity(string entityId)
@@ -136,5 +143,22 @@ internal class AutomationManager : IAutomationManager
         }
         //doesnt' exist / not found
         return false;
+    }
+
+    public IEnumerable<string> GetAllEntitiesToTrack()
+    {
+        var ids = 
+            from a in _internalAutomations.Values
+            let meta = a.GetMetaData()
+            where meta.Enabled
+            let autoIds = 
+                a.TriggerEntityIds().Union(
+                    meta.AdditionalEntitiesToTrack is not null 
+                        ? meta.AdditionalEntitiesToTrack 
+                        : Enumerable.Empty<string>())
+            from id in autoIds
+            select id;
+
+        return ids.Distinct();
     }
 }
