@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HaKafkaNet" Version="2.*" />
-    <PackageReference Include="HaKafkaNet.TestHarness" Version="2.*" />
+    <!-- <PackageReference Include="HaKafkaNet" Version="2.*" /> -->
+    <PackageReference Include="HaKafkaNet.TestHarness" Version="2.1.1" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
