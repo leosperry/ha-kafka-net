@@ -21,6 +21,7 @@ public class LightOnRegistryTests
         // When
         var motionOnState = TestHelpers.GetState(LightOnRegistry.OFFICE_MOTION, "on");
         await harness.SendState(motionOnState);
+        await Task.Delay(300); // conditional automation execute on another thread and need to be scheduled
 
         // Then
         harness.ApiProvider.Verify(api => api.LightTurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));

@@ -7,6 +7,8 @@ namespace HaKafkaNet.Tests;
 
 public class HaStateHandlerComponentTests
 {
+    const int DELAY = 300;
+
     [Fact]
     public async Task WhenNotCached_ShouldCacheState_andCallObserver()
     {
@@ -38,7 +40,7 @@ public class HaStateHandlerComponentTests
         observer.Verify(o => o.OnStateHandlerInitialized(), Times.Once);
 
         await sut.Handle(context.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
         var bytes = JsonSerializer.SerializeToUtf8Bytes(fakeState);
@@ -74,7 +76,7 @@ public class HaStateHandlerComponentTests
         
         //act
         await sut.Handle(null!, newState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
         cache.Verify(c =>  c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), 
@@ -118,7 +120,7 @@ public class HaStateHandlerComponentTests
 
         //act
         await sut.Handle(context.Object, newState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
         cache.Verify(c =>  c.SetAsync("enterprise", It.IsAny<byte[]>(), 
@@ -246,7 +248,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default));
@@ -286,7 +288,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);
@@ -318,7 +320,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);    
@@ -351,7 +353,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);    
@@ -384,7 +386,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default));    
@@ -417,7 +419,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default));
@@ -451,7 +453,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);    
@@ -484,7 +486,7 @@ public class HaStateHandlerComponentTests
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
-        await Task.Delay(200); //sometimes the verification can run before the task is scheduled
+        await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
         auto.Verify(a => a.Execute(It.IsAny<HaEntityStateChange>(), default), Times.Never);    
