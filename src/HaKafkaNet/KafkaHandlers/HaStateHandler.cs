@@ -7,24 +7,22 @@ namespace HaKafkaNet;
 
 internal class HaStateHandler : IMessageHandler<HaEntityState>
 {
-    IDistributedCache _cache;
-    private readonly IAutomationManager _autoMgr;
-
-    ILogger<HaStateHandler> _logger;
+    readonly IDistributedCache _cache;
+    readonly IAutomationManager _autoMgr;
+    readonly ILogger<HaStateHandler> _logger;
 
     DateTime _startTime = DateTime.Now;
     DistributedCacheEntryOptions _cacheOptions = new ();
     
     public HaStateHandler(
         IDistributedCache cache, IAutomationManager automationMgr,
-        StateHandlerObserver observer, ILogger<HaStateHandler> logger)
+        ISystemObserver observer, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
-        this._autoMgr = automationMgr;
-        
+        _autoMgr = automationMgr;
         _logger = logger;
 
-        observer.OnInitialized();
+        observer.OnStateHandlerInitialized();
         _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
     }
 

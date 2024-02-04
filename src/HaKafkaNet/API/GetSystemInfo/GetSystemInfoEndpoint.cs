@@ -5,20 +5,17 @@ namespace HaKafkaNet;
 
 internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<SystemInfoResponse>>
 {
-    private readonly StateHandlerObserver _observer;
+    private readonly ISystemObserver _observer;
     private readonly IAutomationManager _manager;
-    private readonly ILogger<GetSystemInfoEndpoint> _logger;
 
-    public GetSystemInfoEndpoint(StateHandlerObserver observer ,IAutomationManager manager, ILogger<GetSystemInfoEndpoint> logger )
+    public GetSystemInfoEndpoint(ISystemObserver observer ,IAutomationManager manager)
     {
         this._observer = observer;
         _manager = manager;
-        this._logger = logger;
     }
 
     public override void Configure()
     {
-        //Verbs(Http.GET);
         Get("api/systeminfo");
         AllowAnonymous();
     }

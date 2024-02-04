@@ -40,7 +40,7 @@ internal class HaApiProvider : IHaApiProvider
         return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
+    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 
@@ -51,7 +51,7 @@ internal class HaApiProvider : IHaApiProvider
         };
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState<T> entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    public async Task<(HttpResponseMessage response, HaEntityState<T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 

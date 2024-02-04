@@ -6,6 +6,7 @@ using KafkaFlow.Configuration;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 
 namespace HaKafkaNet;
@@ -69,6 +70,10 @@ public static class ServicesExtensions
         
         var kafkaBus = app.Services.CreateKafkaBus();
         await kafkaBus.StartAsync();
+
+        var entityTracker = app.Services.GetRequiredService<EntityTracker>();
+        
+        app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
@@ -95,10 +100,10 @@ public static class ServicesExtensions
             services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
             services.AddSingleton<IAutomationManager, AutomationManager>();
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
-            services.AddSingleton<StateHandlerObserver>();
+            services.AddSingleton<ISystemObserver, SystemObserver>();
             services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
+            services.AddSingleton<EntityTracker>();
 
-            // get all the automation types
             var eligibleTypes = 
                 (from a in AppDomain.CurrentDomain.GetAssemblies()
                 from t in a.GetTypes()
@@ -108,19 +113,30 @@ public static class ServicesExtensions
                     !t.GetCustomAttributes(typeof(ExcludeFromDiscoveryAttribute)).Any()
                 select t).ToArray();
 
-            foreach (var type in eligibleTypes.Where(t => typeof(IAutomation).IsAssignableFrom(t)))
+            foreach (var type in eligibleTypes)
             {
-                services.AddSingleton(typeof(IAutomation), type);
-            }
-
-            foreach (var type in eligibleTypes.Where(t => typeof(IConditionalAutomation).IsAssignableFrom(t)))
-            {
-                services.AddSingleton(typeof(IConditionalAutomation), type);
-            }
-
-            foreach (var type in eligibleTypes.Where(t => typeof(IAutomationRegistry).IsAssignableFrom(t)))
-            {
-                services.AddSingleton(typeof(IAutomationRegistry), type);
+                switch (type)
+                {
+                    case var _ when typeof(IAutomation).IsAssignableFrom(type):
+                        ServiceDescriptor auto = new(typeof(IAutomation), type);
+                        services.TryAddEnumerable(auto);
+                        break;
+                    case var _ when typeof(IConditionalAutomation).IsAssignableFrom(type):
+                        ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type);
+                        services.TryAddEnumerable(conditional);
+                        break;
+                    case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
+                        ServiceDescriptor registry = new(typeof(IAutomationRegistry), type);
+                        services.TryAddEnumerable(registry);
+                        break;
+                    case var _ when typeof(ISystemMonitor).IsAssignableFrom(type):
+                        ServiceDescriptor monitor = new(typeof(ISystemMonitor), type);
+                        services.TryAddEnumerable(monitor);
+                        break;
+                    default:
+                        //do nothing
+                        break;
+                }
             }
         }
     }

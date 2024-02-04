@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Tests;
 
@@ -14,9 +13,10 @@ public class GetAllTests
         var registries = Enumerable.Empty<IAutomationRegistry>();
         
         Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, logger.Object);
+            autos, conditionals, registries, observer.Object, logger.Object);
         // When
 
         var result = sut.GetAll();
@@ -44,10 +44,11 @@ public class GetAllTests
             .Returns([registeredConditional.Object]);
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationManager>> logger = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, logger.Object);
+            autos, conditionals, registries, observer.Object, logger.Object);
         // When
 
         var result = sut.GetAll();
