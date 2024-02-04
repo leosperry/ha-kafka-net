@@ -29,8 +29,7 @@ var app = builder.Build();
 
 app.MapGet("/", () => Results.Redirect("dashboard.html"));
 
-
-await app.StartHaKafkaNet();
+await app.StartHaKafkaNet(config);
 
 app.Run();
 

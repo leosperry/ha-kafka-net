@@ -48,6 +48,7 @@ public static class ServicesExtensions
         if (config.EntityTracker.Enabled)
         {
             services.AddSingleton(config.EntityTracker);
+            services.AddSingleton<EntityTracker>();
         }
 
         if (config.HaConnectionInfo.Enabled)
@@ -129,7 +130,6 @@ public static class ServicesExtensions
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
             services.AddSingleton<ISystemObserver, SystemObserver>();
             services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
-            services.AddSingleton<EntityTracker>();
 
             var eligibleTypes = 
                 (from a in AppDomain.CurrentDomain.GetAssemblies()
