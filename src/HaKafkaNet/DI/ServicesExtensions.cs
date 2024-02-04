@@ -118,19 +118,19 @@ public static class ServicesExtensions
                 switch (type)
                 {
                     case var _ when typeof(IAutomation).IsAssignableFrom(type):
-                        ServiceDescriptor auto = new(typeof(IAutomation), type);
+                        ServiceDescriptor auto = new(typeof(IAutomation), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(auto);
                         break;
                     case var _ when typeof(IConditionalAutomation).IsAssignableFrom(type):
-                        ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type);
+                        ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(conditional);
                         break;
                     case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
-                        ServiceDescriptor registry = new(typeof(IAutomationRegistry), type);
+                        ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(registry);
                         break;
                     case var _ when typeof(ISystemMonitor).IsAssignableFrom(type):
-                        ServiceDescriptor monitor = new(typeof(ISystemMonitor), type);
+                        ServiceDescriptor monitor = new(typeof(ISystemMonitor), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(monitor);
                         break;
                     default:
