@@ -1,10 +1,6 @@
 # ha-kafka-net
 ***
-Version 2 Released! see [release](https://github.com/leosperry/ha-kafka-net/releases/tag/v2.0.0) for details, and check out the image of the dashboard below!
-
-Version 2.1.1 Released! see [release](https://github.com/leosperry/ha-kafka-net/releases/tag/v2.1.0) for details. New System Monitor and configuration options.
-
-Documentation on 2.1 features coming soon
+Version 2.1.2 Released! see [release](https://github.com/leosperry/ha-kafka-net/releases/tag/v2.1.2) for details.
 ***
 Integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -61,11 +57,12 @@ This is an image of the dashboard from the example app.
 * If you are running a dev instance alongside your production instance, you can reuse the same kafka instance, but it is recommended to change the 'GroupId' in your appsettings.json. This will ensure your development instance does not steal events from your production instance.
 
 ## Features recently added
-* A brand new UI! Currently it lists all your automations, where they came from and an ability do enable/disable them at runtime
+* [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
+* A brand new [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI)! Currently it lists all your automations, where they came from and an ability do enable/disable them at runtime
 * API which supports the UI
 * More Home Assistant API calls
-* Test helper methods and a test harness for component level testing of your registries
-* Automation Builder with fluent syntax
+* Test helper methods and a [test harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing) for component level testing of your registries
+* [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
 * Sun model
 
 ## More examples
