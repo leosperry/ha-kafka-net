@@ -25,7 +25,7 @@ jobs:
       working-directory: ./src
     - name: Build
       run: dotnet build
-      working-directory: ./src
+      working-directory: ./src/HaKafkaNet
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: ./src
+      working-directory: ./src/HaKafkaNet.Tests
