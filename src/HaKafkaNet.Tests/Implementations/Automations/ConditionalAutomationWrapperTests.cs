@@ -275,7 +275,6 @@ public class ConditionalAutomationWrapperTests
         await Task.Delay(300);
     
         // Then
-
         observer.Verify(o => o.OnUnhandledException(It.IsAny<AutomationMetaData>(), It.IsAny<Exception>()));
     }
 }
