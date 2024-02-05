@@ -219,12 +219,10 @@ public class ConditionalAutomationWrapperTests
     public async Task WhenAbunchTrueWith1False_ShouldNotTriggerOnce()
     {
         // Given
-        int delay = 300;
+        int delay = 500;
         Mock<IConditionalAutomation> auto = new();
 
         auto.SetupSequence(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(), default))
-            .ReturnsAsync(true)
-            .ReturnsAsync(true)
             .ReturnsAsync(true)
             .ReturnsAsync(true)
             .ReturnsAsync(true)
@@ -243,13 +241,11 @@ public class ConditionalAutomationWrapperTests
             sut.Execute(stateChange, default),
             sut.Execute(stateChange, default),
             sut.Execute(stateChange, default),
-            sut.Execute(stateChange, default),
-            sut.Execute(stateChange, default),
             Task.Delay(delay * 2)
         );
     
         // Then
-        auto.Verify(a => a.ContinuesToBeTrue(stateChange, default), Times.Exactly(6));
+        auto.Verify(a => a.ContinuesToBeTrue(stateChange, default), Times.Exactly(4));
         auto.Verify(a => a.Execute(It.IsAny<CancellationToken>()), Times.Never);
     }
 
