@@ -273,4 +273,26 @@ public class ConditionalAutomationWrapperTests
         // Then
         observer.Verify(o => o.OnUnhandledException(It.IsAny<AutomationMetaData>(), It.IsAny<Exception>()));
     }
+
+    [Fact]
+    public async Task WhenForIsZero_RunImmediately()
+    {
+        // Given
+        Mock<IConditionalAutomation> auto = new();
+        auto.Setup(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(),default))
+            .ReturnsAsync(true);
+        auto.Setup(a => a.For).Returns(TimeSpan.Zero);
+        Mock<ISystemObserver> observer = new();
+        Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
+
+        var stateChange = TestHelpers.GetStateChange();
+    
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
+        // When
+        await sut.Execute(stateChange, default);
+    
+        // Then
+        auto.Verify(a => a.ContinuesToBeTrue(stateChange, default));
+        auto.Verify(a => a.Execute(It.IsAny<CancellationToken>()));
+    }
 }

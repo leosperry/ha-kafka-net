@@ -62,8 +62,20 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
 
     private Task StartIfNotStarted(CancellationToken cancellationToken)
     {
-        if (_cts is null)
+        if (_automation.For == TimeSpan.Zero)
         {
+            //execute immediately
+            return _automation.Execute(cancellationToken)
+                .ContinueWith(t =>{
+                    if (t.IsFaulted)
+                    {
+                        _observer.OnUnhandledException(this._meta, t.Exception);
+                    }
+                });
+        }
+        else if (_cts is null)
+        {
+            // if _cts is not null, we're already running
             lock (lockObj)
             {
                 if (_cts is null)
@@ -96,13 +108,13 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
 
     internal Task StopIfRunning()
     {
-        _logger.LogInformation("Canceling {automation}", _automation.GetType().Name);
         if (_cts is not null)
         {
             lock(lockObj)
             {
                 if (_cts is not null)
                 {
+                    _logger.LogInformation("Canceling {automation}", _automation.GetType().Name);
                     try
                     {
                         _cts.Cancel();
