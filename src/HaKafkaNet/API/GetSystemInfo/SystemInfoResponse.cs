@@ -14,6 +14,6 @@ public record AutomationInfo
     public required string TypeName { get; init; }
     public required string Source { get; set; }
     public required IEnumerable<string> TriggerIds { get; init; }
+    public required IEnumerable<string> AdditionalEntitiesToTrack { get; set; }
     public bool Enabled { get; set; }
-    
 }

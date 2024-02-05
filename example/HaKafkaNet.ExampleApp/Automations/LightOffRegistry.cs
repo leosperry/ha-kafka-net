@@ -37,6 +37,7 @@ public class LightOffRegistry : IAutomationRegistry
             .WithName("Office Light Off When No Motion")
             .WithDescription("from builder")
             .WithTriggers(OFFICE_MOTION)
+            .WithAdditionalEntitiesToTrack(OFFICE_LIGHT)
             .When(stateChange => stateChange.New.State == "off")
             .ForMinutes(5)
             .Then(ct => _services.Api.LightTurnOff(OFFICE_LIGHT, ct))

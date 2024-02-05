@@ -51,7 +51,7 @@ class HaKafkaNetRoot extends React.Component {
     render() {
         return (
             <div>
-                <div className="float-end"><a href="/kafkaflow">Kafka Flow Admin</a></div>
+                <div className="float-end"><a href="/kafkaflow" target="_blank">Kafka Flow Admin</a></div>
                 <h1>Ha-Kafka-Net</h1>
                 {this.state.error &&
                     <h3 className="bg-warning">{this.state.error}</h3>
@@ -63,6 +63,9 @@ class HaKafkaNetRoot extends React.Component {
                 </div>
                 <hr />
                 <h3>Automations</h3>
+                <div>
+                    <p>Tip: you can trigger your automations manually by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a></p>
+                </div>
                 <table className="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -71,7 +74,7 @@ class HaKafkaNetRoot extends React.Component {
                             <th>Description</th>
                             <th>Type</th>
                             <th>Source</th>
-                            <th>Trigger IDs</th>
+                            <th>Entity IDs</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +90,39 @@ class HaKafkaNetRoot extends React.Component {
                                     <td>{item.description}</td>
                                     <td>{item.typeName}</td>
                                     <td>{item.source}</td>
-                                    <td>{item.triggerIds.map(trigger =>(<span key={trigger}>{trigger} </span>))}</td>
+                                    <td>
+
+                                    <div id="accordion">
+                                        <div className="card">
+                                            <div className="card-header" id={"heading1" + item.id}>
+                                                <h5 className="mb-0">
+                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#triggers" + item.id} aria-expanded="false" aria-controls={"triggers" + item.id}>
+                                                    Triggers
+                                                    </button>
+                                                </h5>
+                                            </div>  
+                                            <div id={"triggers" + item.id} className="collapse" aria-labelledby={"heading1" + item.id} data-parent="#accordion">
+                                                <div className="card-body">
+                                                    {item.triggerIds.map(trigger =>(<p key={trigger}>{trigger}</p>))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="card">
+                                            <div className="card-header" id={"heading2" + item.id}>
+                                                <h5 className="mb-0">
+                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#additional" + item.id} aria-expanded="false" aria-controls="collapseOne">
+                                                    Additional Entities To Track
+                                                    </button>
+                                                </h5>
+                                            </div>  
+                                            <div id={"additional" + item.id} className="collapse" aria-labelledby={"heading2" + item.id} data-parent="#accordion">
+                                                <div className="card-body">
+                                                    {item.additionalEntitiesToTrack.map(e =>(<p key={e}>{e} </p>))}
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    </td>
                                 </tr>
                             ))
                         }
