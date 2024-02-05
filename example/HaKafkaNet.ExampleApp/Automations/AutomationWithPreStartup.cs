@@ -50,7 +50,7 @@ public class AutomationWithPreStartup : IAutomation
                 _logger.LogInformation("Sending Persistent Notification");
                 return _api.PersistentNotification(message, cancellationToken);
             default:
-                throw new Exception("how did we get here?");
+                return Task.CompletedTask;
         }
     }
 }

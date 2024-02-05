@@ -1,0 +1,24 @@
+name: built and test example app
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./example/HaKafkaNet.ExampleApp
+    - name: Build
+      run: dotnet build
+      working-directory: ./src/HaKafkaNet.ExampleApp
+    - name: Test
+      run: dotnet test
+      working-directory: ./src/HaKafkaNet.ExampleApp.Tests
+ 
