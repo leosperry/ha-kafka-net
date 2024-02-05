@@ -16,7 +16,7 @@ It was created with the following goals:
 
 Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
 
-Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki)
+Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki) or try [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
@@ -40,7 +40,7 @@ This is an image of the dashboard from the example app.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
  
 ## Getting started with the Example App:
-1. Follow instructions [here](https://github.com/leosperry/ha-kafka-net/wiki/Setup-Instructions) for setting up your environment.
+1. Follow instructions for [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started).
 2. In your HomeAssistant UI, create helper buttons named:
    - `Test Button`
    - `Test Button 2`
