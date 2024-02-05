@@ -27,5 +27,5 @@ jobs:
       run: dotnet build
       working-directory: ./src/HaKafkaNet
     - name: Test
-      run: dotnet test ./HaKafkaNet.Tests --no-build
+      run: dotnet test ./HaKafkaNet.Tests
       working-directory: ./src
