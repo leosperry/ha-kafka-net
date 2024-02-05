@@ -11,6 +11,7 @@ It was created with the following goals:
 * Enable all automation code to be fully unit testable
 
 Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
+Test Harness Nuget [here](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
 
 Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki) or try [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
 
@@ -58,8 +59,8 @@ This is an image of the dashboard from the example app.
 
 ## Features recently added
 * [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-* A brand new [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI)! Currently it lists all your automations, where they came from and an ability do enable/disable them at runtime
-* API which supports the UI
+* Test Harness also supports `ISystemMonitor`
+* A brand new [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI)! Currently it lists all your automations, where they came from and an ability to enable/disable them at runtime
 * More Home Assistant API calls
 * Test helper methods and a [test harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing) for component level testing of your registries
 * [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
