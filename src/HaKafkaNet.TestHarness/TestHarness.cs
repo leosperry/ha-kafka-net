@@ -23,7 +23,7 @@ public class TestHarness
 
     static Mock<ILogger<AutomationManager>> _logger = new();
     static Mock<ILogger<ConditionalAutomationWrapper>> _wrapperLogger = new();
-    static Mock<ISystemObserver> _observer = new();
+    static ISystemObserver? _observer;
 
     IAutomationManager? _autoMgr;
 
@@ -67,7 +67,7 @@ public class TestHarness
             [automation], 
             Enumerable.Empty<IConditionalAutomation>(), 
             Enumerable.Empty<IAutomationRegistry>(),
-            _observer.Object,
+            new Mock<ISystemObserver>().Object,
             _logger.Object);
     }
 
@@ -77,7 +77,7 @@ public class TestHarness
             Enumerable.Empty<IAutomation>(),
             [automation],
             Enumerable.Empty<IAutomationRegistry>(),
-            _observer.Object,
+            new Mock<ISystemObserver>().Object,
             _logger.Object
         );
     }
@@ -88,9 +88,21 @@ public class TestHarness
             Enumerable.Empty<IAutomation>(),
             Enumerable.Empty<IConditionalAutomation>(),
             [registry],
-            _observer.Object,
+            new Mock<ISystemObserver>().Object,
             _logger.Object
         );
+    }
+
+    public void Initialize(
+        IEnumerable<IAutomation>? automations = null, IEnumerable<IConditionalAutomation>? conditionals = null, 
+        IEnumerable<IAutomationRegistry>? registries = null, ISystemMonitor? monitor = null)
+    {
+        _autoMgr = new AutomationManager(
+            automations ?? Enumerable.Empty<IAutomation>(),
+            conditionals ?? Enumerable.Empty<IConditionalAutomation>(),
+            registries ?? Enumerable.Empty<IAutomationRegistry>(),
+            monitor is null ? new Mock<ISystemObserver>().Object : (_observer = new SystemObserver([monitor])),
+            _logger.Object);
     }
 
     public void SetServiceGenericDefaults<T>(string state) where T : new()
@@ -114,7 +126,7 @@ public class TestHarness
     /// <summary>
     /// You should call this in the 'Act' or 'When' portion of your test
     /// </summary>
-    /// <param name="state"></param>
+    /// <param name="state">The state to be assigned to New in the state change. Old will be null</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
@@ -135,7 +147,7 @@ public class TestHarness
     /// <summary>
     /// You should call this in the 'Act' or 'When' portion of your test
     /// </summary>
-    /// <param name="state"></param>
+    /// <param name="state">The state to be assigned to New in the state change. Old will be null</param>
     /// <param name="timing"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -178,5 +190,23 @@ public class TestHarness
         {
             _autoMgr.EnableAutomation(auto.GetMetaData().Id, true);
         }
+    }
+
+    public void RaiseStateHandlerInitialized()
+    {
+        if (_observer is null)
+        {
+            throw new Exception("cannot raise event when no monitor is provided");
+        }
+        _observer.OnStateHandlerInitialized();
+    }
+
+    public void RaiseBadState(params BadEntityState[] badStates)
+    {
+        if (_observer is null)
+        {
+            throw new Exception("cannot raise event when no monitor is provided");
+        }
+        _observer.OnBadStateDiscovered(badStates);
     }
 }
