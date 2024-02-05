@@ -22,7 +22,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./src
+      working-directory: ./src/HaKafkaNet
     - name: Build
       run: dotnet build
       working-directory: ./src/HaKafkaNet
