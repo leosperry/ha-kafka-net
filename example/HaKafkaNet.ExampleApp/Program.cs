@@ -6,6 +6,7 @@ var services = builder.Services;
 
 HaKafkaNetConfig config = new HaKafkaNetConfig();
 builder.Configuration.GetSection("HaKafkaNet").Bind(config);
+services.AddHaKafkaNet(config);
 
 // provide an IDistributedCache implementation
 services.AddStackExchangeRedisCache(options => 
@@ -15,7 +16,6 @@ services.AddStackExchangeRedisCache(options =>
     //options.InstanceName = "HaKafkaNet";
 });
 
-services.AddHaKafkaNet(config);
 
 // services.AddHaKafkaNet(options =>{
 //     //minimum amount of config

@@ -14,11 +14,12 @@ public class ConditionalAutomationWrapperTests
         auto.Setup(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(),default))
             .ReturnsAsync(true);
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -39,11 +40,12 @@ public class ConditionalAutomationWrapperTests
         auto.Setup(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(),default))
             .ReturnsAsync(false);
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -67,11 +69,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(true);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -96,11 +99,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(true);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -125,11 +129,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(false);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -154,11 +159,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(true);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -187,11 +193,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(true);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -224,11 +231,12 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(false);
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
+        Mock<ISystemObserver> observer = new();
         Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
-        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, logger.Object);
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -245,8 +253,29 @@ public class ConditionalAutomationWrapperTests
         auto.Verify(a => a.Execute(It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    [Fact]
+    public async void WhenExecutionThrows_ShouldRaiseEvent()
+    {
+        // Given
+        Mock<IConditionalAutomation> auto = new();
+        auto.Setup(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        auto.Setup(a => a.Execute(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("shields failing"));
+        
+        Mock<ISystemObserver> observer = new();
+        Mock<ILogger<ConditionalAutomationWrapper>> logger = new();
 
+        var stateChange = TestHelpers.GetStateChange();
+    
+        ConditionalAutomationWrapper sut = new ConditionalAutomationWrapper(auto.Object, observer.Object, logger.Object);
+    
+        // When
+        await sut.Execute(stateChange, default);
+        await Task.Delay(300);
+    
+        // Then
 
-
-
+        observer.Verify(o => o.OnUnhandledException(It.IsAny<AutomationMetaData>(), It.IsAny<Exception>()));
+    }
 }

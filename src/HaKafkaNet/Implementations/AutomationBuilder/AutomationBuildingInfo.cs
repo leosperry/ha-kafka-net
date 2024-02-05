@@ -7,6 +7,7 @@ public abstract class AutomationBuildingInfo
     internal string? Description { get; set; }
     internal bool EnabledAtStartup { get; set; }
     internal IEnumerable<string>? TriggerEntityIds { get; set; }
+    internal IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
 }
 
 public abstract class SimpleAutomationBuildignInfoBase: AutomationBuildingInfo

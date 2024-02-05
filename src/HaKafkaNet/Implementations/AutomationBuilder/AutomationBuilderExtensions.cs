@@ -25,6 +25,12 @@ public static class AutomationBuilderExtensions
         return info;
     }
 
+    public static T WithAdditionalEntitiesToTrack<T>(this T info, params string[] entityIds) where T : AutomationBuildingInfo
+    {
+        info.AdditionalEntitiesToTrack = entityIds;
+        return info;
+    }
+
     public static SimpleAutomationBuildingInfo WithExecution(this SimpleAutomationBuildingInfo info, Func<HaEntityStateChange, CancellationToken, Task> execution)
     {
         info.Execution = execution;
@@ -153,6 +159,7 @@ public static class AutomationBuilderExtensions
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
             Id = Guid.NewGuid(),
+            AdditionalEntitiesToTrack = info.AdditionalEntitiesToTrack
         };
     }
 }

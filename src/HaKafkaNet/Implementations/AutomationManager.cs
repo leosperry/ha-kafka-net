@@ -39,7 +39,7 @@ internal class AutomationManager : IAutomationManager
 
         var discoveredConditionals =
             from ca in conditionalAutomations
-            let wrapped = new ConditionalAutomationWrapper(ca, _logger)
+            let wrapped = new ConditionalAutomationWrapper(ca, observer, _logger)
             select new AutomationWrapper(wrapped, logger, "Discovered");
 
         var registeredConditionals = GetRegisteredConditionals(registries);
@@ -106,7 +106,7 @@ internal class AutomationManager : IAutomationManager
             return 
                 from r in registries
                 from a in r.RegisterContitionals()
-                let conditionalWrapper = new ConditionalAutomationWrapper(a, _logger)
+                let conditionalWrapper = new ConditionalAutomationWrapper(a, _observer,_logger)
                 select new AutomationWrapper(conditionalWrapper,_logger, r.GetType().Name);
         }
         catch (System.Exception ex)

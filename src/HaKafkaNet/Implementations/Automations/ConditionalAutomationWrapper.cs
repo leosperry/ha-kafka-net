@@ -13,14 +13,16 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
         get => _automation;
     }
 
+    private readonly ISystemObserver _observer;
     private readonly ILogger _logger;
 
     private readonly object lockObj = new{};
     private CancellationTokenSource? _cts;
 
-    public ConditionalAutomationWrapper(IConditionalAutomation automation, ILogger logger)
+    public ConditionalAutomationWrapper(IConditionalAutomation automation, ISystemObserver observer, ILogger logger)
     {
         this._automation = automation;
+        this._observer = observer;
         _logger = logger;
 
         if (automation is IAutomationMeta metaAuto)
@@ -77,6 +79,10 @@ internal class ConditionalAutomationWrapper : IAutomation, IAutomationMeta
                                 {
                                     _cts.Dispose();
                                     _cts = null;
+                                }
+                                if (t.IsFaulted)
+                                {
+                                    _observer.OnUnhandledException(this._meta, t.Exception);
                                 }
                             });
                         }
