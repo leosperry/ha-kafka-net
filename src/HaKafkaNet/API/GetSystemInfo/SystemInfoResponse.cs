@@ -3,6 +3,7 @@
 public record SystemInfoResponse
 {
     public bool StateHandlerInitialized { get; init; }
+    public required string Version { get; init; }
     public required Dictionary<Guid, AutomationInfo> Automations{ get; init; }
 }
 

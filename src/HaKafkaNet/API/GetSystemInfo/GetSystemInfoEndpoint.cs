@@ -7,6 +7,14 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
 {
     private readonly ISystemObserver _observer;
     private readonly IAutomationManager _manager;
+    private static readonly string _version;
+
+    static GetSystemInfoEndpoint()
+    {
+        var ver = System.Reflection.Assembly.GetAssembly(typeof(IAutomation))?.GetName().Version;
+        
+        _version = ver?.ToString(3) ?? "unknown";
+    }
 
     public GetSystemInfoEndpoint(ISystemObserver observer ,IAutomationManager manager)
     {
@@ -27,6 +35,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
             Data = new SystemInfoResponse()
             {
                 StateHandlerInitialized = _observer.IsInitialized,
+                Version = _version,
                 Automations = _manager.GetAll().Select( a => {
                     var meta = a.GetMetaData();
                     return new AutomationInfo()

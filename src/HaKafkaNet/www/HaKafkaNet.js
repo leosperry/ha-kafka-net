@@ -51,8 +51,14 @@ class HaKafkaNetRoot extends React.Component {
     render() {
         return (
             <div>
-                <div className="float-end"><a href="/kafkaflow" target="_blank">Kafka Flow Admin</a></div>
+                <div className="float-end">
+                    <p><a href="/kafkaflow" target="_blank">Kafka Flow Admin</a></p>
+                    <p><a href="https://github.com/leosperry/ha-kafka-net/wiki" target="_blank">Documentation</a></p>
+                </div>
                 <h1>Ha-Kafka-Net</h1>
+                <div>Version {this.state.systemInfo.data &&
+                    <span>{this.state.systemInfo.data.version}</span>
+                }</div>
                 {this.state.error &&
                     <h3 className="bg-warning">{this.state.error}</h3>
                 }
@@ -128,6 +134,13 @@ class HaKafkaNetRoot extends React.Component {
                         }
                     </tbody>
                 </table>
+
+                {this.state.systemInfo.data && 
+                    <div>
+                        Send the developer a thank you, report a bug, or request feature via <a href={"mailto:leonard.sperry@live.com?subject=HaKafkaNet Comment V"+ this.state.systemInfo.data.version}>email</a> 
+                        &nbsp; or <a href="https://github.com/leosperry/ha-kafka-net/discussions" target="_blank">start a discussion</a>
+                    </div>
+                }
             </div>
         )
     }
