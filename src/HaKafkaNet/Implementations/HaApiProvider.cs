@@ -40,6 +40,12 @@ internal class HaApiProvider : IHaApiProvider
         return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
     }
 
+    public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)
+    {
+        return await _client.GetAsync($"/api/error_log", cancellationToken);
+    }
+
+
     public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
@@ -118,6 +124,11 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
     {
         return CallService("notify", "persistent_notification", new {message}, cancellationToken);
+    }
+
+    public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
+    {
+        return CallService("homeassistant", "restart", new{}, cancellationToken);
     }
 
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)

@@ -13,6 +13,8 @@ public interface IHaApiProvider
     /// <returns></returns>
     Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default);
 
+    Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Gets the state of an entity
     /// </summary>
@@ -93,6 +95,13 @@ public interface IHaApiProvider
     /// <param name="message">contents of the notification</param>
     /// <returns></returns>
     Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default);
+
+
+    /// <summary>
+    /// Does what's on the tin
+    /// </summary>
+    /// <returns></returns>
+    Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns off a switch

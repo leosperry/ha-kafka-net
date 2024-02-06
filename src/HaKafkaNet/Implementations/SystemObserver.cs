@@ -28,9 +28,9 @@ internal class SystemObserver : ISystemObserver
 
         foreach (var monitor in monitors)
         {
-            StateHandlerInitialized += () =>_ = monitor.StateHandlerInitialized();
+            StateHandlerInitialized += () =>    _ = monitor.StateHandlerInitialized();
             UnhandledException += (meta, ex) => _ = monitor.UnhandledException(meta, ex);
-            BadEntityState += (states) => _ = monitor.BadEntityStateDiscovered(states);
+            BadEntityState += (states) =>       _ = monitor.BadEntityStateDiscovered(states);
         }
     }
 

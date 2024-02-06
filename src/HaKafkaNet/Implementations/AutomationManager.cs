@@ -39,7 +39,7 @@ internal class AutomationManager : IAutomationManager
 
         var discoveredConditionals =
             from ca in conditionalAutomations
-            let wrapped = new ConditionalAutomationWrapper(ca, observer, _logger)
+            let wrapped = new ConditionalAutomationWrapper(ca, _observer, _logger)
             select new AutomationWrapper(wrapped, logger, "Discovered");
 
         var registeredConditionals = GetRegisteredConditionals(registries);
