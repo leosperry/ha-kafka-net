@@ -1,25 +1,32 @@
 # ha-kafka-net
 ***
-Version 2.1.3 Released! see [releases]([https://github.com/leosperry/ha-kafka-net/releases/tag/v2.1.2](https://github.com/leosperry/ha-kafka-net/releases)) for details.
+Version 2.1.3 Released! see [releases](https://github.com/leosperry/ha-kafka-net/releases) for details.
+
+Version 3 is in the works. See below for details.
 ***
 Integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
-* Create Home Assistant automations in .NET
-* Expose a simple way to track states of all entities in Home Assistant
-* Expose a simple way to respond to Home Assistant state changes
-* Provide a means to call Home Assistant RESTful services
+* Create Home Assistant automations in .NET with abilities to:
+  * track/retrieve states of all entities in Home Assistant
+  * respond to Home Assistant state changes
+  * call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
+* Make .NET development with Home Assistant easy
 
-Nuget package can be found [here](https://www.nuget.org/packages/HaKafkaNet/).
-Test Harness Nuget [here](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
-
-Full documentation [here](https://github.com/leosperry/ha-kafka-net/wiki) or try [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
+#### Resources
+* [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
+* [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
+* [Test Harness Nuget](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
+* [Full Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
-* It gives you a UI to manage your automations and inspect Kafka consumers
+* UI to manage your automations and inspect Kafka consumers.
 * You have an easy way to respond to events during start up which means you are guarenteed to see/handle all events at least once, even if your application has been down.
-* Full unit testability
+* Monitoring capabilities through `ISystemMonitor`
+* Extensible framework
+* Prebuilt automations and an automation builder with fluent syntax for quickly creating new automations.
+* Full unit testability and componet level testing with Test Harness
 * MIT license
 
 ### Dashboard
@@ -46,25 +53,27 @@ This is an image of the dashboard from the example app.
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
 
 ## Coming soon
-* More pre-built automations.
-* More Documentation
-* More enhanced HA API functionality
+Version 3 is in development and will be available soon. It will come with some breaking changes specifically around the registry, but it will ship with several new features including.
+* Updates to dashboard.
+* New Home Assistant API endpoints
+* improved thread managment
+* `IDelayableAutomation` with enhanced scheduling abilities in an extensible framework.
+* More options for handling pre-startup(between restarts) events.  
 
 ## Tips
-* You can optionally add this repository as a submodule to your own instead of using the nuget package.
-* During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current offset which you can discover from your kafka-ui instance
-* ILogger support has been added. When your automation is called, the name of your automation, information about the automation will be added to the scope.
-* You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date if your automations are shut down for development or other reasons.
+* During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current Kafka offset which you can discover from your kafka-ui instance.
+*You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date and have your applications running your automations have less work to do at startup.
 * If you are running a dev instance alongside your production instance, you can reuse the same kafka instance, but it is recommended to change the 'GroupId' in your appsettings.json. This will ensure your development instance does not steal events from your production instance.
+* You can raise state change events by setting them manually in the developer tools of your Home Assisstant instance. This won't change the actual states of your devices, but it will send the events through Kafka.
 
 ## Features recently added
-* [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-* Test Harness also supports `ISystemMonitor`
+* [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor) for handling errors and monitoring non-responsive entities.
 * A brand new [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI)! Currently it lists all your automations, where they came from and an ability to enable/disable them at runtime
 * More Home Assistant API calls
-* Test helper methods and a [test harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing) for component level testing of your registries
+* Test helper methods and a [test harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing) for component level testing of your registries.
+  * Test Harness also supports `ISystemMonitor`
 * [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
-* Sun model
+* Sun model (new sun based automations coming in version 3)
 
 ## More examples
 I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
