@@ -62,7 +62,7 @@ Version 3 is in development and will be available soon. It will come with some b
 
 ## Tips
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current Kafka offset which you can discover from your kafka-ui instance.
-*You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date and have your applications running your automations have less work to do at startup.
+* You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date and have your applications running your automations have less work to do at startup.
 * If you are running a dev instance alongside your production instance, you can reuse the same kafka instance, but it is recommended to change the 'GroupId' in your appsettings.json. This will ensure your development instance does not steal events from your production instance.
 * You can raise state change events by setting them manually in the developer tools of your Home Assisstant instance. This won't change the actual states of your devices, but it will send the events through Kafka.
 
