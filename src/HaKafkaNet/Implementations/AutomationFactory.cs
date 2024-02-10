@@ -5,13 +5,11 @@ namespace HaKafkaNet;
 
 internal class AutomationFactory : IAutomationFactory
 {
-    readonly IHaServices _services;
-    readonly ILogger<ConditionalAutomationWrapper> _logger;
+    readonly IHaServices _services;   
 
-    public AutomationFactory(IHaServices services ,ILogger<ConditionalAutomationWrapper> logger)
+    public AutomationFactory(IHaServices services)
     {
         _services = services;
-        _logger = logger;
     }
 
     public IHaServices Services
@@ -50,5 +48,29 @@ internal class AutomationFactory : IAutomationFactory
     public LightOffOnNoMotion LightOffOnNoMotion(IEnumerable<string> motionIds, IEnumerable<string> lightIds, TimeSpan duration)
     {
         return new LightOffOnNoMotion(motionIds, lightIds, duration, _services);
+    }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunrise</param>
+    /// <returns></returns>
+    public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunRiseAutomation(execution, offset);
+    }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <returns></returns>
+    public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunSetAutomation(execution, offset);
     }
 }

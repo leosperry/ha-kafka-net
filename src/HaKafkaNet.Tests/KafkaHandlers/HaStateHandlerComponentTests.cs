@@ -18,12 +18,14 @@ public class HaStateHandlerComponentTests
             .Returns(Task.FromResult(default(byte[])));
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
+        Mock<IInternalRegistrar> registrar = new();
+
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         Mock<ISystemObserver> observer = new();
         AutomationManager manager = new(
-            Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), 
+            registrar.Object, observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -63,12 +65,13 @@ public class HaStateHandlerComponentTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
+        Mock<IInternalRegistrar> registrar = new();
+
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         Mock<ISystemObserver> observer = new();
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -100,12 +103,12 @@ public class HaStateHandlerComponentTests
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
+        Mock<IInternalRegistrar> registrar = new();
 
         Mock<ISystemObserver> observer = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomation>(), Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -141,16 +144,19 @@ public class HaStateHandlerComponentTests
 
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        Mock<IAutomation> auto1 = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto1 = new ();
         auto1.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
+        auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
+
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto1.Object]);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto1.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -188,15 +194,17 @@ public class HaStateHandlerComponentTests
 
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        Mock<IAutomation> auto1 = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto1 = new Mock<IAutomationWrapper>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
+        auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto1.Object]);
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto1.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -225,10 +233,11 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new Mock<IAutomationWrapper>();
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
-        //collector.Setup(c => c.GetAll()).Returns([auto.Object]);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
+
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -238,11 +247,12 @@ public class HaStateHandlerComponentTests
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
@@ -260,7 +270,7 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         var autoWithMeta = auto.As<IAutomationMeta>();
         autoWithMeta.Setup(a => a.GetMetaData())
             .Returns(new AutomationMetaData()
@@ -270,20 +280,22 @@ public class HaStateHandlerComponentTests
             });
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="", Enabled=false});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -300,22 +312,24 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(-1));
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -331,9 +345,10 @@ public class HaStateHandlerComponentTests
     {
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PreStartupNotCached);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -344,11 +359,12 @@ public class HaStateHandlerComponentTests
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(1));
 
         Mock<IAutomationFactory> factory = new();
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -365,9 +381,10 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1))));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -377,11 +394,12 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(-1));
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -398,9 +416,10 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1))));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -410,11 +429,12 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(1));
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -432,9 +452,10 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(-1))));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -444,11 +465,12 @@ public class HaStateHandlerComponentTests
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1));
 
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -464,9 +486,10 @@ public class HaStateHandlerComponentTests
     {
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomation> auto = new Mock<IAutomation>();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();
         fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
@@ -477,11 +500,12 @@ public class HaStateHandlerComponentTests
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1));
 
         Mock<IAutomationFactory> factory = new();
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
         Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            [auto.Object], Enumerable.Empty<IConditionalAutomation>(),
-            Enumerable.Empty<IAutomationRegistry>(), observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When

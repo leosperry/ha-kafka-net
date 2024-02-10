@@ -1,12 +1,7 @@
 ﻿namespace HaKafkaNet;
 
-public interface IAutomation
+public interface IAutomationBase
 {
-    /// <summary>
-    /// User friendly name to display
-    /// </summary>
-    string Name { get => GetType().Name; }
-
     /// <summary>
     /// At startup, depending on the specifics of when events fired, timing of events relative to the cache can vary
     /// Use this setting to tell HaKafkaNet which events you care about
@@ -15,13 +10,16 @@ public interface IAutomation
 
     /// <summary>
     /// When a state change occurs, if the entity id of the state matches any value (case sensitive) in this collection,
-    /// the execute method will be called
+    /// the ContinuesToBeTrue method will be called
     /// </summary>
     /// <returns>entity id's which your automation should be notified about</returns>
-    IEnumerable<string> TriggerEntityIds();
+    IEnumerable<string> TriggerEntityIds();    
+}
 
+public interface IAutomation : IAutomationBase
+{
     /// <summary>
-    /// 
+    /// The interface used by the Automation manager to execute automations
     /// </summary>
     /// <param name="stateChange">Information about the state change including the previous state if it was cached</param>
     /// <param name="cancellationToken">A token that will be marked canceled during shutdown of the worker</param>
@@ -29,33 +27,33 @@ public interface IAutomation
     Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 }
 
-public interface IConditionalAutomation
+/// <summary>
+/// used internally
+/// consider moving to another file
+/// </summary>
+internal interface IAutomationWrapper : IAutomation, IAutomationMeta 
+{
+    IAutomation WrappedAutomation {get;}
+}
+
+public interface IDelayableAutomation : IAutomationBase
 {
     /// <summary>
-    /// User friendly name to display
+    /// In some cases, especially if handling prestartup events, this determines if executions should run if it was scheduled to run previous to DateTime.Now
     /// </summary>
-    string Name { get => GetType().Name; }
+    bool ShouldExecutePastEvents { get => false; }
 
     /// <summary>
-    /// When a state change occurs, if the entity id of the state matches any value (case sensitive) in this collection,
-    /// the ContinuesToBeTrue method will be called
+    /// Indicates if the automation should run if the ContinuesToBeTrue method errors
     /// </summary>
-    /// <returns>entity id's which your automation should be notified about</returns>
-    IEnumerable<string> TriggerEntityIds();
-
-    /// <summary>
-    /// A positive duration to wait. If ContinuesToBeTrue has never returned false, your automation 
-    /// will be executed after the first time it reports true and this time has elapsed
-    /// </summary>
-    /// <returns></returns>
-    TimeSpan For{ get; }
+    bool ShouldExecuteOnContinueError { get => false; }
 
     /// <summary>
     /// Called on all state changes where EntityId matches any of the TriggerEntityIds
     /// </summary>
     /// <param name="haEntityStateChange"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>boolean to indicate if the automation should be schecduled or cancled if scheduled</returns>
     Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken);
 
     /// <summary>
@@ -67,18 +65,30 @@ public interface IConditionalAutomation
     Task Execute(CancellationToken cancellationToken);
 }
 
+public interface IConditionalAutomation : IDelayableAutomation
+{
+    /// <summary>
+    /// If ContinuesToBeTrue returns true, this is used to determine when Execute should be called.
+    /// </summary>
+    /// <returns></returns>
+    TimeSpan For{ get; }
+}
+
+public interface ISchedulableAutomation : IDelayableAutomation
+{
+    /// <summary>
+    /// True if new state changes can override previously scheduled tasks
+    /// </summary>
+    bool IsReschedulable { get; }
+
+    /// <summary>
+    /// Used to calculate For when executing. 
+    /// </summary>
+    /// <returns></returns>
+    DateTime? GetNextScheduled();
+}
+
 public interface IAutomationMeta
 {
     AutomationMetaData GetMetaData();
-}
-
-public record AutomationMetaData
-{
-    public bool Enabled { get; set; } = true;
-    public required string Name { get; init; }
-    public string? Description { get; init;}
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
-    public string? UnderlyingType { get; internal set; }
-    internal string? Source { get; set; }
 }

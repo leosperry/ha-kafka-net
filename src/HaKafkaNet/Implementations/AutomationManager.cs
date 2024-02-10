@@ -4,7 +4,7 @@ namespace HaKafkaNet;
 
 internal interface IAutomationManager
 {
-    IEnumerable<AutomationWrapper> GetAll();
+    IEnumerable<IAutomationWrapper> GetAll();
     bool HasAutomationsForEntity(string entityId);
     Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default);
     
@@ -21,40 +21,29 @@ internal interface IAutomationManager
 
 internal class AutomationManager : IAutomationManager
 {
+    private readonly IInternalRegistrar _registrar;
     readonly ISystemObserver _observer;
     private readonly ILogger<AutomationManager> _logger;
 
-    private  Dictionary<Guid, AutomationWrapper> _internalAutomations = new();
-    private Dictionary<string, List<AutomationWrapper>> _automationsByTrigger;
+    private  Dictionary<Guid, IAutomationWrapper> _internalAutomations = new();
+    private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
-        IEnumerable<IAutomation> automations,
-        IEnumerable<IConditionalAutomation> conditionalAutomations,
         IEnumerable<IAutomationRegistry> registries,
+        IInternalRegistrar registrar,
         ISystemObserver observer,
         ILogger<AutomationManager> logger)
     {
+        _registrar = registrar;
         _observer = observer;
         this._logger = logger;
 
-        var discoveredConditionals =
-            from ca in conditionalAutomations
-            let wrapped = new ConditionalAutomationWrapper(ca, _observer, _logger)
-            select new AutomationWrapper(wrapped, logger, "Discovered");
+        foreach (var reg in registries)
+        {
+            reg.Register(_registrar);
+        }
 
-        var registeredConditionals = GetRegisteredConditionals(registries);
-
-        var discoverdAutomations = 
-            from a in automations
-            select new AutomationWrapper(a, logger, "Discovered");
-
-        IEnumerable<AutomationWrapper> registered = GetRegistered(registries);
-
-        _internalAutomations = 
-            discoverdAutomations
-            .Union(discoveredConditionals)
-            .Union(registered)
-            .Union(registeredConditionals)
+        _internalAutomations = _registrar.Registered
             .ToDictionary(a => a.GetMetaData().Id);
 
         //get by trigger
@@ -67,12 +56,12 @@ internal class AutomationManager : IAutomationManager
             select (key, collection)).ToDictionary();
     }
 
-    public IEnumerable<AutomationWrapper> GetAll()
+    public IEnumerable<IAutomationWrapper> GetAll()
     {
         return _internalAutomations.Values;
     }
 
-    public IEnumerable<AutomationWrapper> GetByTriggerEntityId(string entityId)
+    public IEnumerable<IAutomationWrapper> GetByTriggerEntityId(string entityId)
     {
         if (_automationsByTrigger.TryGetValue(entityId, out var automations))
         {
@@ -99,45 +88,12 @@ internal class AutomationManager : IAutomationManager
     public bool HasAutomationsForEntity(string entityId)
         => _automationsByTrigger.ContainsKey(entityId);
 
-    private IEnumerable<AutomationWrapper> GetRegisteredConditionals(IEnumerable<IAutomationRegistry> registries)
-    {
-        try
-        {
-            return 
-                from r in registries
-                from a in r.RegisterContitionals()
-                let conditionalWrapper = new ConditionalAutomationWrapper(a, _observer,_logger)
-                select new AutomationWrapper(conditionalWrapper,_logger, r.GetType().Name);
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogCritical(ex, "Registration for conditionals Failed");
-            throw;
-        }    
-    }
-
-    private IEnumerable<AutomationWrapper> GetRegistered(IEnumerable<IAutomationRegistry> registries)
-    {
-        try
-        {
-            return 
-                from r in registries
-                from a in r.Register()
-                select new AutomationWrapper(a, _logger, r.GetType().Name);
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogCritical(ex, "Registration Failed");
-            throw;
-        }
-    }
-
     public bool EnableAutomation(Guid id, bool enable)
     {
         if (_internalAutomations.TryGetValue(id, out var auto))
         {
             auto.GetMetaData().Enabled = enable;
-            if (!enable && auto.WrappedAutomation is ConditionalAutomationWrapper conditional)
+            if (!enable && auto.WrappedAutomation is DelayablelAutomationWrapper conditional)
             {
                 //diable any running conditionals
                 conditional.StopIfRunning();

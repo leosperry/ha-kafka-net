@@ -18,5 +18,6 @@ public interface IAutomationFactory
     LightOnMotionAutomation LightOnMotion(IEnumerable<string> motionId, IEnumerable<string> lightId);
     LightOffOnNoMotion LightOffOnNoMotion(string motionId, string lightId, TimeSpan duration);
     LightOffOnNoMotion LightOffOnNoMotion(IEnumerable<string> motionIds, IEnumerable<string> lightIds, TimeSpan duration);
-
+    SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null);
+    SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null);
 }

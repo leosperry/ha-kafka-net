@@ -3,8 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
+
 [ExcludeFromDiscovery]
-internal class AutomationWrapper : IAutomation, IAutomationMeta
+internal class AutomationWrapper : IAutomationWrapper
 {
     readonly IAutomation _auto;
     readonly ILogger _log;
@@ -15,7 +16,7 @@ internal class AutomationWrapper : IAutomation, IAutomationMeta
    
     public EventTiming EventTimings { get => _eventTimings; }
 
-    internal IAutomation WrappedAutomation
+    public IAutomation WrappedAutomation
     {
         get => _auto;
     }
@@ -24,7 +25,7 @@ internal class AutomationWrapper : IAutomation, IAutomationMeta
     {
         _auto = automation;
         _log = logger;
-        var underlyingType = automation is ConditionalAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
+        var underlyingType = automation is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
         
         if (automation is IAutomationMeta metaAuto)
         {

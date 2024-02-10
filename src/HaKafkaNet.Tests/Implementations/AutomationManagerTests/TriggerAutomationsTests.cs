@@ -10,12 +10,14 @@ namespace HaKafkaNet.Tests;
 /// </summary>
 public class TriggerAutomationsTests
 {
-    private AutomationManager GetManager(Mock<IAutomation> auto, Mock<ISystemObserver> observer)
+    private AutomationManager GetManager(Mock<IAutomationWrapper> auto, Mock<ISystemObserver> observer)
     {
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered).Returns([auto.Object]);
+
         return new AutomationManager(
-            [auto.Object],
-            Enumerable.Empty<IConditionalAutomation>(),
             Enumerable.Empty<IAutomationRegistry>(),
+            registrar.Object,
             observer.Object,
             new Mock<ILogger<AutomationManager>>().Object
         );
@@ -25,9 +27,13 @@ public class TriggerAutomationsTests
     public async Task WhenAutomationThrows_ShouldCallObserver()
     {
         //arrange
-        Mock<IAutomation> auto = new ();
+        Mock<IAutomationWrapper> auto = new ();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData()
+        {
+            Name = "test self destruct"
+        });
 
         Mock<ISystemObserver> oabserver = new();
 
