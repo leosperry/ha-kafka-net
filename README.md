@@ -1,8 +1,8 @@
 # ha-kafka-net
 ***
-Version 2.1.3 Released! see [releases](https://github.com/leosperry/ha-kafka-net/releases) for details.
+Version 2.1.3 Released. see [releases](https://github.com/leosperry/ha-kafka-net/releases) for details.
 
-Version 3 is in the works. See below for details.
+Version 3 pre-release has been merged. Use with caution. If you run into issues reset to an earlier tag. More automated tests and documentation still needed before release.
 ***
 Integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
