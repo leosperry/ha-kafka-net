@@ -57,9 +57,33 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunrise</param>
     /// <returns></returns>
+    public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunDawnAutomation(execution, offset);
+    }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunrise</param>
+    /// <returns></returns>
     public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
     {
         return new SunRiseAutomation(execution, offset);
+    }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <returns></returns>
+    public SunNoonAutomation SunSNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunNoonAutomation(execution, offset);
     }
 
     /// <summary>
@@ -73,4 +97,30 @@ internal class AutomationFactory : IAutomationFactory
     {
         return new SunSetAutomation(execution, offset);
     }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <returns></returns>
+    public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunDuskAutomation(execution, offset);
+    }
+
+    /// <summary>
+    /// Requires Home Assistant to have sun.sun configured in Kafka Integration
+    /// May not work in arctic circle
+    /// </summary>
+    /// <param name="execution"></param>
+    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <returns></returns>
+    public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    {
+        return new SunMidnightAutomation(execution, offset);
+    }
+
+    
 }
