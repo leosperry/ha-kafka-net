@@ -40,4 +40,24 @@ internal class AutomationBuilder : IAutomationBuilder
             EnabledAtStartup = enabledAtStartup
         };
     }
+
+    public SchedulableAutomationBuildingInfo CreateSchedulable(bool reschdulable = false, bool enabledAtStartup = true)
+    {
+        return new()
+        {
+            EnabledAtStartup = enabledAtStartup,
+            IsReschedulable = reschdulable
+        };
+    }
+
+    public SchedulableAutomationWithServicesBuildingInfo CreateSchedulableWithServices(bool reschdulable = false, bool enabledAtStartup = true)
+    {
+        return new(_services)
+        {
+            EnabledAtStartup = enabledAtStartup,
+            IsReschedulable = reschdulable
+        };
+    }
+
+
 }

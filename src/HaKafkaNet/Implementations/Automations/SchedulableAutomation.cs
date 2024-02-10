@@ -1,16 +1,14 @@
 ﻿namespace HaKafkaNet;
 
-public abstract class SchedulableAutomationBase : ISchedulableAutomation, IAutomationMeta
+public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta
 {    
     private AutomationMetaData? _meta;
     private DateTime _nextExecution;
     private ReaderWriterLockSlim _lock = new();
 
-    public TimeSpan For => (GetNextScheduled() ?? throw new Exception("blarg")) - DateTime.Now;
-
     public bool IsReschedulable { get; protected set;}
 
-    public async Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
+    public override sealed async Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
         _lock.EnterUpgradeableReadLock();
@@ -40,11 +38,13 @@ public abstract class SchedulableAutomationBase : ISchedulableAutomation, IAutom
         }
     }
 
-    public abstract Task Execute(CancellationToken cancellationToken);
+    public SchedulableAutomationBase(IEnumerable<string> triggerIds,
+        bool shouldExecutePastEvents = false,
+        bool shouldExecuteOnError = false): base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError) 
+        {
+            
+        }
 
-    public abstract IEnumerable<string> TriggerEntityIds();
-
-    // part of interface
     public abstract Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
     /// <summary>
@@ -63,7 +63,6 @@ public abstract class SchedulableAutomationBase : ISchedulableAutomation, IAutom
             _lock.ExitReadLock();
         }
     }
-
 
     internal void SetMeta(AutomationMetaData meta)
     {
@@ -87,21 +86,19 @@ public abstract class SchedulableAutomationBase : ISchedulableAutomation, IAutom
 [ExcludeFromDiscovery]
 public class SchedulableAutomation : SchedulableAutomationBase
 {
-    IEnumerable<string> _triggers;
     GetNextEventFromEntityState _getNext;
     private readonly Func<CancellationToken, Task> _execution;
 
     public SchedulableAutomation(
         IEnumerable<string> triggerIds, 
         GetNextEventFromEntityState getNextEvent,
-        Func<CancellationToken, Task> execution) : base()
+        Func<CancellationToken, Task> execution,
+        bool shouldExecutePastEvents = false,
+        bool shouldExecuteOnError = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
     {
-        _triggers = triggerIds;
         _getNext = getNextEvent;
         _execution = execution;
     }
-
-    public override IEnumerable<string> TriggerEntityIds() => _triggers;
 
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
@@ -111,6 +108,37 @@ public class SchedulableAutomation : SchedulableAutomationBase
     public override Task Execute(CancellationToken cancellationToken)
     {
         return _execution(cancellationToken);
+    }
+}
+
+[ExcludeFromDiscovery]
+public class SchedulableAutomationWithServices: SchedulableAutomationBase
+{
+    private readonly IHaServices _services;
+
+    Func<IHaServices, HaEntityStateChange, CancellationToken, Task<DateTime?>> _getNext;
+    private readonly Func<IHaServices, CancellationToken, Task> _execution;
+
+    public SchedulableAutomationWithServices(
+        IHaServices services, IEnumerable<string> triggerIds, 
+        Func<IHaServices, HaEntityStateChange, CancellationToken, Task<DateTime?>> getNextEvent,
+        Func<IHaServices, CancellationToken, Task> execution,
+        bool shouldExecutePastEvents = false,
+        bool shouldExecuteOnError = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
+    {
+        _services = services;
+        _getNext = getNextEvent;
+        _execution = execution;
+    }
+
+    public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    {
+        return _getNext(_services, stateChange, cancellationToken);
+    }
+
+    public override Task Execute(CancellationToken cancellationToken)
+    {
+        return _execution(_services, cancellationToken);
     }
 }
 

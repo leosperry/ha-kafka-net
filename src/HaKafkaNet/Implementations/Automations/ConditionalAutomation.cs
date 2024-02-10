@@ -2,22 +2,16 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public abstract class ConditionalAutomationBase : IConditionalAutomation, IAutomationMeta
+public abstract class ConditionalAutomationBase : DelayableAutomationBase, IConditionalAutomation, IAutomationMeta
 {
-    readonly IEnumerable<string> _triggerEntities;
     readonly TimeSpan _for;
     AutomationMetaData? _meta;
 
-    public ConditionalAutomationBase(IEnumerable<string> triggerEntities, TimeSpan @for)
+    public ConditionalAutomationBase(IEnumerable<string> triggerEntities, TimeSpan @for): base(triggerEntities)
     {
-        this._triggerEntities = triggerEntities;
         this._for = @for;
     }
     public TimeSpan For => _for;
-
-    public abstract Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken);
-
-    public abstract Task Execute(CancellationToken cancellationToken);
 
     public virtual AutomationMetaData GetMetaData()
     {
@@ -32,24 +26,17 @@ public abstract class ConditionalAutomationBase : IConditionalAutomation, IAutom
         };
     }
 
-    public IEnumerable<string> TriggerEntityIds()
-    {
-        return _triggerEntities;
-    }
-
     internal void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
     }
-
 }
 
 [ExcludeFromDiscovery]
 public class ConditionalAutomation : ConditionalAutomationBase
 {
-    private readonly IEnumerable<string> _triggerEntities;
     private readonly Func<HaEntityStateChange, CancellationToken, Task<bool>> _continuesToBeTrue;
-    private readonly TimeSpan _for;
+
     private readonly Func<CancellationToken, Task> _execute;
 
     public ConditionalAutomation(
@@ -57,9 +44,7 @@ public class ConditionalAutomation : ConditionalAutomationBase
         TimeSpan @for, Func<CancellationToken, Task> execute) 
             : base(triggerEntities, @for)
     {
-        this._triggerEntities = triggerEntities;
         this._continuesToBeTrue = continuesToBeTrue;
-        this._for = @for;
         this._execute = execute;
     }
 

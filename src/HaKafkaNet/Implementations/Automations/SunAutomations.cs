@@ -5,16 +5,11 @@ public abstract class SunAutomationBase : SchedulableAutomationBase
     readonly TimeSpan _offset;
     readonly Func<CancellationToken, Task> _execute;
 
-    public SunAutomationBase(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunAutomationBase(Func<CancellationToken, Task> execution, TimeSpan? offset = null): base(["sun.sun"])
     {
         base.IsReschedulable = false;
         _execute = execution;
         _offset = offset ?? TimeSpan.Zero;
-    }
-
-    public override IEnumerable<string> TriggerEntityIds()
-    {
-        yield return "sun.sun";
     }
 
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)

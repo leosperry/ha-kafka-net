@@ -31,6 +31,24 @@ public static class AutomationBuilderExtensions
         return info;
     }
 
+    public static T WithTimings<T>(this T info, EventTiming timings) where T : AutomationBuildingInfo
+    {
+        info.EventTimings = timings;
+        return info;
+    }
+
+    public static T ShouldContinueOnError<T>(this T info) where T : DelayableAutomationBuildingInfo
+    {
+        info.ShouldExecuteOnContinueError = true;
+        return info;
+    }
+
+    public static T ShouldExecutePastEvents<T>(this T info) where T : DelayableAutomationBuildingInfo
+    {
+        info.ShouldExecutePastEvents = true;
+        return info;
+    }
+
     public static SimpleAutomationBuildingInfo WithExecution(this SimpleAutomationBuildingInfo info, Func<HaEntityStateChange, CancellationToken, Task> execution)
     {
         info.Execution = execution;
@@ -149,6 +167,29 @@ public static class AutomationBuilderExtensions
             info.For ?? TimeSpan.Zero,
             info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"))
             .WithMeta(GetMeta(info));
+    }
+
+    public static ISchedulableAutomation Build(this SchedulableAutomationBuildingInfo info)
+    {
+        return new SchedulableAutomation(
+            info.TriggerEntityIds ?? Enumerable.Empty<string>(),
+            info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be defined"),
+            info.Execution ?? throw new AutomationBuilderException("execution must be defined"),
+            info.ShouldExecutePastEvents,
+            info.ShouldExecuteOnContinueError)
+            .WithMeta(GetMeta(info));
+    }
+
+    public static ISchedulableAutomation Build(this SchedulableAutomationWithServicesBuildingInfo info)
+    {
+        return new SchedulableAutomationWithServices(
+            info._services,
+            info.TriggerEntityIds ?? Enumerable.Empty<string>(),
+            info.GetNextScheduledWithServices ?? throw new AutomationBuilderException("GetNextScheduled must be defined"),
+            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"),
+            info.ShouldExecutePastEvents,
+            info.ShouldExecuteOnContinueError)
+        .WithMeta(GetMeta(info));
     }
 
     private static AutomationMetaData GetMeta(AutomationBuildingInfo info)
