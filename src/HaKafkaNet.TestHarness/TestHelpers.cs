@@ -79,7 +79,7 @@ public class TestHelpers
             FriendlyName = "Sun",
             Azimuth = azimuth,
             Elevation = elevation,
-            NexMidnight = nextMidnight,
+            NextMidnight = nextMidnight,
             NextDawn = nextDawn,
             NextDusk = nextDusk,
             NextNoon = nextNoon,

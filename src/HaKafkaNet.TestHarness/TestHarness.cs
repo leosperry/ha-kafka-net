@@ -22,8 +22,11 @@ public class TestHarness
     public IAutomationBuilder Builder { get; private set; }
 
     static Mock<ILogger<AutomationManager>> _logger = new();
-    static Mock<ILogger<ConditionalAutomationWrapper>> _wrapperLogger = new();
-    static ISystemObserver? _observer;
+    static Mock<ILogger<AutomationRegistrar>> _loggerReg = new();
+    static Mock<ILogger<DelayablelAutomationWrapper>> _wrapperLogger = new();
+
+    IInternalRegistrar? _registrar;
+    ISystemObserver? _observer;
 
     IAutomationManager? _autoMgr;
 
@@ -43,7 +46,7 @@ public class TestHarness
         Services.Setup(s => s.Cache).Returns(Cache.Object);
         Services.Setup(s => s.EntityProvider).Returns(EntityProvider.Object);
 
-        Factory = new AutomationFactory(Services.Object, _wrapperLogger.Object);
+        Factory = new AutomationFactory(Services.Object);
         Builder = new AutomationBuilder(Services.Object);
 
         if (defaultState is not null)
@@ -63,45 +66,78 @@ public class TestHarness
 
     public void Initialize(IAutomation automation)
     {
+        Mock<ISystemObserver> observer = new();
+
+        _registrar = new AutomationRegistrar([automation],Enumerable.Empty<IConditionalAutomation>(),Enumerable.Empty<ISchedulableAutomation>(), observer.Object, _loggerReg.Object);
+
+
         _autoMgr = new AutomationManager(
-            [automation], 
-            Enumerable.Empty<IConditionalAutomation>(), 
             Enumerable.Empty<IAutomationRegistry>(),
+            _registrar,
             new Mock<ISystemObserver>().Object,
             _logger.Object);
     }
 
     public void Initialize(IConditionalAutomation automation)
     {
-        _autoMgr = new AutomationManager(
+        Mock<ISystemObserver> observer = new();
+
+        _registrar = new AutomationRegistrar(
             Enumerable.Empty<IAutomation>(),
             [automation],
+            Enumerable.Empty<ISchedulableAutomation>(), 
+            observer.Object, _loggerReg.Object);
+        
+        _autoMgr = new AutomationManager(
             Enumerable.Empty<IAutomationRegistry>(),
-            new Mock<ISystemObserver>().Object,
+            _registrar,
+            observer.Object,
             _logger.Object
         );
     }
 
     public void Initialize(IAutomationRegistry registry)
     {
-        _autoMgr = new AutomationManager(
+        Mock<ISystemObserver> observer = new();
+
+        _registrar = new AutomationRegistrar(
             Enumerable.Empty<IAutomation>(),
             Enumerable.Empty<IConditionalAutomation>(),
+            Enumerable.Empty<ISchedulableAutomation>(), 
+            observer.Object, _loggerReg.Object);
+        
+        _autoMgr = new AutomationManager(
             [registry],
-            new Mock<ISystemObserver>().Object,
+            _registrar,
+            observer.Object,
             _logger.Object
         );
     }
 
     public void Initialize(
-        IEnumerable<IAutomation>? automations = null, IEnumerable<IConditionalAutomation>? conditionals = null, 
+        IEnumerable<IAutomation>? automations = null, IEnumerable<IConditionalAutomation>? conditionals = null, IEnumerable<ISchedulableAutomation>? schedulables = null,
         IEnumerable<IAutomationRegistry>? registries = null, ISystemMonitor? monitor = null)
     {
-        _autoMgr = new AutomationManager(
+        Mock<ISystemObserver> observer = new();
+        if (monitor is null)
+        {
+            _observer = new Mock<ISystemObserver>().Object;
+        }
+        else
+        {
+            _observer = new SystemObserver([monitor]);
+        }
+
+        _registrar = new AutomationRegistrar(
             automations ?? Enumerable.Empty<IAutomation>(),
             conditionals ?? Enumerable.Empty<IConditionalAutomation>(),
+            schedulables ?? Enumerable.Empty<ISchedulableAutomation>(),
+            observer.Object, _loggerReg.Object);
+        
+        _autoMgr = new AutomationManager(
             registries ?? Enumerable.Empty<IAutomationRegistry>(),
-            monitor is null ? new Mock<ISystemObserver>().Object : (_observer = new SystemObserver([monitor])),
+            _registrar,
+            _observer,
             _logger.Object);
     }
 
