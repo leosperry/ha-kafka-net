@@ -19,7 +19,7 @@ public abstract class ConditionalAutomationBase : IConditionalAutomation, IAutom
 
     public abstract Task Execute(CancellationToken cancellationToken);
 
-    public AutomationMetaData GetMetaData()
+    public virtual AutomationMetaData GetMetaData()
     {
         var thisType = this.GetType();
         return _meta ??= new AutomationMetaData()
@@ -31,6 +31,7 @@ public abstract class ConditionalAutomationBase : IConditionalAutomation, IAutom
             UnderlyingType = thisType.Name
         };
     }
+
     public IEnumerable<string> TriggerEntityIds()
     {
         return _triggerEntities;

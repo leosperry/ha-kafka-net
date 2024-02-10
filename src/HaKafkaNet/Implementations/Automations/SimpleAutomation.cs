@@ -18,7 +18,7 @@ public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta
 
     public abstract Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
-    public AutomationMetaData GetMetaData()
+    public virtual AutomationMetaData GetMetaData()
     {
         var thisType = this.GetType();
         return _meta ??= new AutomationMetaData()

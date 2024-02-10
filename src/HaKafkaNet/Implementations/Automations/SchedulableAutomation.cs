@@ -1,7 +1,8 @@
 ﻿namespace HaKafkaNet;
 
-public abstract class SchedulableAutomationBase : ISchedulableAutomation
+public abstract class SchedulableAutomationBase : ISchedulableAutomation, IAutomationMeta
 {    
+    private AutomationMetaData? _meta;
     private DateTime _nextExecution;
     private ReaderWriterLockSlim _lock = new();
 
@@ -61,6 +62,25 @@ public abstract class SchedulableAutomationBase : ISchedulableAutomation
         {
             _lock.ExitReadLock();
         }
+    }
+
+
+    internal void SetMeta(AutomationMetaData meta)
+    {
+        _meta = meta;
+    }
+
+    public virtual AutomationMetaData GetMetaData()
+    {
+        var thisType = this.GetType();
+        return _meta ??= new AutomationMetaData()
+        {
+            Name = thisType.Name,
+            Description = thisType.FullName,
+            Enabled = true,
+            Id = Guid.NewGuid(),
+            UnderlyingType = thisType.Name
+        };
     }
 }
 
