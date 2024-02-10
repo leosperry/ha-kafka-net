@@ -12,22 +12,26 @@ public class GetByTriggerIdTests
         
         Mock<IConditionalAutomation> conditional = new();
         IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
+
         
         Mock<IAutomationRegistry> registry = new();
-        Mock<IAutomation> registeredAuto = new();
-        registry.Setup(r => r.Register())
+        Mock<IAutomationWrapper> registeredAuto = new();
+        registeredAuto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData()
+        {
+            Name = "auto"
+        });
+
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered)
             .Returns([registeredAuto.Object]);
-        Mock<IConditionalAutomation> registeredConditional = new();
-        registry.Setup(r => r.RegisterContitionals())
-            .Returns([registeredConditional.Object]);
+
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
         Mock<ILogger<AutomationManager>> logger = new();
         Mock<ISystemObserver> observer = new();
 
-
         var sut = new AutomationManager(
-            autos, conditionals, registries, observer.Object, logger.Object);
+            registries, registrar.Object, observer.Object, logger.Object);
         // When
         var result = sut.GetByTriggerEntityId(string.Empty);
 
@@ -39,36 +43,38 @@ public class GetByTriggerIdTests
     public void WhenAllTriggerIdMatch_ReturnsAll()
     {
         string triggerId = "NCC-1701";
-        Mock<IAutomation> auto = new();
+        Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
-        IEnumerable<IAutomation> autos = [auto.Object];
+        auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name = "auto"});
+
         
         Mock<IConditionalAutomation> conditional = new();
         conditional.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
         IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
         
         Mock<IAutomationRegistry> registry = new();
-        Mock<IAutomation> registeredAuto = new();
+
+        Mock<IAutomationWrapper> registeredAuto = new();
         registeredAuto.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
-        registry.Setup(r => r.Register())
-            .Returns([registeredAuto.Object]);
-        Mock<IConditionalAutomation> registeredConditional = new();
-        registeredConditional.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
-        registry.Setup(r => r.RegisterContitionals())
-            .Returns([registeredConditional.Object]);
+        registeredAuto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
+        
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
+
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered)
+            .Returns([auto.Object, registeredAuto.Object]);
         
         Mock<ILogger<AutomationManager>> logger = new();
         Mock<ISystemObserver> observer = new();
 
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, observer.Object, logger.Object);
+            registries, registrar.Object, observer.Object, logger.Object);
         // When
         var result = sut.GetByTriggerEntityId(triggerId);
 
         // Then
-        Assert.Equal(4, result.Count());
+        Assert.Equal(2, result.Count());
     }
     
     [Fact]
@@ -76,30 +82,29 @@ public class GetByTriggerIdTests
     {
         string enterprise = "NCC-1701";
         string excelsior = "NCC-2000";
-        Mock<IAutomation> auto = new();
-        auto.Setup(a => a.TriggerEntityIds()).Returns([enterprise]);
-        IEnumerable<IAutomation> autos = [auto.Object];
+        Mock<IAutomationWrapper> auto1 = new();
+        auto1.Setup(a => a.TriggerEntityIds()).Returns([enterprise]);
+        auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         
-        Mock<IConditionalAutomation> conditional = new();
-        conditional.Setup(a => a.TriggerEntityIds()).Returns([enterprise, excelsior]);
-        IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
+        Mock<IAutomationWrapper> auto2 = new();
+        auto2.Setup(a => a.TriggerEntityIds()).Returns([enterprise, excelsior]);
+        auto2.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
+        
+        Mock<IAutomationWrapper> auto3 = new();
+        auto3.Setup(a => a.TriggerEntityIds()).Returns([excelsior]);
+        auto3.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         
         Mock<IAutomationRegistry> registry = new();
-        Mock<IAutomation> registeredAuto = new();
-        registeredAuto.Setup(a => a.TriggerEntityIds()).Returns([excelsior]);
-        registry.Setup(r => r.Register())
-            .Returns([registeredAuto.Object]);
-        Mock<IConditionalAutomation> registeredConditional = new();
-        registeredConditional.Setup(a => a.TriggerEntityIds()).Returns(default(IEnumerable<string>)!);
-        registry.Setup(r => r.RegisterContitionals())
-            .Returns([registeredConditional.Object]);
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
-        
+
+        Mock<IInternalRegistrar> registrar = new();
+        registrar.Setup(r => r.Registered)
+            .Returns([auto1.Object, auto3.Object, auto2.Object]);        
         Mock<ILogger<AutomationManager>> logger = new();
         Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationManager(
-            autos, conditionals, registries, observer.Object, logger.Object);
+            registries, registrar.Object, observer.Object, logger.Object);
         // When
         var enterpriseResult = sut.GetByTriggerEntityId(enterprise);
         var excelsiorResult = sut.GetByTriggerEntityId(excelsior);

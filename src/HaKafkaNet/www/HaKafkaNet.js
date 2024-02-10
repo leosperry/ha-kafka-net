@@ -117,7 +117,7 @@ class HaKafkaNetRoot extends React.Component {
                                             <div className="card-header" id={"heading2" + item.id}>
                                                 <h5 className="mb-0">
                                                     <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#additional" + item.id} aria-expanded="false" aria-controls="collapseOne">
-                                                    Additional Entities To Track
+                                                    Additional Entities
                                                     </button>
                                                 </h5>
                                             </div>  

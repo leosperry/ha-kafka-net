@@ -19,7 +19,7 @@ public record SunAttributes()
     public required DateTime NextDusk { get; init; }
 
     [JsonPropertyName("next_midnight")]
-    public required DateTime NexMidnight { get; init; }
+    public required DateTime NextMidnight { get; init; }
 
     [JsonPropertyName("next_noon")]
     public required DateTime NextNoon { get; init; }

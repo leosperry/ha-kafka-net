@@ -22,6 +22,12 @@ public class LightOnRegistry : IAutomationRegistry
         _factory = factory;
     }
 
+    public void Register(IRegistrar reg)
+    {
+        reg.RegisterMultiple(Register());
+        reg.RegisterMultiple(RegisterContitionals());
+    }
+
     public IEnumerable<IAutomation> Register()
     {
         //prebuilt for your convenience

@@ -14,10 +14,16 @@ public class AutomationRegistry : IAutomationRegistry
         _automationFactory = automationFactory;
     }
 
+    public void Register(IRegistrar reg)
+    {
+        
+    }
+
     public IEnumerable<IAutomation> Register()
     {
         return Enumerable.Empty<IAutomation>();
     }
+
 
     public IEnumerable<IConditionalAutomation> RegisterContitionals()
     {

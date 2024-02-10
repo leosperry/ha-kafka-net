@@ -11,15 +11,18 @@ public class GetAllTests
         var autos = Enumerable.Empty<IAutomation>();
         var conditionals = Enumerable.Empty<IConditionalAutomation>();
         var registries = Enumerable.Empty<IAutomationRegistry>();
+
+        IEnumerable<ISchedulableAutomation> schedulables = Enumerable.Empty<ISchedulableAutomation>();
+
         
-        Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ILogger<AutomationRegistrar>> logger = new();
         Mock<ISystemObserver> observer = new();
 
-        var sut = new AutomationManager(
-            autos, conditionals, registries, observer.Object, logger.Object);
+        var sut = new AutomationRegistrar(
+            autos, conditionals, schedulables, observer.Object, logger.Object);
         // When
 
-        var result = sut.GetAll();
+        var result = sut.RegisteredAutomations;
     
         // Then
         Assert.Empty(result);
@@ -34,28 +37,24 @@ public class GetAllTests
         
         Mock<IConditionalAutomation> conditional = new();
         IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
-        
-        Mock<IAutomationRegistry> registry = new();
-        Mock<IAutomation> registeredAuto = new();
-        registry.Setup(r => r.Register())
-            .Returns([registeredAuto.Object]);
-        Mock<IConditionalAutomation> registeredConditional = new();
-        registry.Setup(r => r.RegisterContitionals())
-            .Returns([registeredConditional.Object]);
-        IEnumerable<IAutomationRegistry> registries = [registry.Object];
+
+        Mock<ISchedulableAutomation> schedulable = new();
+        IEnumerable<ISchedulableAutomation> schedulables = [schedulable.Object];
         
         Mock<ISystemObserver> observer = new();
-        Mock<ILogger<AutomationManager>> logger = new();
+        Mock<ILogger<AutomationRegistrar>> logger = new();
 
-        var sut = new AutomationManager(
-            autos, conditionals, registries, observer.Object, logger.Object);
+        var sut = new AutomationRegistrar(
+            autos, conditionals, schedulables, observer.Object, logger.Object);
         // When
 
-        var result = sut.GetAll();
+        sut.Register(auto.Object);
+        sut.Register(conditional.Object);
+        sut.Register(schedulable.Object);
+        var result = sut.RegisteredAutomations;
     
         // Then
-        registry.Verify(r => r.Register(), Times.Once);
-        registry.Verify(r => r.RegisterContitionals(), Times.Once);
-        Assert.Equal(4, result.Count());
+
+        Assert.Equal(6, result.Count());
     }
 }

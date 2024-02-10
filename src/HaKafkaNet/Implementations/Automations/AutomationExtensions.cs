@@ -22,7 +22,7 @@ public static class SimpleAutomationExtensions
         auto.SetMeta(meta);
         return auto;
     }
-    
+
 }
 
 public static class ContitionalAutomationExtensions

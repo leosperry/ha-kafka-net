@@ -16,6 +16,12 @@ public class LightOffRegistry : IAutomationRegistry
         _builder = builder;
     }
 
+    public void Register(IRegistrar reg)
+    {
+        reg.RegisterMultiple(RegisterContitionals());
+    }
+
+
     public IEnumerable<IAutomation> Register()
     {
         return Enumerable.Empty<IAutomation>();

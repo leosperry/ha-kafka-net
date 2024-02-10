@@ -130,6 +130,7 @@ public static class ServicesExtensions
             services.AddSingleton<IAutomationFactory, AutomationFactory>();
             services.AddSingleton<ISystemObserver, SystemObserver>();
             services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
+            services.AddSingleton<IInternalRegistrar, AutomationRegistrar>();
 
             var eligibleTypes = 
                 (from a in AppDomain.CurrentDomain.GetAssemblies()
