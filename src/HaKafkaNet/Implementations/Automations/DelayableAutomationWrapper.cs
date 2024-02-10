@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private CancellationTokenSource? _cts;
 
     private Func<TimeSpan> _getDelay;
+    private DateTime? _timeForScheduled;
 
     public DelayablelAutomationWrapper(IDelayableAutomation automation, ISystemObserver observer, ILogger logger, Func<TimeSpan>? evaluator = null)
     {
@@ -45,7 +47,11 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
         if (automation is ISchedulableAutomation schedulableAutomation)
         {
-            _getDelay = () => (schedulableAutomation.GetNextScheduled() ?? DateTime.Now) - DateTime.Now;
+            _getDelay = () => _timeForScheduled switch
+            {
+                null => TimeSpan.MinValue,
+                var time => time.Value - DateTime.Now
+            };
         }
         else if (automation is IConditionalAutomation conditional)
         {
@@ -59,31 +65,70 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        // need ot call ContinuesToBeTrue
-        bool shouldContinue;
-        if (_automation is ISchedulableAutomation schedulableAutomation && schedulableAutomation.IsReschedulable)
+        if (_automation is ISchedulableAutomation schedulableAutomation)
         {
-            var previous = schedulableAutomation.GetNextScheduled();
-            shouldContinue = await InternalContinueToBeTrue(stateChange, cancellationToken);
-            var next = schedulableAutomation.GetNextScheduled();
-            if (previous != next)
+            var previous = _timeForScheduled;
+
+            // should we continue
+            var shouldContinue = await InternalContinueToBeTrue(stateChange, cancellationToken);
+
+            if (!shouldContinue)
             {
                 StopIfRunning();
+                return;
             }
-        }
-        else
-        {
-            shouldContinue = await InternalContinueToBeTrue(stateChange, cancellationToken);
-        }
 
-        if (shouldContinue)
-        {
-            // cannot await here. it will block
+            // we need to be running
+            //find out if we are
+            bool alreadyScheduled;
+            lockObj.EnterReadLock();
+            try
+            {
+                alreadyScheduled = _cts is not null;
+            }
+            finally
+            {
+                lockObj.ExitReadLock();
+            }
+            // found out
+
+            if (alreadyScheduled && !schedulableAutomation.IsReschedulable)
+            {
+                return;
+            }
+
+            //we are either not running or running and we need to reschedule
+            _timeForScheduled = schedulableAutomation.GetNextScheduled();
+            if (!alreadyScheduled)
+            {
+                _ = StartIfNotStarted(cancellationToken);
+                return;
+            }
+
+            //if the time hasn't changed, don't do anything
+            if (previous == _timeForScheduled)
+            {
+                return;
+            }
+
+            //for sure we need to reschedule
+            StopIfRunning();
             _ = StartIfNotStarted(cancellationToken);
         }
         else
         {
-            StopIfRunning();
+            // handle all other delayed automations
+            bool shouldContinue = await InternalContinueToBeTrue(stateChange, cancellationToken);
+
+            if (shouldContinue)
+            {
+                // cannot await here. it will block
+                _ = StartIfNotStarted(cancellationToken);
+            }
+            else
+            {
+                StopIfRunning();
+            }
         }
     }
 
@@ -103,6 +148,28 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private Task StartIfNotStarted(CancellationToken cancellationToken)
     {
         TimeSpan delay = _getDelay();
+
+        if (delay == TimeSpan.MinValue)
+        {
+            return Task.CompletedTask;
+        }
+
+        if (delay < TimeSpan.Zero)
+        {
+            if (_automation.ShouldExecutePastEvents)
+            {
+                delay = TimeSpan.Zero;
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+        if (delay < TimeSpan.Zero)
+        {
+            delay = TimeSpan.Zero;
+        }
 
         if (delay == TimeSpan.Zero)
         {

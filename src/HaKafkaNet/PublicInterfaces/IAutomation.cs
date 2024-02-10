@@ -69,6 +69,7 @@ public interface IConditionalAutomation : IDelayableAutomation
 {
     /// <summary>
     /// If ContinuesToBeTrue returns true, this is used to determine when Execute should be called.
+    /// If this returns TimeSpan.MinValue, your automation will not execute as if ContinuesToBeTrue returned false
     /// </summary>
     /// <returns></returns>
     TimeSpan For{ get; }
@@ -82,7 +83,8 @@ public interface ISchedulableAutomation : IDelayableAutomation
     bool IsReschedulable { get; }
 
     /// <summary>
-    /// Used to calculate For when executing. 
+    /// If ContinuesToBeTrue returns true, this is used to calculate when Execute should be called
+    /// If this returns null, your automation will not execute as if ContinuesToBeTrue returned false. 
     /// </summary>
     /// <returns></returns>
     DateTime? GetNextScheduled();
