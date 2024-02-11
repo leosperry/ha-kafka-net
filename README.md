@@ -23,10 +23,17 @@ It was created with the following goals:
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
 * UI to manage your automations and inspect Kafka consumers.
-* You have an easy way to respond to events during start up which means you are guarenteed to see/handle all events at least once, even if your application has been down.
-* Monitoring capabilities through `ISystemMonitor`
-* Extensible framework
-* Prebuilt automations and an automation builder with fluent syntax for quickly creating new automations.
+* Monitoring capabilities through [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
+  * Global Exception Handler
+  * Be alerted of non-responsive entities
+* Pre-built automations
+  * Lights On/Off from Motion sensors
+  * Sun rise/set/etc events including offset (e.g. Run 15 minutes before sunset)
+* Extensible framework - create your own reusable automations
+  * Extend automation factory with extension methods
+  * Create your own automamtions from scratch
+* Delayed event handling with multiple scheduling options
+* Automation builder with fluent syntax for quickly creating automations.
 * Full unit testability and componet level testing with Test Harness
 * MIT license
 
