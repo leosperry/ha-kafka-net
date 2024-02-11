@@ -1,8 +1,6 @@
 # ha-kafka-net
 ***
 Version 3 Released. See [Release](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0) for details. It has one significant breaking change. See release notes or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
-
-V3 of Test Harness coming forthwith
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
