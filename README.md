@@ -1,10 +1,6 @@
 # ha-kafka-net
 ***
-Version 3 Released. See [Release](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0) for details.
-
-Version 3 has one significant breaking change. See release notes above or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
-
-Documentation of new features coming soon.
+Version 3 Released. See [Release](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0) for details. It has one significant breaking change. See release notes or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -61,12 +57,8 @@ This is an image of the dashboard from the example app.
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
 
 ## Coming soon
-Version 3 is in development and will be available soon. It will come with some breaking changes specifically around the registry, but it will ship with several new features including.
-* Updates to dashboard.
 * New Home Assistant API endpoints
-* improved thread managment
-* `IDelayableAutomation` with enhanced scheduling abilities in an extensible framework.
-* More options for handling pre-startup(between restarts) events.  
+* Automation Builder Scheduled Automations
 
 ## Tips
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current Kafka offset which you can discover from your kafka-ui instance.
@@ -77,11 +69,11 @@ Version 3 is in development and will be available soon. It will come with some b
 ## Features recently added
 * [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor) for handling errors and monitoring non-responsive entities.
 * A brand new [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI)! Currently it lists all your automations, where they came from and an ability to enable/disable them at runtime
-* More Home Assistant API calls
 * Test helper methods and a [test harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing) for component level testing of your registries.
   * Test Harness also supports `ISystemMonitor`
 * [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
-* Sun model (new sun based automations coming in version 3)
+* Sun model and Sun Based Automations
+* Scheduled Automation framework
 
 ## More examples
 I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
