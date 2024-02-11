@@ -24,6 +24,20 @@ internal class AutomationFactory : IAutomationFactory
         return new ConditionalAutomation(triggerEntities, continuesToBeTrue, @for, execute);
     }
 
+    public SchedulableAutomation CreateScheduled(
+        IEnumerable<string> triggerIds, 
+        GetNextEventFromEntityState getNextEvent,
+        Func<CancellationToken, Task> execution,
+        bool shouldExecutePastEvents = false,
+        bool shouldExecuteOnError = false,
+        EventTiming timngs = EventTiming.PostStartup
+    )
+    {
+        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError);
+        scheduled.EventTimings = timngs;
+        return scheduled;
+    }
+
     public SimpleAutomation SimpleAutomation(IEnumerable<string> triggerEntities, Func<HaEntityStateChange, CancellationToken, Task> execute, 
         EventTiming eventTimings = EventTiming.PostStartup)
     {

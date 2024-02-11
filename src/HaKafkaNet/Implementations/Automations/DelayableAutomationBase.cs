@@ -3,6 +3,13 @@ namespace HaKafkaNet;
 
 public abstract class DelayableAutomationBase : IDelayableAutomation
 {
+    EventTiming _timings = EventTiming.PostStartup;
+    public EventTiming EventTimings 
+    { 
+        get => _timings;
+        internal set => _timings = value; 
+    }
+
     protected readonly IEnumerable<string> _triggerEntities;
 
     bool _shouldExecutePastEvents = false;

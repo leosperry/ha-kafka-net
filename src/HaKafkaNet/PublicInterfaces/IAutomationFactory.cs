@@ -14,6 +14,15 @@ public interface IAutomationFactory
         TimeSpan @for,
         Func<CancellationToken, Task> execute);
 
+    SchedulableAutomation CreateScheduled(
+        IEnumerable<string> triggerIds, 
+        GetNextEventFromEntityState getNextEvent,
+        Func<CancellationToken, Task> execution,
+        bool shouldExecutePastEvents = false,
+        bool shouldExecuteOnError = false,
+        EventTiming timngs = EventTiming.PostStartup
+    );
+
     LightOnMotionAutomation LightOnMotion(string motionId, string lightId);
     LightOnMotionAutomation LightOnMotion(IEnumerable<string> motionId, IEnumerable<string> lightId);
     LightOffOnNoMotion LightOffOnNoMotion(string motionId, string lightId, TimeSpan duration);

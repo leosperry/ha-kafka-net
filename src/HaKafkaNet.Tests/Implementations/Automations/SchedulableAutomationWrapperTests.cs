@@ -225,28 +225,28 @@ public class SchedulableAutomationTests
     public async Task WhenExecutes_andIsReschedulableFalse_andTriggersAgain_ShouldRun()
     {
         // Given
-        int delay= 200;
+        int delay= 100;
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
         Mock<ISchedulableAutomation> auto = new();
-
         auto.Setup(a => a.ContinuesToBeTrue(It.IsAny<HaEntityStateChange>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
         auto.SetupSequence(a => a.GetNextScheduled())
-            .Returns(DateTime.Now.AddMilliseconds(delay))
-            .Returns(DateTime.Now.AddMilliseconds(delay * 2));
+            .Returns(() => DateTime.Now.AddMilliseconds(delay))
+            .Returns(() => DateTime.Now.AddMilliseconds(delay));        
         
         DelayablelAutomationWrapper sut = new DelayablelAutomationWrapper(auto.Object, observer.Object, logger.Object);
+
         // When
         await sut.Execute(stateChange, default);
-        await Task.Delay(delay);
+        await Task.Delay(delay * 2);
         auto.Verify(a => a.Execute(It.IsAny<CancellationToken>()), Times.Once);
 
         await sut.Execute(stateChange, default);
-        await Task.Delay(delay);
+        await Task.Delay(delay * 2);
         auto.Verify(a => a.Execute(It.IsAny<CancellationToken>()), Times.Exactly(2));
     
         // Then
