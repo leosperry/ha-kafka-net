@@ -1,18 +1,18 @@
 # ha-kafka-net
 ***
-Version 2.1.3 Released. see [releases](https://github.com/leosperry/ha-kafka-net/releases) for details.
+Version 3 Released. See [Release]([https://github.com/leosperry/ha-kafka-net/releases](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0)) for details.
 
-Version 3 pre-release has been merged. Documentation still needed.
-The example app shows changes needed in the [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs) for V3.
+Version 3 has one significant breaking change. See release notes above or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
+
+Documentation of new features coming soon.
 ***
-Integration that uses Home Assistant Kafka integration for creating home automations in .NET
+HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
 * Create Home Assistant automations in .NET with abilities to:
   * track/retrieve states of all entities in Home Assistant
   * respond to Home Assistant state changes
   * call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
-* Make .NET development with Home Assistant easy
 
 #### Resources
 * [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
