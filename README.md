@@ -15,6 +15,7 @@ It was created with the following goals:
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
 * [Test Harness Nuget](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
 * [Full Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
+* [Discord Server](https://discord.gg/RaGu72RbCt)
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
