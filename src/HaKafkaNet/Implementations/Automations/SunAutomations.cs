@@ -1,11 +1,13 @@
 ﻿namespace HaKafkaNet;
 
-public abstract class SunAutomationBase : SchedulableAutomationBase
+public abstract class SunAutomation : SchedulableAutomationBase
 {
     readonly TimeSpan _offset;
     readonly Func<CancellationToken, Task> _execute;
 
-    public SunAutomationBase(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(["sun.sun"])
+    public const EventTiming DEFAULT_SUN_EVENT_TIMINGS = EventTiming.PostStartup | EventTiming.PreStartupSameAsLastCached | EventTiming.PreStartupPostLastCached | EventTiming.PreStartupNotCached;
+
+    public SunAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true): base(["sun.sun"], executePast)
     {
         base.IsReschedulable = false;
         base.EventTimings = timings;
@@ -47,9 +49,10 @@ public abstract class SunAutomationBase : SchedulableAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunRiseAutomation : SunAutomationBase
+public sealed class SunRiseAutomation : SunAutomation
 {
-    public SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextRising;
 }
@@ -59,9 +62,10 @@ public sealed class SunRiseAutomation : SunAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunSetAutomation : SunAutomationBase
+public sealed class SunSetAutomation : SunAutomation
 {
-    public SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextSetting;
 }
@@ -71,9 +75,10 @@ public sealed class SunSetAutomation : SunAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunDawnAutomation : SunAutomationBase
+public sealed class SunDawnAutomation : SunAutomation
 {
-    public SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, true) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDawn;
 }
@@ -83,9 +88,10 @@ public sealed class SunDawnAutomation : SunAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunDuskAutomation : SunAutomationBase
+public sealed class SunDuskAutomation : SunAutomation
 {
-    public SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDusk;
 }
@@ -95,9 +101,10 @@ public sealed class SunDuskAutomation : SunAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunMidnightAutomation : SunAutomationBase
+public sealed class SunMidnightAutomation : SunAutomation
 {
-    public SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextMidnight;
 }
@@ -107,9 +114,10 @@ public sealed class SunMidnightAutomation : SunAutomationBase
 /// May not work in arctic circle
 /// </summary>
 [ExcludeFromDiscovery]
-public sealed class SunNoonAutomation : SunAutomationBase
+public sealed class SunNoonAutomation : SunAutomation
 {
-    public SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.PostStartup): base(execution, offset, timings) { }
+    public SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextNoon;
 }

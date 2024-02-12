@@ -46,7 +46,7 @@ public class LightOffOnNoMotion : ConditionalAutomationBase
             select _services.EntityProvider.GetEntityState(lightId, cancellationToken)
                 .ContinueWith(t => 
                     t.Result!.State == "on" 
-                        ? _services.Api.LightTurnOff(lightId, cancellationToken)
+                        ? _services.Api.TurnOff(lightId, cancellationToken)
                         : Task.CompletedTask
                 , cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current)
         );

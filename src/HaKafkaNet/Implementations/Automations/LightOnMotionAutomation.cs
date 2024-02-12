@@ -26,7 +26,7 @@ public class LightOnMotionAutomation : SimpleAutomationBase
                 select _services.EntityProvider.GetEntityState(lightId, cancellationToken)
                     .ContinueWith(t => 
                         t.Result!.State == "off"
-                            ? _services.Api.LightTurnOn(lightId, cancellationToken)
+                            ? _services.Api.TurnOn(lightId, cancellationToken)
                             : Task.CompletedTask
                     , cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current)
             );

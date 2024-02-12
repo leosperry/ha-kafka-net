@@ -9,22 +9,19 @@ public abstract class DelayableAutomationBase : IDelayableAutomation
         get => _timings;
         internal set => _timings = value; 
     }
+    public bool ShouldExecutePastEvents { get; set; }
+    public bool ShouldExecuteOnContinueError { get; set; }
 
     protected readonly IEnumerable<string> _triggerEntities;
 
-    bool _shouldExecutePastEvents = false;
-    public bool ShouldExecutePastEvents { get => _shouldExecutePastEvents; protected set => _shouldExecutePastEvents = value; }
-
-    bool _shouldExecuteOnError = false;
-    public bool ShouldExecuteOnContinueError { get => _shouldExecuteOnError; protected set => _shouldExecuteOnError = value; }
 
     public DelayableAutomationBase(IEnumerable<string> triggerEntities,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false)
     {
         _triggerEntities = triggerEntities;
-        _shouldExecutePastEvents = shouldExecutePastEvents;
-        _shouldExecuteOnError = shouldExecuteOnError;
+        ShouldExecutePastEvents = shouldExecutePastEvents;
+        ShouldExecuteOnContinueError = shouldExecuteOnError;
     }
 
     public abstract Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken);

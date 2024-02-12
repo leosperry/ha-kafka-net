@@ -44,6 +44,23 @@ internal class AutomationFactory : IAutomationFactory
         return new SimpleAutomation(triggerEntities, execute, eventTimings);
     }
 
+    public ConditionalAutomation EntityAutoOff(string entity_id, TimeSpan timeToLeaveOn)
+    {
+        if (timeToLeaveOn < TimeSpan.Zero)
+        {
+            throw new HaKafkaNetException("LightAutoOff: timeToLeaveOn cannot be negative");
+        }
+        return new ConditionalAutomation(
+            [entity_id],
+            (sc,ct)=> Task.FromResult(sc.New.State == "on"), 
+            timeToLeaveOn, 
+            ct => _services.Api.TurnOff(entity_id));
+    }
+
+    public ConditionalAutomation EntityAutoOff(string lightId, int minutes)
+        => EntityAutoOff(lightId, TimeSpan.FromMinutes(minutes));
+    
+
     public LightOnMotionAutomation LightOnMotion(string motionId, string lightId)
     {
         return new LightOnMotionAutomation([motionId], [lightId], _services);
@@ -71,9 +88,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunrise</param>
     /// <returns></returns>
-    public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunDawnAutomation(execution, offset);
+        return new SunDawnAutomation(execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -83,9 +100,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunrise</param>
     /// <returns></returns>
-    public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunRiseAutomation(execution, offset);
+        return new SunRiseAutomation(execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -95,9 +112,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunNoonAutomation SunSNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunNoonAutomation SunSNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunNoonAutomation(execution, offset);
+        return new SunNoonAutomation(execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -107,9 +124,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunSetAutomation(execution, offset);
+        return new SunSetAutomation(execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -119,9 +136,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunDuskAutomation(execution, offset);
+        return new SunDuskAutomation(execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -131,9 +148,9 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null)
+    public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
-        return new SunMidnightAutomation(execution, offset);
+        return new SunMidnightAutomation(execution, offset, timings, executePast);
     }
 
     

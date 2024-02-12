@@ -166,11 +166,6 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
         }
 
-        if (delay < TimeSpan.Zero)
-        {
-            delay = TimeSpan.Zero;
-        }
-
         if (delay == TimeSpan.Zero)
         {
             return ActualExecute(cancellationToken);
@@ -210,7 +205,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
     private Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
-        using (_logger!.BeginScope("Start [{automationType}]", _automation.GetType().Name))
+        using (_logger!.BeginScope("Start [{automationType}]", _meta.UnderlyingType?.GetType().Name ?? _automation.GetType().Name))
         {
             return _automation.Execute(token)
             .ContinueWith(t =>
@@ -254,7 +249,8 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             {
                 if (_cts is not null)
                 {
-                    _logger.LogInformation("Canceling {automation}", _automation.GetType().Name);
+                    _logger.LogInformation("Canceling {automation} Named:{name}", 
+                        _meta.UnderlyingType?.GetType().Name ??  _automation.GetType().Name, _meta.Name);
                     try
                     {
                         _cts.CancelAsync();
