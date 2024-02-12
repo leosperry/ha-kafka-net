@@ -19,13 +19,13 @@ public static class AutomationBuilderExtensions
         return info;
     }
 
-    public static T WithTriggers<T>(this T info, params string[] triggerEntityIds) where T: AutomationBuildingInfo
+    public static T WithTriggers<T>(this T info, params string[] triggerEntityIds) where T: MostAutomationsBuildingInfo
     {
         info.TriggerEntityIds = triggerEntityIds;
         return info;
     }
 
-    public static T WithAdditionalEntitiesToTrack<T>(this T info, params string[] entityIds) where T : AutomationBuildingInfo
+    public static T WithAdditionalEntitiesToTrack<T>(this T info, params string[] entityIds) where T : MostAutomationsBuildingInfo
     {
         info.AdditionalEntitiesToTrack = entityIds;
         return info;
@@ -134,7 +134,7 @@ public static class AutomationBuilderExtensions
     {
         return new SimpleAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.Execution ?? throw new AutomationBuilderException("execution must be defined"),
+            info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.EventTimings ?? EventTiming.PostStartup).WithMeta(GetMeta(info));
 
     }
@@ -144,7 +144,7 @@ public static class AutomationBuilderExtensions
         return new SimpleAutomationWithServices(
             info._services,
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.ExecutionWithServcies ?? throw new AutomationBuilderException("execution must be defined"),
+            info.ExecutionWithServcies ?? throw new AutomationBuilderException("execution must be specified"),
             info.EventTimings ?? EventTiming.PostStartup).WithMeta(GetMeta(info));
     }
 
@@ -152,9 +152,9 @@ public static class AutomationBuilderExtensions
     {
         return new ConditionalAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.ContinuesToBeTrue ?? throw new AutomationBuilderException("when clause must be defined"),
+            info.ContinuesToBeTrue ?? throw new AutomationBuilderException("when clause must be specified"),
             info.For ?? TimeSpan.Zero,
-            info.Execution ?? throw new AutomationBuilderException("execution must be defined"))
+            info.Execution ?? throw new AutomationBuilderException("execution must be specified"))
             .WithMeta(GetMeta(info));
     }
     
@@ -163,9 +163,9 @@ public static class AutomationBuilderExtensions
         return new ConditionalAutomationWithServices(
             info._services,
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.ContinuesToBeTrueWithServices ?? throw new AutomationBuilderException("when clause must be defined"),
+            info.ContinuesToBeTrueWithServices ?? throw new AutomationBuilderException("when clause must be specified"),
             info.For ?? TimeSpan.Zero,
-            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"))
+            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be specified"))
             .WithMeta(GetMeta(info));
     }
 
@@ -173,8 +173,8 @@ public static class AutomationBuilderExtensions
     {
         return new SchedulableAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be defined"),
-            info.Execution ?? throw new AutomationBuilderException("execution must be defined"),
+            info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
+            info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError)
             .WithMeta(GetMeta(info));
@@ -185,22 +185,66 @@ public static class AutomationBuilderExtensions
         return new SchedulableAutomationWithServices(
             info._services,
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.GetNextScheduledWithServices ?? throw new AutomationBuilderException("GetNextScheduled must be defined"),
-            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be defined"),
+            info.GetNextScheduledWithServices ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
+            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError)
         .WithMeta(GetMeta(info));
+    }
+
+    public static SunAutomation Build(this SunAutommationBuildingInfo info)
+    {
+        return info.SunEvent switch
+        {
+            SunEventType.Dawn => new SunDawnAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            SunEventType.Rise => new SunRiseAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            SunEventType.Noon => new SunNoonAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            SunEventType.Set => new SunSetAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            SunEventType.Dusk => new SunDuskAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            SunEventType.Midnight => new SunMidnightAutomation(
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+            _ => throw new AutomationBuilderException("Unknown sun type. This should not be possible")
+        };
+    }
+
+    public static SunAutommationBuildingInfo WithOffset(this SunAutommationBuildingInfo info, TimeSpan offset)
+    {
+        info.Offset = offset;
+        return info;
+    }
+
+    public static SunAutommationBuildingInfo ExecutePastEvents(this SunAutommationBuildingInfo info, bool executePast)
+    {
+        info.ExecutePast = executePast;
+        return info;
+    }
+
+    public static SunAutommationBuildingInfo WithExecution(this SunAutommationBuildingInfo info, Func<CancellationToken, Task> execution)
+    {
+        info.Execution = execution;
+        return info;
     }
 
     private static AutomationMetaData GetMeta(AutomationBuildingInfo info)
     {
         return new AutomationMetaData()
         {
-            Name = info.Name ?? nameof(SimpleAutomationWithServices), //fix
+            Name = info.Name ?? $"from builder {info.GetType().Name}",
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
             Id = Guid.NewGuid(),
-            AdditionalEntitiesToTrack = info.AdditionalEntitiesToTrack
+            AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null
         };
     }
 }

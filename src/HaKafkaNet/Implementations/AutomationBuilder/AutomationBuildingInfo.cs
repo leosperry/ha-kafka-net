@@ -6,22 +6,21 @@ public abstract class AutomationBuildingInfo
     internal string? Name { get; set; }
     internal string? Description { get; set; }
     internal bool EnabledAtStartup { get; set; }
-    internal IEnumerable<string>? TriggerEntityIds { get; set; }
-    internal IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
     internal EventTiming? EventTimings { get; set; }
 }
 
-public abstract class SimpleAutomationBuildignInfoBase: AutomationBuildingInfo
+public abstract class MostAutomationsBuildingInfo : AutomationBuildingInfo
 {
-    
+    internal IEnumerable<string>? TriggerEntityIds { get; set; }
+    internal IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
 }
 
-public class SimpleAutomationBuildingInfo : SimpleAutomationBuildignInfoBase
+public class SimpleAutomationBuildingInfo : MostAutomationsBuildingInfo
 {
     internal Func<HaEntityStateChange, CancellationToken, Task>? Execution { get; set; }
 }
 
-public class SimpleAutomationWithServicesBuildingInfo : SimpleAutomationBuildignInfoBase
+public class SimpleAutomationWithServicesBuildingInfo : MostAutomationsBuildingInfo
 {
     internal readonly IHaServices _services;
 
@@ -32,7 +31,7 @@ public class SimpleAutomationWithServicesBuildingInfo : SimpleAutomationBuildign
     internal Func<IHaServices, HaEntityStateChange, CancellationToken, Task>? ExecutionWithServcies { get; set; }
 }
 
-public abstract class DelayableAutomationBuildingInfo : AutomationBuildingInfo
+public abstract class DelayableAutomationBuildingInfo : MostAutomationsBuildingInfo
 {
     internal bool ShouldExecutePastEvents { get; set; }
     internal bool ShouldExecuteOnContinueError { get; set; }
@@ -62,7 +61,7 @@ public class ConditionalAutomationWithServicesBuildingInfo : ConditionalAutomati
 
 public abstract class SchedulableAutomationBuildingInfoBase : DelayableAutomationBuildingInfo
 {
-        internal bool IsReschedulable { get; set; }
+    internal bool IsReschedulable { get; set; }
 }
 
 public class SchedulableAutomationBuildingInfo : SchedulableAutomationBuildingInfoBase
@@ -82,5 +81,12 @@ public class SchedulableAutomationWithServicesBuildingInfo : SchedulableAutomati
 
     internal Func<IHaServices ,HaEntityStateChange, CancellationToken, Task<DateTime?>>? GetNextScheduledWithServices { get; set; }
     internal Func<IHaServices, CancellationToken, Task>? ExecutionWithServices { get; set; }
-    
+}
+
+public class SunAutommationBuildingInfo : AutomationBuildingInfo
+{
+    internal bool ExecutePast { get; set; } = true;
+    internal SunEventType SunEvent { get; set; }
+    internal TimeSpan? Offset { get; set; }
+    internal Func<CancellationToken, Task>? Execution { get; set; }
 }

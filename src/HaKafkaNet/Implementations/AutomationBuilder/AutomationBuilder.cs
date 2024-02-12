@@ -59,5 +59,12 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-
+    public  SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
+    {
+        return new()
+        {
+            EnabledAtStartup = enabledAtStartup,
+            SunEvent = sunEvent
+        };
+    }
 }
