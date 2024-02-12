@@ -50,7 +50,11 @@ public interface IHaApiProvider
     /// <param name="entity_id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    [Obsolete("Please use generic TurnOn()", false)]
     Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default);
+    
+    [Obsolete("Please use generic TurnOn()", false)]
+
     Task<HttpResponseMessage> LightTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
     
     /// <summary>
@@ -67,7 +71,10 @@ public interface IHaApiProvider
     /// <param name="entity_id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    [Obsolete("Please use generic TurnOff()", false)]
     Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default);
+    
+    [Obsolete("Please use generic TurnOff()", false)]
     Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_ids, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -108,7 +115,10 @@ public interface IHaApiProvider
     /// </summary>
     /// <param name="entity_id">id of switch to turn off</param>
     /// <returns></returns>
+    [Obsolete("Please use generic TurnOff()", false)]
     Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default);
+
+    [Obsolete("Please use generic TurnOff()", false)]
     Task<HttpResponseMessage> SwitchTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -117,7 +127,10 @@ public interface IHaApiProvider
     /// <param name="entity_id">Entity of switch to turn on</param>
     /// <param name="brightness">Brightness to set</param>
     /// <returns></returns>
+    [Obsolete("Please use generic TurnOn()", false)]
     Task<HttpResponseMessage> SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default);
+
+    [Obsolete("Please use generic TurnOn()", false)]
     Task<HttpResponseMessage> SwitchTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -126,6 +139,17 @@ public interface IHaApiProvider
     /// <param name="entity_id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> SwitchToggle(string entity_id, CancellationToken cancellationToken = default);
+
+    [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+
+    Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+
 }

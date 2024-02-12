@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,6 +24,17 @@ internal class HaApiProvider : IHaApiProvider
         }
     };
 
+    #region Constants
+    const string 
+        HOME_ASSISTANT = "homeassistant",
+        NOTIFY = "notify",
+        TURN_ON = "turn_on",
+        TURN_OFF = "turn_off",
+        TOGGLE = "toggle",
+        LIGHT = "light",
+        SWITCH = "switch" ;
+    #endregion
+
     public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config)
     {
         _client = clientFactory.CreateClient();
@@ -42,7 +54,7 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)
     {
-        return await _client.GetAsync($"/api/error_log", cancellationToken);
+        return await _client.GetAsync("/api/error_log", cancellationToken);
     }
 
 
@@ -69,93 +81,78 @@ internal class HaApiProvider : IHaApiProvider
     }
 
     public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "toggle", new {entity_id}, cancellationToken);
-    }
+        => CallService(LIGHT, TOGGLE, new {entity_id}, cancellationToken);
     
     public Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "toggle", new {entity_id}, cancellationToken);
-    }
+        => CallService(LIGHT, TOGGLE, new {entity_id}, cancellationToken);
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_on", new { entity_id, brightness }, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_ON, new { entity_id, brightness }, cancellationToken);
 
     public Task<HttpResponseMessage> LightSetBrightness(IEnumerable<string> entity_id, byte brightness, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_on", new { entity_id, brightness }, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_ON, new { entity_id, brightness }, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_OFF, new {entity_id}, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_off", new {entity_id}, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_OFF, new {entity_id}, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_on", new { entity_id }, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_ON, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> LightTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_on", new { entity_id }, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_ON, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> LightTurnOn(LightTurnOnModel settings, CancellationToken cancellationToken = default)
-    {
-        return CallService("light", "turn_on", settings, cancellationToken);
-    }
+        => CallService(LIGHT, TURN_ON, settings, cancellationToken);
 
     public Task<HttpResponseMessage> NotifyGroupOrDevice(string groupName, string message, CancellationToken cancellationToken = default)
-    {
-        return CallService("notify", groupName, new { message }, cancellationToken);
-    }
+        => CallService(NOTIFY, groupName, new { message }, cancellationToken);
 
     public Task<HttpResponseMessage> NotifyAlexaMedia(string message, string[] targets, CancellationToken cancellationToken = default)
-    {
-        return CallService("notify", "alexa_media", new { message, target = targets }, cancellationToken);
-    }
+        => CallService(NOTIFY, "alexa_media", new { message, target = targets }, cancellationToken);
 
     public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
-    {
-        return CallService("notify", "persistent_notification", new {message}, cancellationToken);
-    }
+        =>  CallService(NOTIFY, "persistent_notification", new {message}, cancellationToken);
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
-    {
-        return CallService("homeassistant", "restart", new{}, cancellationToken);
-    }
+        => CallService(HOME_ASSISTANT, "restart", new{}, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "turn_off", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> SwitchTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "turn_off", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchTurnOn(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "turn_on", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TURN_ON, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchTurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "turn_on", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TURN_ON, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchToggle(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "toggle", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TOGGLE, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-    {
-        return CallService("switch", "toggle", new { entity_id }, cancellationToken);
-    }
+        => CallService(SWITCH, TOGGLE, new { entity_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default) 
+        => CallService(HOME_ASSISTANT, TURN_ON, new {entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new {entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new {entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new {entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new {entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new {entity_id}, cancellationToken);
+
 }
