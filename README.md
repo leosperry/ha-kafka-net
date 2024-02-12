@@ -15,10 +15,10 @@ It was created with the following goals:
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
 * [Test Harness Nuget](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
 * [Full Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
-* [Discord Server](https://discord.gg/RaGu72RbCt)
+* Join the [Discord Server](https://discord.gg/RaGu72RbCt)
 
 ## Why ha-kafka-net ?
-* Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities.
+* Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities, and even handle missed events based on your choosing.
 * UI to manage your automations and inspect Kafka consumers.
 * Monitoring capabilities through [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
   * Global Exception Handler
@@ -56,10 +56,6 @@ This is an image of the dashboard from the example app.
    - `Test Button 3`
 2. Look through the provided examples for ID's of lights/sensors and set them to match your environment.
 3. Click your test buttons both while your application is up and while it is down to see different behaviors at starup.
-
-## Coming soon
-* New Home Assistant API endpoints
-* Automation Builder Scheduled Automations
 
 ## Tips
 * During start up, it can take a minute or two for it to churn though thousands of events. In the output, you can see which kafka offsets have been handled. You can then compare that to the current Kafka offset which you can discover from your kafka-ui instance.
