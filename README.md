@@ -13,6 +13,7 @@ It was created with the following goals:
 #### Resources
 * [Getting Started](https://github.com/leosperry/ha-kafka-net/wiki/Getting-Started)
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
+* [Tutorial: Creating Automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
 * [Test Harness Nuget](https://www.nuget.org/packages/HaKafkaNet.TestHarness/)
 * [Full Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
 * Join the new [Discord Server](https://discord.gg/RaGu72RbCt)
