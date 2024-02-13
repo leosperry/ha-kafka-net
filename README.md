@@ -25,7 +25,7 @@ It was created with the following goals:
   * Be alerted of non-responsive entities
 * Pre-built automations
   * Lights On/Off from Motion sensors
-  * Sun rise/set/etc events including offset (e.g. Run 15 minutes before sunset)
+  * [Sun Automations](https://github.com/leosperry/ha-kafka-net/wiki/Sun-Automations) for handling sun rise/set/etc events including offset (e.g. Run 15 minutes before sunset)
 * Extensible framework - create your own reusable automations
   * Extend automation factory with extension methods
   * Create your own automamtions from scratch
