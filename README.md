@@ -19,7 +19,7 @@ It was created with the following goals:
 
 ## Why ha-kafka-net ?
 * Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities, and even handle missed events based on your choosing.
-* UI to manage your automations and inspect Kafka consumers.
+* UI to manage your automations and inspect Kafka consumers. See [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings) for more details.
 * Monitoring capabilities through [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
   * Global Exception Handler
   * Be alerted of non-responsive entities
