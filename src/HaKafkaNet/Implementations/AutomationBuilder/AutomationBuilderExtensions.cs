@@ -101,18 +101,6 @@ public static partial class AutomationBuilderExtensions
             .WithMeta(GetMeta(info));
     }
 
-    // public static ISchedulableAutomation Build(this SchedulableAutomationWithServicesBuildingInfo info)
-    // {
-    //     return new SchedulableAutomationWithServices(
-    //         info._services,
-    //         info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-    //         info.GetNextScheduledWithServices ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
-    //         info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be specified"),
-    //         info.ShouldExecutePastEvents,
-    //         info.ShouldExecuteOnContinueError)
-    //     .WithMeta(GetMeta(info));
-    // }
-
     public static SunAutomation Build(this SunAutommationBuildingInfo info)
     {
         return info.SunEvent switch
