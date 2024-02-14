@@ -57,6 +57,7 @@ internal class AutomationWrapper : IAutomationWrapper
     /// <returns></returns>
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
+        this._meta.LastTriggered = DateTime.Now;
         using (_log.BeginScope("Start [{automationName}] of Type [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", 
             _meta.Name, _auto.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
         {

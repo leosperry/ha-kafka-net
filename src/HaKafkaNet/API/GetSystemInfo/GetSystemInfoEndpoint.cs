@@ -47,7 +47,9 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                         Source = meta.Source ?? string.Empty,
                         TriggerIds = a.TriggerEntityIds(),
                         AdditionalEntitiesToTrack = meta.AdditionalEntitiesToTrack ?? Enumerable.Empty<string>(),
-                        Enabled = meta.Enabled
+                        Enabled = meta.Enabled,
+                        LastTriggered = meta.LastTriggered?.ToString() ?? "None",
+                        LastExecuted = meta.IsDelayable ? meta.LastExecuted?.ToString() ?? "None" : "N/A"
                     };
                 }).ToDictionary(item => item.Id)
             }

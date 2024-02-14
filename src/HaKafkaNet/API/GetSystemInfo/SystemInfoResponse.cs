@@ -17,4 +17,6 @@ public record AutomationInfo
     public required IEnumerable<string> TriggerIds { get; init; }
     public required IEnumerable<string> AdditionalEntitiesToTrack { get; set; }
     public bool Enabled { get; set; }
+    public required string LastTriggered { get; set; }
+    public required string LastExecuted { get; set; }
 }

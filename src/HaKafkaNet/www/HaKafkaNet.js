@@ -78,8 +78,8 @@ class HaKafkaNetRoot extends React.Component {
                             <th>Enabled</th>
                             <th>Name</th>
                             <th>Description</th>
-                            <th>Type</th>
-                            <th>Source</th>
+                            <th>Type/Source</th>
+                            <th>Latest Runs</th>
                             <th>Entity IDs</th>
                         </tr>
                     </thead>
@@ -94,8 +94,8 @@ class HaKafkaNetRoot extends React.Component {
                                     </td>
                                     <td>{item.name}</td>
                                     <td>{item.description}</td>
-                                    <td>{item.typeName}</td>
-                                    <td>{item.source}</td>
+                                    <td>{item.typeName}<br/>{item.source}</td>
+                                    <td>Lastest Trigger:<br/>{item.lastTriggered}<br/>Latest Execution:<br/>{item.lastExecuted}</td>
                                     <td>
 
                                     <div id="accordion">

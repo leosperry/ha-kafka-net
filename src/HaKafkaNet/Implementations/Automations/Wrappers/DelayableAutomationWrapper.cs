@@ -44,6 +44,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                 UnderlyingType = _automation.GetType().Name
             };
         }
+        _meta.IsDelayable = true;
 
         if (automation is ISchedulableAutomation schedulableAutomation)
         {
@@ -210,6 +211,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             return _automation.Execute(token)
             .ContinueWith(t =>
             {
+                this._meta.LastExecuted = DateTime.Now;
                 if (t.IsFaulted)
                 {
                     _observer.OnUnhandledException(this._meta, t.Exception);
