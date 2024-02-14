@@ -47,7 +47,7 @@ public class LightOnRegistry : IAutomationRegistry
             async (stateChange, ct)=> {
                 if (stateChange.New.State == "on")
                 {
-                    await _services.Api.LightTurnOn(OFFICE_LIGHT, ct);
+                    await _services.Api.TurnOn(OFFICE_LIGHT, ct);
                 }
             }).WithMeta(new AutomationMetaData(){
                 Name = "Office Light On Motion",
@@ -68,21 +68,21 @@ public class LightOnRegistry : IAutomationRegistry
                 if (stateChange.New.State == "on")
                 {
                     //services reference comes from this class
-                    await _services.Api.LightTurnOn(OFFICE_LIGHT, ct);
+                    await _services.Api.TurnOn(OFFICE_LIGHT, ct);
                 }
             })
             .Build();
         
         // you can rely on the builder to pass in home assistant services
-        yield return _builder.CreateSimpleWithServices(false)
+        yield return _builder.CreateSimple(false)
             .WithName("Office Light On Motion")
             .WithDescription("from builder with services")
             .WithTriggers(OFFICE_MOTION)
-            .WithExecution(async (svc, stateChange, ct) =>{
+            .WithExecution(async (stateChange, ct) =>{
                 if (stateChange.New.State == "on")
                 {
                     //services reference injected into callback
-                    await svc.Api.LightTurnOn(OFFICE_LIGHT, ct);
+                    await _services.Api.TurnOn(OFFICE_LIGHT, ct);
                 }
             })
             .Build();
@@ -98,7 +98,7 @@ public class LightOnRegistry : IAutomationRegistry
             .WithDescription("from builder using conditional")
             .WithTriggers(OFFICE_MOTION)
             .When(sc => sc.New.State == "on") // there is an asynchronous overload for this method should you need to call services
-            .Then(ct => _services.Api.LightTurnOn(OFFICE_LIGHT, ct))
+            .Then(ct => _services.Api.TurnOn(OFFICE_LIGHT, ct))
             .Build();
     }
 }

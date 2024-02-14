@@ -23,7 +23,7 @@ public class LightOnRegistryTests
         await Task.Delay(300); // conditional automation execute on another thread and need to be scheduled
 
         // Then
-        harness.ApiProvider.Verify(api => api.LightTurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));
+        harness.ApiProvider.Verify(api => api.TurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));
         harness.ApiProvider.Verify(api => api.LightSetBrightness(LightOnRegistry.OFFICE_LIGHT, 200, It.IsAny<CancellationToken>()));
         // six of the same automation set up different ways
     }

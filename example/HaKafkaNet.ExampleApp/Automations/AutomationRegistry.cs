@@ -26,7 +26,7 @@ public class AutomationRegistry : IAutomationRegistry
 
         // new feature! Turn on front porch light 15 minutes before sunset
         reg.Register(_automationFactory.SunSetAutomation(
-            ct => _services.Api.LightTurnOn("light.front_porch"), 
+            ct => _services.Api.TurnOn("light.front_porch"), 
             TimeSpan.FromMinutes(-15)));
     }
 

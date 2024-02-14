@@ -21,7 +21,6 @@ public class LightOffRegistry : IAutomationRegistry
         reg.RegisterMultiple(RegisterContitionals());
     }
 
-
     public IEnumerable<IAutomation> Register()
     {
         return Enumerable.Empty<IAutomation>();
@@ -36,7 +35,7 @@ public class LightOffRegistry : IAutomationRegistry
             [OFFICE_MOTION], 
             (stateChange, ct)=> Task.FromResult(stateChange.New.State == "off"),
             TimeSpan.FromMinutes(5),
-            ct => _services.Api.LightTurnOff(OFFICE_LIGHT, ct))
+            ct => _services.Api.TurnOff(OFFICE_LIGHT, ct))
             .WithMeta("Office Light Off When No Motion", "from factory manual", false);
 
         yield return _builder.CreateConditional(false)
@@ -46,7 +45,7 @@ public class LightOffRegistry : IAutomationRegistry
             .WithAdditionalEntitiesToTrack(OFFICE_LIGHT)
             .When(stateChange => stateChange.New.State == "off")
             .ForMinutes(5)
-            .Then(ct => _services.Api.LightTurnOff(OFFICE_LIGHT, ct))
+            .Then(ct => _services.Api.TurnOff(OFFICE_LIGHT, ct))
             .Build();    
     }
 }
