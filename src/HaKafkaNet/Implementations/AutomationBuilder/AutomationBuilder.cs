@@ -50,14 +50,14 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-    public SchedulableAutomationWithServicesBuildingInfo CreateSchedulableWithServices(bool reschdulable = false, bool enabledAtStartup = true)
-    {
-        return new(_services)
-        {
-            EnabledAtStartup = enabledAtStartup,
-            IsReschedulable = reschdulable
-        };
-    }
+    // public SchedulableAutomationWithServicesBuildingInfo CreateSchedulableWithServices(bool reschdulable = false, bool enabledAtStartup = true)
+    // {
+    //     return new(_services)
+    //     {
+    //         EnabledAtStartup = enabledAtStartup,
+    //         IsReschedulable = reschdulable
+    //     };
+    // }
 
     public  SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
     {

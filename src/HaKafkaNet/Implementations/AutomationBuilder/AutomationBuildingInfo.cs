@@ -59,28 +59,12 @@ public class ConditionalAutomationWithServicesBuildingInfo : ConditionalAutomati
     internal Func<IHaServices, CancellationToken, Task>? ExecutionWithServices { get; set; }
 }
 
-public abstract class SchedulableAutomationBuildingInfoBase : DelayableAutomationBuildingInfo
+public class SchedulableAutomationBuildingInfo : DelayableAutomationBuildingInfo
 {
     internal bool IsReschedulable { get; set; }
-}
 
-public class SchedulableAutomationBuildingInfo : SchedulableAutomationBuildingInfoBase
-{
     internal Func<CancellationToken, Task>? Execution { get; set; }
     internal GetNextEventFromEntityState? GetNextScheduled { get; set; }
-}
-
-public class SchedulableAutomationWithServicesBuildingInfo : SchedulableAutomationBuildingInfoBase
-{
-    internal readonly IHaServices _services;
-
-    internal SchedulableAutomationWithServicesBuildingInfo(IHaServices services)
-    {
-        _services = services;
-    }
-
-    internal Func<IHaServices ,HaEntityStateChange, CancellationToken, Task<DateTime?>>? GetNextScheduledWithServices { get; set; }
-    internal Func<IHaServices, CancellationToken, Task>? ExecutionWithServices { get; set; }
 }
 
 public class SunAutommationBuildingInfo : AutomationBuildingInfo
