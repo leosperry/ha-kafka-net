@@ -49,4 +49,12 @@
 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Implementations/Automations/BaseAutomations/" />
+    <Folder Include="Implementations/Automations/Prebuilt/" />
+    <Folder Include="Implementations/Automations/Wrappers/" />
+    <Folder Include="Implementations/Core/" />
+    <Folder Include="Implementations/Services/" />
+  </ItemGroup>
 </Project>

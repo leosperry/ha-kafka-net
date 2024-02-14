@@ -5,7 +5,9 @@ public abstract class SunAutomation : SchedulableAutomationBase
     readonly TimeSpan _offset;
     readonly Func<CancellationToken, Task> _execute;
 
-    public const EventTiming DEFAULT_SUN_EVENT_TIMINGS = EventTiming.PostStartup | EventTiming.PreStartupSameAsLastCached | EventTiming.PreStartupPostLastCached | EventTiming.PreStartupNotCached;
+    public const EventTiming DEFAULT_SUN_EVENT_TIMINGS = 
+        EventTiming.PostStartup | EventTiming.PreStartupSameAsLastCached | 
+        EventTiming.PreStartupPostLastCached | EventTiming.PreStartupNotCached;
 
     public SunAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true): base(["sun.sun"], executePast)
     {
