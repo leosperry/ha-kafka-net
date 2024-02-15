@@ -79,7 +79,7 @@ class HaKafkaNetRoot extends React.Component {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Type/Source</th>
-                            <th>Latest Runs</th>
+                            <th>Latest Trigger/Execution</th>
                             <th>Entity IDs</th>
                         </tr>
                     </thead>
@@ -95,7 +95,7 @@ class HaKafkaNetRoot extends React.Component {
                                     <td>{item.name}</td>
                                     <td>{item.description}</td>
                                     <td>{item.typeName}<br/>{item.source}</td>
-                                    <td>Lastest Trigger:<br/>{item.lastTriggered}<br/>Latest Execution:<br/>{item.lastExecuted}</td>
+                                    <td>Trigger:<br/>{item.lastTriggered}<br/>Execution:<br/>{item.lastExecuted}</td>
                                     <td>
 
                                     <div id="accordion">
@@ -117,7 +117,7 @@ class HaKafkaNetRoot extends React.Component {
                                             <div className="card-header" id={"heading2" + item.id}>
                                                 <h5 className="mb-0">
                                                     <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#additional" + item.id} aria-expanded="false" aria-controls="collapseOne">
-                                                    Additional Entities
+                                                    Additional
                                                     </button>
                                                 </h5>
                                             </div>  
