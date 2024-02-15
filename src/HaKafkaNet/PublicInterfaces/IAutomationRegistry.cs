@@ -15,14 +15,16 @@ public interface IRegistrar
 {
     
     void Register(IAutomation automation);
-    void Register(IConditionalAutomation automation);
-    void Register(ISchedulableAutomation automation);
+    void Register(IDelayableAutomation automation);
     void Register<T>(T automation, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
 
     void RegisterMultiple(IEnumerable<IAutomation> automations);
-    void RegisterMultiple(IEnumerable<IConditionalAutomation> automations);
-    void RegisterMultiple(IEnumerable<ISchedulableAutomation> automations);
+    void RegisterMultiple(IEnumerable<IDelayableAutomation> automations);
+
+    void RegisterMultiple(params IAutomation[] automations);
+    void RegisterMultiple(params IDelayableAutomation[] automations);
+    
     void RegisterMultiple<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
 }

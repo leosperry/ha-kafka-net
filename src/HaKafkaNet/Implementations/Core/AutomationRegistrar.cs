@@ -32,12 +32,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         AddSimple(automation);
     }
 
-    public void Register(IConditionalAutomation automation)
-    {
-        AddDelayable(automation);
-    }
-
-    public void Register(ISchedulableAutomation automation)
+    public void Register(IDelayableAutomation automation)
     {
         AddDelayable(automation);
     }
@@ -55,7 +50,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         }
     }
 
-    public void RegisterMultiple(IEnumerable<IConditionalAutomation> automations)
+    public void RegisterMultiple(IEnumerable<IDelayableAutomation> automations)
     {
         foreach (var item in automations)
         {
@@ -63,7 +58,16 @@ internal class AutomationRegistrar : IInternalRegistrar
         }    
     }
 
-    public void RegisterMultiple(IEnumerable<ISchedulableAutomation> automations)
+
+    public void RegisterMultiple(params IAutomation[] automations)
+    {
+        foreach (var item in automations)
+        {
+            AddSimple(item);
+        }
+    }
+
+    public void RegisterMultiple(params IDelayableAutomation[] automations)
     {
         foreach (var item in automations)
         {
