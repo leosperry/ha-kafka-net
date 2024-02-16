@@ -1,8 +1,6 @@
 # ha-kafka-net
 ***
 Version 3 Released. See [Release](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0) for details. It has one significant breaking change. See release notes or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
-
-Version 3.1 is in the works. It will bring significant enhancements to stronly typing entity states.
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -65,6 +63,7 @@ This is an image of the dashboard from the example app.
 * You can run the transformer seperately from the state manager and your automations. This allows you to constantly have the transformers work up to date and have your applications running your automations have less work to do at startup.
 * If you are running a dev instance alongside your production instance, you can reuse the same kafka instance, but it is recommended to change the 'GroupId' in your appsettings.json. This will ensure your development instance does not steal events from your production instance.
 * You can raise state change events by setting them manually in the developer tools of your Home Assisstant instance. This won't change the actual states of your devices, but it will send the events through Kafka.
+* For accurate times on your dashboard, when running in docker, make sure to set the timezone of your docker container appropriately
 
 ## Features recently added
 * [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor) for handling errors and monitoring non-responsive entities.
@@ -74,6 +73,9 @@ This is an image of the dashboard from the example app.
 * [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
 * Sun model and Sun Based Automations
 * Scheduled Automation framework
+
+## Coming Soon
+Version 3.1 is in the works. It will bring significant enhancements to stronly typing entity states.
 
 ## More examples
 I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
