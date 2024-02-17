@@ -23,9 +23,9 @@ public class LightOnMotionAutomation : SimpleAutomationBase
             //turn on any lights that are not
             return Task.WhenAll(
                 from lightId in _lights
-                select _services.EntityProvider.GetEntityState(lightId, cancellationToken)
+                select _services.EntityProvider.GetOnOffEntity(lightId, cancellationToken)
                     .ContinueWith(t => 
-                        t.Result!.State == "off"
+                        t.Result!.State == OnOff.Off
                             ? _services.Api.TurnOn(lightId, cancellationToken)
                             : Task.CompletedTask
                     , cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current)

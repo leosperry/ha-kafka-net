@@ -23,11 +23,11 @@ public class LightOffOnNoMotion : ConditionalAutomationBase
     {
         var motionStates = 
             from m in _motionIds
-            select _services.EntityProvider.GetEntityState(m, cancellationToken); // all should be off
+            select _services.EntityProvider.GetEntity(m, cancellationToken); // all should be off
         
         var lightStates = 
             from l in _lightIds
-            select _services.EntityProvider.GetEntityState(l, cancellationToken);  // any should be on
+            select _services.EntityProvider.GetEntity(l, cancellationToken);  // any should be on
 
         Task<HaEntityState[]> motionResults;
         Task<HaEntityState[]> lightResults;
@@ -43,9 +43,9 @@ public class LightOffOnNoMotion : ConditionalAutomationBase
     {
         return Task.WhenAll(
             from lightId in _lightIds
-            select _services.EntityProvider.GetEntityState(lightId, cancellationToken)
+            select _services.EntityProvider.GetOnOffEntity(lightId, cancellationToken)
                 .ContinueWith(t => 
-                    t.Result!.State == "on" 
+                    t.Result?.State == OnOff.On
                         ? _services.Api.TurnOff(lightId, cancellationToken)
                         : Task.CompletedTask
                 , cancellationToken, TaskContinuationOptions.NotOnFaulted, TaskScheduler.Current)

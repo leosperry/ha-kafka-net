@@ -1,13 +1,20 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace HaKafkaNet;
 
+public record SunModel : HaEntityState<SunState, SunAttributes>
+{
+    [JsonPropertyName("state")]
+    public override required SunState State { get; init; }
+} 
+
+[JsonConverter(typeof(JsonStringEnumConverter<SunState>))]
 public enum SunState
 {
-    //[JsonPropertyName("above_horizon")]
-    AboveHorizon,
-    //[JsonPropertyName("below_horizon")]
-    BelowHorizon
+    Above_Horizon,
+    Below_Horizon
 }
 
 public record SunAttributes()

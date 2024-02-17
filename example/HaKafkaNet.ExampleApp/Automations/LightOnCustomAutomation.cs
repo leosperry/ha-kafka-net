@@ -30,7 +30,8 @@ public class LightOnCustomAutomation : IAutomation, IAutomationMeta
 
     public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        if ((stateChange.Old is null || stateChange.Old.State == "off") && stateChange.New.State ==  "on")
+        var motion = stateChange.ToOnOff();
+        if ((motion.Old is null || motion.Old.State != OnOff.On) && motion.New.State == OnOff.On)
         {
             return _api.LightSetBrightness(_lightId, _brightness, cancellationToken);
         }

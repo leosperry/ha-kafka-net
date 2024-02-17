@@ -22,23 +22,13 @@ public abstract class SunAutomation : SchedulableAutomationBase
         DateTime? next = base.GetNextScheduled();
         if (next < DateTime.Now)
         {
-            var sunAtts = GetSunAttributes(stateChange);
+            var sunAtts = stateChange.New.Attributes<SunAttributes>()!;
             next = this.GetNextSunEvent(sunAtts) + _offset;
         }
         return Task.FromResult(next);
     }
 
     protected abstract DateTime GetNextSunEvent(SunAttributes atts);
-
-    private SunAttributes GetSunAttributes(HaEntityStateChange haEntityStateChange)
-    {
-        var sunAtts = haEntityStateChange.New.Convert<SunAttributes>().Attributes;
-        if (sunAtts is null)
-        {
-            throw new HaKafkaNetException("Could not calculate sunrise. Sun schema invalid");
-        }
-        return sunAtts;
-    }
 
     public override Task Execute(CancellationToken cancellationToken)
     {

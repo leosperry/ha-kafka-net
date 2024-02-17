@@ -69,14 +69,25 @@ internal class HaApiProvider : IHaApiProvider
         };
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState<T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    public async Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 
         return response.StatusCode switch
         {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<T>>(response.Content.ReadAsStream())!),
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<string, T>>(response.Content.ReadAsStream())!),
             _ => (response, null!)
+        };
+    }
+
+    public async Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default)
+    {
+        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream())!),
+            _ => (response, default(T?))
         };
     }
 
