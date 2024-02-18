@@ -6,5 +6,5 @@ public interface IHaStateCache : IEntityStateProvider
     Task<HaEntityState?> Get(string id, CancellationToken cancellationToken = default);
 
     [Obsolete("please use GetEntity", false)]
-    Task<HaEntityState<string, T>?> Get<T>(string id, CancellationToken cancellationToken = default);
+    Task<HaEntityState<T>?> Get<T>(string id, CancellationToken cancellationToken = default);
 }

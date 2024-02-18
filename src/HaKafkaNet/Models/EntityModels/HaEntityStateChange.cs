@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography.Xml;
 using System.Text.Json;
 using Microsoft.AspNetCore.Routing.Internal;
 
@@ -26,33 +27,36 @@ public record HaEntityStateChange<T>
 
 public record HaEntityStateChange : HaEntityStateChange<HaEntityState>
 {
-    public HaEntityStateChange<T> Transform<T,Tstate,Tatt>() 
-        where T : HaEntityState<Tstate, Tatt>
-    {
-        return new HaEntityStateChange<T>
-        {
-            EventTiming = this.EventTiming,
-            EntityId = this.EntityId,
-            New = (T)this.New,
-            Old = this.Old is null? null : (T?)this.Old
-        };
-    }
+
 }
 
 public static class StateChangeExtensions
 {
-    public static HaEntityStateChange<HaEntityState<Tstate,Tatt>> ToTyped<Tstate, Tatt>(this HaEntityStateChange change) =>  change.Transform<HaEntityState<Tstate,Tatt>, Tstate, Tatt>();
-    public static HaEntityStateChange<HaEntityState<Tstate,JsonElement>> ToStateTyped<Tstate>(this HaEntityStateChange change) =>  change.Transform<HaEntityState<Tstate,JsonElement>, Tstate, JsonElement>();
-    public static HaEntityStateChange<HaEntityState<string,Tatt>> ToAttributeTyped<Tatt>(this HaEntityStateChange change) =>  change.Transform<HaEntityState<string,Tatt>, string, Tatt>();
-    public static HaEntityStateChange<OnOffEnity> ToOnOff(this HaEntityStateChange change) =>  change.Transform<OnOffEnity, OnOff, JsonElement>()!;
-    public static HaEntityStateChange<OnOffEnity<T>> ToOnOff<T>(this HaEntityStateChange change) =>  change.Transform<OnOffEnity<T>, OnOff, T>();
-    public static HaEntityStateChange<IntegerEnity> ToIntTyped(this HaEntityStateChange change) =>  change.Transform<IntegerEnity, int, JsonElement>();
-    public static HaEntityStateChange<IntegerEnity<T>> ToIntTyped<T>(this HaEntityStateChange change) =>  change.Transform<IntegerEnity<T>, int, T>();
-    public static HaEntityStateChange<DoubleEnity> ToDoubleTyped(this HaEntityStateChange change) =>  change.Transform<DoubleEnity, double, JsonElement>();
-    public static HaEntityStateChange<DoubleEnity<T>> ToDoubleTyped<T>(this HaEntityStateChange change) =>  change.Transform<DoubleEnity<T>, double, T>();
-    public static HaEntityStateChange<DateTimeEnity> ToDateTimeTyped(this HaEntityStateChange change) =>  change.Transform<DateTimeEnity, DateTime, JsonElement>();
-    public static HaEntityStateChange<DateTimeEnity<T>> ToDateTimeTyped<T>(this HaEntityStateChange change) =>  change.Transform<DateTimeEnity<T>, DateTime, T>();
-    public static HaEntityStateChange<BatteryStateEntity> ToBatteryState(this HaEntityStateChange change) =>  change.Transform<BatteryStateEntity, BatteryState, JsonElement>();
-    public static HaEntityStateChange<BatteryStateEntity<T>> ToBatteryState<T>(this HaEntityStateChange change) =>  change.Transform<BatteryStateEntity<T>, BatteryState, T>();
-    public static HaEntityStateChange<SunModel> ToSun(this HaEntityStateChange change) =>  change.Transform<SunModel, SunState, SunAttributes>();
+    static HaEntityStateChange<T> Transform<T, Tstate, Tatt>(HaEntityStateChange change)
+        where T : HaEntityState<Tstate, Tatt>
+    {
+        return new HaEntityStateChange<T>
+        {
+            EventTiming = change.EventTiming,
+            EntityId = change.EntityId,
+            New = (T)change.New,
+            Old = change.Old is null? null : (T?)change.Old
+        };
+    }    
+
+    public static HaEntityStateChange<HaEntityState<Tstate,Tatt>> ToTyped<Tstate, Tatt>(this HaEntityStateChange change) =>  Transform<HaEntityState<Tstate,Tatt>, Tstate, Tatt>(change);
+    public static HaEntityStateChange<HaEntityState<Tstate,JsonElement>> ToStateTyped<Tstate>(this HaEntityStateChange change) =>  Transform<HaEntityState<Tstate,JsonElement>, Tstate, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<string,Tatt>> ToAttributeTyped<Tatt>(this HaEntityStateChange change) =>  Transform<HaEntityState<string,Tatt>, string, Tatt>(change);
+    public static HaEntityStateChange<HaEntityState<OnOff, JsonElement>> ToOnOff(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, JsonElement>, OnOff, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<OnOff, T>> ToOnOff<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<OnOff, T>, OnOff, T>(change);
+    public static HaEntityStateChange<HaEntityState<int?, JsonElement>> ToIntTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<int?, JsonElement>, int?, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<int?, T>> ToIntTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<int?, T>, int?, T>(change);
+    public static HaEntityStateChange<HaEntityState<double?, JsonElement>> ToDoubleTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<double?, JsonElement>, double?, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<double?, T>> ToDoubleTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<double?, T>, double?, T>(change);
+    public static HaEntityStateChange<HaEntityState<DateTime?, JsonElement>> ToDateTimeTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<DateTime?, JsonElement>, DateTime?, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<DateTime?, T>> ToDateTimeTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<DateTime?, T>, DateTime?, T>(change);
+    public static HaEntityStateChange<HaEntityState<BatteryState, JsonElement>> ToBatteryState(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, JsonElement>, BatteryState, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<BatteryState, T>> ToBatteryState<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, T>, BatteryState, T>(change);
+    
+    //public static HaEntityStateChange<SunModel> ToSun(this HaEntityStateChange change) =>  change.Transform<SunModel, SunState, SunAttributes>();
 }

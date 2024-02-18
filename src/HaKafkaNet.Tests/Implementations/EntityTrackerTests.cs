@@ -40,7 +40,7 @@ public class EntityTrackerTests
             .Returns(["enterprise"]);
 
         Mock<IHaStateCache> cache = new();
-        cache.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        cache.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(TestHelpers.GetState());
         Mock<IHaApiProvider> provider = new();
 
@@ -70,7 +70,7 @@ public class EntityTrackerTests
         Mock<IHaStateCache> cache = new();
         
         Mock<IHaApiProvider> provider = new();
-        provider.Setup(c => c.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        provider.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState(state: "all systems normal")));
         EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
         // When
@@ -98,7 +98,7 @@ public class EntityTrackerTests
         Mock<IHaStateCache> cache = new();
         
         Mock<IHaApiProvider> provider = new();
-        provider.Setup(c => c.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        provider.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(lastUpdated : DateTime.Now.AddDays(-1), state: "all systems normal")));
@@ -109,7 +109,7 @@ public class EntityTrackerTests
     
         // Then
         mgr.Verify(m => m.GetAllEntitiesToTrack(), Times.Once);
-        provider.Verify(p => p.GetEntityState("enterprise", It.IsAny<CancellationToken>()), Times.Once);
+        provider.Verify(p => p.GetEntity("enterprise", It.IsAny<CancellationToken>()), Times.Once);
         observer.Verify(o => o.OnBadStateDiscovered(It.IsAny<IEnumerable<BadEntityState>>()), Times.Never);
     }
 
@@ -129,7 +129,7 @@ public class EntityTrackerTests
         Mock<IHaStateCache> cache = new();
         
         Mock<IHaApiProvider> provider = new();
-        provider.Setup(c => c.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        provider.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(state: "unknown", lastUpdated : DateTime.Now.AddDays(-1))));
@@ -140,7 +140,7 @@ public class EntityTrackerTests
     
         // Then
         mgr.Verify(m => m.GetAllEntitiesToTrack(), Times.Once);
-        provider.Verify(p => p.GetEntityState("enterprise", It.IsAny<CancellationToken>()), Times.Once);
+        provider.Verify(p => p.GetEntity("enterprise", It.IsAny<CancellationToken>()), Times.Once);
         observer.Verify(o => o.OnBadStateDiscovered(It.IsAny<IEnumerable<BadEntityState>>()), Times.Once);
     }
 
@@ -158,11 +158,11 @@ public class EntityTrackerTests
             .Returns(["enterprise"]);
 
         Mock<IHaStateCache> cache = new();
-        cache.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        cache.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1)));
         
         Mock<IHaApiProvider> provider = new();
-        provider.Setup(c => c.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        provider.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(state: "unknown", lastUpdated : DateTime.Now.AddDays(-1))));
@@ -173,7 +173,7 @@ public class EntityTrackerTests
     
         // Then
         mgr.Verify(m => m.GetAllEntitiesToTrack(), Times.Once);
-        provider.Verify(p => p.GetEntityState("enterprise", It.IsAny<CancellationToken>()), Times.Once);
+        provider.Verify(p => p.GetEntity("enterprise", It.IsAny<CancellationToken>()), Times.Once);
         observer.Verify(o => o.OnBadStateDiscovered(It.IsAny<IEnumerable<BadEntityState>>()), Times.Once);
     }
 

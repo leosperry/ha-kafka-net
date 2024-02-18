@@ -1,4 +1,5 @@
-﻿using HaKafkaNet;
+﻿using System.Text.Json;
+using HaKafkaNet;
 using HaKafkaNet.Tests;
 using Moq;
 
@@ -13,6 +14,8 @@ public class LightOnRegistryTests
         // Given
         TestHarness harness = new TestHarness("off");
 
+        harness.SetServicesGenericDefaults<OnOff,JsonElement>(OnOff.Off, default);
+        
         var sut = new LightOnRegistry(harness.Services.Object, harness.Builder, harness.Factory);
         harness.Initialize(sut);
         harness.EnableAllAutomations(); // not normally required. The example registry ships with automations disabled
@@ -25,6 +28,6 @@ public class LightOnRegistryTests
         // Then
         harness.ApiProvider.Verify(api => api.TurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));
         harness.ApiProvider.Verify(api => api.LightSetBrightness(LightOnRegistry.OFFICE_LIGHT, 200, It.IsAny<CancellationToken>()));
-        // six of the same automation set up different ways
+        // six similar automations set up different ways
     }
 }

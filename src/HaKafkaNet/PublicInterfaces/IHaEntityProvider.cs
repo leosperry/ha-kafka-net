@@ -26,12 +26,13 @@ public interface IHaEntityProvider : IEntityStateProvider
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [Obsolete("please use GetAttributeTypedEntity", false)]
-    Task<HaEntityState<string, T>?> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
+    Task<HaEntityState<T>?> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
 }
 
 
 public interface IEntityStateProvider
 {
     Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default);
+    Task<HaEntityState<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken); 
     Task<T?> GetEntity<T>(string entityId, CancellationToken cancellationToken = default) where T : class;
 }

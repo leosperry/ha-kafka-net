@@ -22,7 +22,7 @@ public abstract class SunAutomation : SchedulableAutomationBase
         DateTime? next = base.GetNextScheduled();
         if (next < DateTime.Now)
         {
-            var sunAtts = stateChange.New.Attributes<SunAttributes>()!;
+            var sunAtts = stateChange.New.GetAttributes<SunAttributes>()!;
             next = this.GetNextSunEvent(sunAtts) + _offset;
         }
         return Task.FromResult(next);

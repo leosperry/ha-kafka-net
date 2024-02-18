@@ -58,15 +58,9 @@ internal class HaApiProvider : IHaApiProvider
     }
 
 
-    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
+    public Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
     {
-        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
-
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState>(response.Content.ReadAsStream())!),
-            _ => (response, null!)
-        };
+        return GetEntity(entity_id, cancellationToken);
     }
 
     public async Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
@@ -76,6 +70,17 @@ internal class HaApiProvider : IHaApiProvider
         return response.StatusCode switch
         {
             HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<string, T>>(response.Content.ReadAsStream())!),
+            _ => (response, null!)
+        };
+    }
+
+    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default)
+    {
+        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState>(response.Content.ReadAsStream())!),
             _ => (response, null!)
         };
     }

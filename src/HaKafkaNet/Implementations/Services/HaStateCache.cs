@@ -12,6 +12,7 @@ internal class HaStateCache : IHaStateCache
         _cache = cache;
     }
 
+    [Obsolete("please use GetEntity", false)]
     public async Task<HaEntityState?> Get(string id, CancellationToken cancellationToken = default)
     {
         var cached = await _cache.GetAsync(id);
@@ -22,12 +23,13 @@ internal class HaStateCache : IHaStateCache
         return null;
     }
 
-    public async Task<HaEntityState<string, T>?> Get<T>(string id, CancellationToken cancellationToken = default) 
+    [Obsolete("please use GetEntity", false)]
+    public async Task<HaEntityState<T>?> Get<T>(string id, CancellationToken cancellationToken = default) 
     {
         var cached = await _cache.GetAsync(id);
         if(cached != null)
         {
-            return JsonSerializer.Deserialize<HaEntityState<string, T>>(cached)!;
+            return JsonSerializer.Deserialize<HaEntityState<T>>(cached)!;
         }
         return null;
     }
@@ -50,4 +52,9 @@ internal class HaStateCache : IHaStateCache
 
     public Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default)
         => GetEntity<HaEntityState>(entityId, cancellationToken);
+
+    public Task<HaEntityState<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
+    {
+        return GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
+    }
 }

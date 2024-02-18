@@ -21,10 +21,10 @@ internal class HaEntityProvider : IHaEntityProvider
         return GetEntity(entity_id, cancellationToken);
     }
 
-    [Obsolete("", false)]
-    public Task<HaEntityState<string, T>?> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    [Obsolete("please use GetEntity", false)]
+    public Task<HaEntityState<T>?> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
     {
-        return GetEntity<HaEntityState<string,T>>(entity_id, cancellationToken);
+        return GetEntity<HaEntityState<T>>(entity_id, cancellationToken);
     }
 
     public async Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default)
@@ -45,7 +45,7 @@ internal class HaEntityProvider : IHaEntityProvider
                 _logger.LogInformation(ex, "Error retrieving entity from cache");
             }
             
-            var apiReturn = await _api.GetEntityState(entityId, cancellationToken);
+            var apiReturn = await _api.GetEntity(entityId, cancellationToken);
             return apiReturn.entityState;
         }
     }
@@ -72,5 +72,10 @@ internal class HaEntityProvider : IHaEntityProvider
             
             return apiReturn.entityState;
         }    
+    }
+
+    public Task<HaEntityState<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
+    {
+        return GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
     }
 }
