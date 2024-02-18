@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace HaKafkaNet;
@@ -7,6 +8,19 @@ internal class HaStateCache : IHaStateCache
 {   
     IDistributedCache _cache;
 
+    static JsonSerializerOptions _options = new JsonSerializerOptions()
+    {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        Converters = 
+        {
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+            new RgbConverter(),
+            new RgbwConverter(),
+            new RgbwwConverter(),
+            new XyConverter(),
+            new HsConverter(),
+        }
+    };
     public HaStateCache(IDistributedCache cache)
     {
         _cache = cache;
@@ -18,7 +32,7 @@ internal class HaStateCache : IHaStateCache
         var cached = await _cache.GetAsync(id);
         if(cached != null)
         {
-            return JsonSerializer.Deserialize<HaEntityState>(cached)!;
+            return JsonSerializer.Deserialize<HaEntityState>(cached, _options)!;
         }
         return null;
     }
@@ -29,7 +43,7 @@ internal class HaStateCache : IHaStateCache
         var cached = await _cache.GetAsync(id);
         if(cached != null)
         {
-            return JsonSerializer.Deserialize<HaEntityState<T>>(cached)!;
+            return JsonSerializer.Deserialize<HaEntityState<T>>(cached, _options)!;
         }
         return null;
     }
@@ -45,7 +59,7 @@ internal class HaStateCache : IHaStateCache
         var cached = await _cache.GetAsync(entityId, cancellationToken);
         if(cached != null)
         {
-            return JsonSerializer.Deserialize<T>(cached);
+            return JsonSerializer.Deserialize<T>(cached, _options);
         }
         return null;     
     }
