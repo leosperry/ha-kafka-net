@@ -119,6 +119,7 @@ public static class StateExtensions
 {
     static JsonSerializerOptions _options = new JsonSerializerOptions()
     {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
         Converters = 
         {
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),

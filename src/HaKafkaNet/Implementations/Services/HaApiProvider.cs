@@ -12,6 +12,7 @@ internal class HaApiProvider : IHaApiProvider
     readonly HomeAssistantConnectionInfo _apiConfig;
     readonly JsonSerializerOptions _options = new JsonSerializerOptions()
     {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters = 
         {
