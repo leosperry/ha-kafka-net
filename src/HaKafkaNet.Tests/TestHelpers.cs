@@ -31,7 +31,7 @@ public class TestHelpers
         };
     }    
     
-    public static HaEntityState<Tstate, Tatt> GetState<Tstate, Tatt>(string entityId = "enterprise", Tstate? state = default, Tatt? atttributes = default, DateTime lastUpdated = default)
+    public static HaEntityState<Tstate, Tatt> GetState<Tstate, Tatt>(string entityId, Tstate state, Tatt? atttributes = default, DateTime lastUpdated = default)
     {
         return new HaEntityState<Tstate, Tatt>()
         {

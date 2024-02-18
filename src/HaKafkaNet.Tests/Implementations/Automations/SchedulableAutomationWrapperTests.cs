@@ -199,8 +199,8 @@ public class SchedulableAutomationTests
         auto.Setup(a => a.IsReschedulable).Returns(true);
 
         auto.SetupSequence(a => a.GetNextScheduled())
-            .Returns(DateTime.Now.AddMilliseconds(delay * 2))
-            .Returns(DateTime.Now.AddMilliseconds(delay));
+            .Returns(() => DateTime.Now.AddMilliseconds(delay * 2))
+            .Returns(() => DateTime.Now.AddMilliseconds(delay));
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
