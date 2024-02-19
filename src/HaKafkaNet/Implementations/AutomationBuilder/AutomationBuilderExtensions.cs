@@ -42,8 +42,9 @@ public static partial class AutomationBuilderExtensions
     {
         info.Execution = execution;
         return info;
-    }
+    } 
 
+    [Obsolete("", false)]
     public static SimpleAutomationWithServicesBuildingInfo WithExecution(this SimpleAutomationWithServicesBuildingInfo info, Func<IHaServices, HaEntityStateChange, CancellationToken, Task> execution)
     {
         info.ExecutionWithServcies = execution;
@@ -60,6 +61,7 @@ public static partial class AutomationBuilderExtensions
 
     }
     
+    [Obsolete("", false)]
     public static IAutomation Build(this SimpleAutomationWithServicesBuildingInfo info)
     {
         return new SimpleAutomationWithServices(
@@ -79,6 +81,7 @@ public static partial class AutomationBuilderExtensions
             .WithMeta(GetMeta(info));
     }
     
+    [Obsolete("", false)]
     public static IConditionalAutomation Build(this ConditionalAutomationWithServicesBuildingInfo info)
     {
         return new ConditionalAutomationWithServices(

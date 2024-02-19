@@ -3,7 +3,7 @@
 namespace HaKafkaNet;
 
 
-public record LightModel : BaseDeviceModel
+public record LightModel : DeviceModel
 {
     [JsonPropertyName("brightness")]
     public byte? Brightness { get; init; }

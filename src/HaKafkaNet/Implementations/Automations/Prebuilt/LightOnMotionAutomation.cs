@@ -18,7 +18,7 @@ public class LightOnMotionAutomation : SimpleAutomationBase
 
     public override Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        if (stateChange.New.State == "on")
+        if (stateChange.New.GetStateEnum<OnOff>() == OnOff.On)
         {
             //turn on any lights that are not
             return Task.WhenAll(

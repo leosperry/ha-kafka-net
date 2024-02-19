@@ -9,16 +9,22 @@ public abstract record BaseEntityModel
 {
     [JsonPropertyName("friendly_name")]
     public string? FriendlyName { get; init; }
+
+    [JsonPropertyName("icon")]
+    public string? Icon { get; init; }
 }
 
-public abstract record BaseDeviceModel : BaseEntityModel
+public record DeviceModel : BaseEntityModel
 {
     [JsonPropertyName("supported_features")]
     public int? SupportedFeatures { get; init; }
 
     [JsonPropertyName("device_class")]
     public string? DeviceClass { get; init; }
+}
 
-    [JsonPropertyName("icon ")]
-    public string? Icon { get; init; }
+public record SensorModel : DeviceModel
+{
+    [JsonPropertyName("unit_of_measurement")]
+    public string? UnitOfMeasurement { get; set; }
 }
