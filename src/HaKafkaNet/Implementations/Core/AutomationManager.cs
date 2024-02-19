@@ -93,11 +93,21 @@ internal class AutomationManager : IAutomationManager
         if (_internalAutomations.TryGetValue(id, out var auto))
         {
             auto.GetMetaData().Enabled = enable;
-            if (!enable && auto.WrappedAutomation is DelayablelAutomationWrapper conditional)
+            if (auto.WrappedAutomation is DelayablelAutomationWrapper conditional)
             {
-                //diable any running conditionals
-                conditional.StopIfRunning();
+                if (!enable)
+                {
+                    //diable any running conditionals
+                    conditional.StopIfRunning(StopReason.Disabled);
+                }
+                // else if (conditional.WrappedConditional is ISchedulableAutomation)
+                // {
+                //     //known edge case, provide mechanism for rescheduling
+                //     //automation was re-enabled via UI and will not reschedule unless trigger entity reports state change
+                //     //not likely an issue for sun based automations because of how often "sun.sun" reports
+                // }
             }
+
             return true;
         }
         //doesnt' exist / not found

@@ -75,7 +75,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
             if (!shouldContinue)
             {
-                StopIfRunning();
+                StopIfRunning(StopReason.Canceled);
                 return;
             }
 
@@ -113,7 +113,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
 
             //for sure we need to reschedule
-            StopIfRunning();
+            StopIfRunning(StopReason.Rescheduled);
             _ = StartIfNotStarted(cancellationToken);
         }
         else
@@ -128,7 +128,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
             else
             {
-                StopIfRunning();
+                StopIfRunning(StopReason.Canceled);
             }
         }
     }
@@ -241,7 +241,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
         }
     }
 
-    internal void StopIfRunning()
+    internal void StopIfRunning(StopReason reason)
     {
         if (_cts is not null)
         {
@@ -251,11 +251,10 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             {
                 if (_cts is not null)
                 {
-                    _logger.LogInformation("Canceling {automation} Named:{name}", 
-                        _meta.UnderlyingType?.GetType().Name ??  _automation.GetType().Name, _meta.Name);
+                    _logger.LogInformation($"{reason} {_meta.UnderlyingType} Named:{_meta.Name} at {DateTime.Now}");              
                     try
                     {
-                        _cts.CancelAsync();
+                        _cts.Cancel();
                     }
                     finally
                     {
@@ -277,4 +276,11 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     }
 
     public AutomationMetaData GetMetaData() => _meta;
+}
+
+internal enum StopReason
+{
+    Canceled,
+    Rescheduled,
+    Disabled
 }
