@@ -68,7 +68,7 @@ public class XyConverter : JsonConverter<XyColor>
 {
     public override XyColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var floats = JsonSerializer.Deserialize<float[]>(reader.GetString()!)!;
+        var floats = JsonSerializer.Deserialize<float[]>(ref reader)!;
         XyColor retVal = new(floats[0], floats[1]);
         return retVal;
     }
@@ -86,7 +86,7 @@ public class HsConverter : JsonConverter<HsColor>
 {
     public override HsColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var floats = JsonSerializer.Deserialize<float[]>(reader.GetString()!)!;
+        var floats = JsonSerializer.Deserialize<float[]>(ref reader)!;
         HsColor retVal = new(floats[0], floats[1]);
         return retVal;
     }

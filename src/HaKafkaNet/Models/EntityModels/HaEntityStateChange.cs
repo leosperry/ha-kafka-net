@@ -57,6 +57,7 @@ public static class StateChangeExtensions
     public static HaEntityStateChange<HaEntityState<DateTime?, T>> ToDateTimeTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<DateTime?, T>, DateTime?, T>(change);
     public static HaEntityStateChange<HaEntityState<BatteryState, JsonElement>> ToBatteryState(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, JsonElement>, BatteryState, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<BatteryState, T>> ToBatteryState<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, T>, BatteryState, T>(change);
+    public static HaEntityStateChange<HaEntityState<DateTime?, SceneControllerEvent>> ToSceneControllerEvent(this HaEntityStateChange change) => Transform<HaEntityState<DateTime?, SceneControllerEvent>, DateTime?, SceneControllerEvent>(change);
     
     //public static HaEntityStateChange<SunModel> ToSun(this HaEntityStateChange change) =>  change.Transform<SunModel, SunState, SunAttributes>();
 }

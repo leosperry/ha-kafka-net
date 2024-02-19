@@ -26,7 +26,7 @@ public record RgbwwTuple(byte Red,byte Green, byte Blue, byte White, byte WarmWh
 
 public record XyColor(float X, float Y)
 {
-    public static implicit operator XyColor((byte x, byte y) tuple)
+    public static implicit operator XyColor((float x, float y) tuple)
     {
         return new XyColor(tuple.x, tuple.y);
     }
@@ -34,7 +34,7 @@ public record XyColor(float X, float Y)
 
 public record HsColor(float Hue, float Saturation)
 {
-    public static implicit operator HsColor((byte hue, byte saturation) tuple)
+    public static implicit operator HsColor((float hue, float saturation) tuple)
     {
         return new HsColor(tuple.hue, tuple.saturation);
     }
