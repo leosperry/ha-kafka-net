@@ -1,6 +1,9 @@
 # ha-kafka-net
 ***
-Version 3 Released. See [Release](https://github.com/leosperry/ha-kafka-net/releases/tag/v3.0.0) for details. It has one significant breaking change. See release notes or the example app shows changes needed in [`AutomationRegistry.cs`](https://github.com/leosperry/ha-kafka-net/blob/main/example/HaKafkaNet.ExampleApp/Automations/AutomationRegistry.cs).
+Version 4 pre-release changes have been merged. This version brings significant improvements for strong typing entity states and attributes.
+> Note: Several methods for retrieving entities have been marked deprecated, but should still function to allow time to upgrade. The reasons for these changes are to add consistency.  In most cases, you can simply change `Get()` or `GetEntityState()` to `GetEntity()`.
+
+Documentation on new features coming soon. To get a peek at most of the new features, look for extension methods on `HaEntityState`, `HaEntityStateChange`, `IHaEntityProvider`, and `IHaStateCache`. Also look for new methods on `IHaApiProvider`.
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -73,9 +76,6 @@ This is an image of the dashboard from the example app.
 * [Automation Builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax
 * Sun model and Sun Based Automations
 * Scheduled Automation framework
-
-## Coming Soon
-Version 3.1 is in the works. It will bring significant enhancements to stronly typing entity states.
 
 ## More examples
 I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
