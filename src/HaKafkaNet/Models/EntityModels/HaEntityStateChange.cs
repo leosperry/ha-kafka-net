@@ -92,7 +92,7 @@ public static class StateChangeExtensions
     public static HaEntityStateChange<HaEntityState<SunState, SunAttributes>> ToSun(this HaEntityStateChange change) =>  Transform<HaEntityState<SunState, SunAttributes>, SunState, SunAttributes>(change);
     
     public static HaEntityStateChange<HaEntityState<OnOff, LightModel>> ToLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, LightModel>, OnOff, LightModel>(change);
-    public static HaEntityStateChange<HaEntityState<OnOff, ColoredLightModel>> ToColoredLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, ColoredLightModel>, OnOff, ColoredLightModel>(change);
+    public static HaEntityStateChange<HaEntityState<OnOff, ColorLightModel>> ToColoredLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, ColorLightModel>, OnOff, ColorLightModel>(change);
     
     public static HaEntityStateChange<HaEntityState<DateTime?, SceneControllerEvent>> ToSceneControllerEvent(this HaEntityStateChange change) => Transform<HaEntityState<DateTime?, SceneControllerEvent>, DateTime?, SceneControllerEvent>(change);
 }

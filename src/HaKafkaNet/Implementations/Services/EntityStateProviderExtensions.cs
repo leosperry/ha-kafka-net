@@ -33,8 +33,8 @@ public static class EntityStateProviderExtensions
 
     public static Task<HaEntityState<OnOff, LightModel>?> GetLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<OnOff, LightModel>>(entityId, cancellationToken);
-    public static Task<HaEntityState<OnOff, ColoredLightModel>?> GetColorLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
-        provider.GetEntity<HaEntityState<OnOff, ColoredLightModel>>(entityId, cancellationToken);
+    public static Task<HaEntityState<OnOff, ColorLightModel>?> GetColorLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<OnOff, ColorLightModel>>(entityId, cancellationToken);
     
     public static Task<SunModel?> GetSun(this IEntityStateProvider provider, CancellationToken cancellationToken = default) 
         => provider.GetEntity<SunModel>("sun.sun", cancellationToken);

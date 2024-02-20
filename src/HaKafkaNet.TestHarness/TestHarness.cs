@@ -161,7 +161,7 @@ public class TestHarness
             .ReturnsAsync(valueFunction);
     }
 
-    public void SetServicesGenericDefaults<Tstate, Tatt>(Tstate? state, Tatt attributes)
+    public void SetServicesGenericDefaults<Tstate, Tatt>(Tstate state, Tatt attributes)
     {
         ApiProvider.Setup(api => api.GetEntity<HaEntityState<Tstate,Tatt>>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetEntity(entityId, state, attributes)));

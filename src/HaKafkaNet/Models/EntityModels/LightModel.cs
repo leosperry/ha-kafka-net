@@ -21,7 +21,7 @@ public record LightModel : DeviceModel
 /// <summary>
 /// pulled from https://developers.home-assistant.io/docs/core/entity/light/
 /// </summary>
-public record ColoredLightModel : LightModel
+public record ColorLightModel : LightModel
 {
     [JsonPropertyName("color_temp_kelvin")]
     public int? TempKelvin { get; init; }
