@@ -90,7 +90,7 @@ public record LightTurnOnModel
     /// Change brightness by a percentage. Should be between -100..100.
     /// </summary>
     [JsonPropertyName("brightness_step_pct")]
-    public int? BrightnessStepPctt { get; init; }
+    public int? BrightnessStepPct { get; init; }
 
     
     /// <summary>

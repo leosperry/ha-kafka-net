@@ -24,7 +24,7 @@ public interface IAutomation : IAutomationBase
     /// <param name="stateChange">Information about the state change including the previous state if it was cached</param>
     /// <param name="cancellationToken">A token that will be marked canceled during shutdown of the worker</param>
     /// <returns></returns>
-    Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken);
+    Task Execute(HaEntityStateChange stateChange, CancellationToken ct);
 }
 
 /// <summary>
@@ -54,7 +54,7 @@ public interface IDelayableAutomation : IAutomationBase
     /// <param name="haEntityStateChange"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>boolean to indicate if the automation should be schecduled or cancled if scheduled</returns>
-    Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken);
+    Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken ct);
 
     /// <summary>
     /// Called after the first time ContinuesToBeTrue is called and after the For specified amount of time
@@ -62,7 +62,7 @@ public interface IDelayableAutomation : IAutomationBase
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Execute(CancellationToken cancellationToken);
+    Task Execute(CancellationToken ct);
 }
 
 public interface IConditionalAutomation : IDelayableAutomation

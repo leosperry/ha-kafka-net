@@ -118,6 +118,8 @@ public interface IHaApiProvider
     /// <returns></returns>
     Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default);
 
+    Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Turns off a switch
     /// </summary>

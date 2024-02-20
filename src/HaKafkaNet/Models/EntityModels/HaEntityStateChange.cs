@@ -69,18 +69,30 @@ public static class StateChangeExtensions
     /// <returns></returns>
     public static HaEntityStateChange<HaEntityState<string,Tatt>> ToAttributeTyped<Tatt>(this HaEntityStateChange change) =>  Transform<HaEntityState<string,Tatt>, string, Tatt>(change);
 
+
+    // specialized types
     public static HaEntityStateChange<HaEntityState<OnOff, JsonElement>> ToOnOff(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, JsonElement>, OnOff, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<OnOff, T>> ToOnOff<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<OnOff, T>, OnOff, T>(change);
+    
     public static HaEntityStateChange<HaEntityState<int?, JsonElement>> ToIntTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<int?, JsonElement>, int?, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<int?, T>> ToIntTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<int?, T>, int?, T>(change);
+    
     public static HaEntityStateChange<HaEntityState<double?, JsonElement>> ToDoubleTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<double?, JsonElement>, double?, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<double?, T>> ToDoubleTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<double?, T>, double?, T>(change);
+
+    public static HaEntityStateChange<HaEntityState<float?, JsonElement>> ToFloatTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<float?, JsonElement>, float?, JsonElement>(change);
+    public static HaEntityStateChange<HaEntityState<float?, T>> ToFloatTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<float?, T>, float?, T>(change);
+
     public static HaEntityStateChange<HaEntityState<DateTime?, JsonElement>> ToDateTimeTyped(this HaEntityStateChange change) =>  Transform<HaEntityState<DateTime?, JsonElement>, DateTime?, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<DateTime?, T>> ToDateTimeTyped<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<DateTime?, T>, DateTime?, T>(change);
+    
     public static HaEntityStateChange<HaEntityState<BatteryState, JsonElement>> ToBatteryState(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, JsonElement>, BatteryState, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<BatteryState, T>> ToBatteryState<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<BatteryState, T>, BatteryState, T>(change);
+    
     public static HaEntityStateChange<HaEntityState<SunState, SunAttributes>> ToSun(this HaEntityStateChange change) =>  Transform<HaEntityState<SunState, SunAttributes>, SunState, SunAttributes>(change);
+    
     public static HaEntityStateChange<HaEntityState<OnOff, LightModel>> ToLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, LightModel>, OnOff, LightModel>(change);
     public static HaEntityStateChange<HaEntityState<OnOff, ColoredLightModel>> ToColoredLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, ColoredLightModel>, OnOff, ColoredLightModel>(change);
+    
     public static HaEntityStateChange<HaEntityState<DateTime?, SceneControllerEvent>> ToSceneControllerEvent(this HaEntityStateChange change) => Transform<HaEntityState<DateTime?, SceneControllerEvent>, DateTime?, SceneControllerEvent>(change);
 }

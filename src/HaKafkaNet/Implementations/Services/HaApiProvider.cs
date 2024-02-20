@@ -136,6 +136,9 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, "restart", new{}, cancellationToken);
 
+    public Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default)
+        => CallService("remote", "send_command", new{ entity_id,  command }, cancellationToken);
+
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);
 
