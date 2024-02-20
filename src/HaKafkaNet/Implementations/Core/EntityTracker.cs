@@ -73,11 +73,11 @@ internal class EntityTracker : IDisposable
         foreach (var item in entityIds)
         {
             // check the cache, if it has been updated in the interval, ignore
-            var cached = await _cache.Get(item, _cancelSource.Token);
+            var cached = await _cache.GetEntity(item, _cancelSource.Token);
             if (cached is null || DateTime.Now - cached.LastUpdated > _maxEntityReportTime)
             {
-                var (response, entityState) = await _provider.GetEntityState(item, _cancelSource.Token);
-                if(response.StatusCode != System.Net.HttpStatusCode.OK || entityState is null || badStates.Contains(entityState.State))
+                var (response, entityState) = await _provider.GetEntity(item, _cancelSource.Token);
+                if(response.StatusCode != System.Net.HttpStatusCode.OK || entityState is null || entityState.State is null|| badStates.Contains(entityState.State))
                 {
                     yield return new(item, entityState);
                 }

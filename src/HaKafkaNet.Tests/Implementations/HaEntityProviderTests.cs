@@ -12,7 +12,7 @@ public class HaEntityProviderTests
         // Given
         Mock<IHaStateCache> cache = new();
         var fakeState = TestHelpers.GetState();
-        cache.Setup(c => c.Get(fakeState.EntityId, default))
+        cache.Setup(c => c.GetEntity(fakeState.EntityId, default))
             .ReturnsAsync(fakeState);
         
         Mock<IHaApiProvider> api = new();
@@ -22,11 +22,11 @@ public class HaEntityProviderTests
         HaEntityProvider sut = new HaEntityProvider(cache.Object, api.Object, logger.Object);
 
         // When
-        var result = await sut.GetEntityState(fakeState.EntityId);
+        var result = await sut.GetEntity(fakeState.EntityId);
     
         // Then
-        cache.Verify(c => c.Get(fakeState.EntityId, default));
-        api.Verify(a => a.GetEntityState(It.IsAny<string>(), default), Times.Never);
+        cache.Verify(c => c.GetEntity(fakeState.EntityId, default));
+        api.Verify(a => a.GetEntity(It.IsAny<string>(), default), Times.Never);
         Assert.Equal(fakeState, result);
     }
 
@@ -36,12 +36,12 @@ public class HaEntityProviderTests
         // Given
         Mock<IHaStateCache> cache = new();
         HaEntityState fakeState = TestHelpers.GetState();
-        cache.Setup(c => c.Get(fakeState.EntityId, default))
+        cache.Setup(c => c.GetEntity(fakeState.EntityId, default))
             .ReturnsAsync(default(HaEntityState)).Verifiable();
         
         Mock<IHaApiProvider> api = new();
         (HttpResponseMessage, HaEntityState) apiReturn = (default(HttpResponseMessage), fakeState)!;
-        api.Setup(a => a.GetEntityState(fakeState.EntityId, default))
+        api.Setup(a => a.GetEntity(fakeState.EntityId, default))
             .ReturnsAsync(apiReturn).Verifiable();
 
         Mock<ILogger<HaEntityProvider>> logger = new();
@@ -49,7 +49,7 @@ public class HaEntityProviderTests
         HaEntityProvider sut = new HaEntityProvider(cache.Object, api.Object, logger.Object);
 
         // When
-        var result = await sut.GetEntityState(fakeState.EntityId);
+        var result = await sut.GetEntity(fakeState.EntityId);
     
         // Then
         cache.Verify();
@@ -62,12 +62,12 @@ public class HaEntityProviderTests
         // Given
         Mock<IHaStateCache> cache = new();
         HaEntityState fakeState = TestHelpers.GetState();
-        cache.Setup(c => c.Get(fakeState.EntityId, default))
+        cache.Setup(c => c.GetEntity(fakeState.EntityId, default))
             .Throws(new Exception()).Verifiable();
         
         Mock<IHaApiProvider> api = new();
         (HttpResponseMessage, HaEntityState) apiReturn = (default(HttpResponseMessage), fakeState)!;
-        api.Setup(a => a.GetEntityState(fakeState.EntityId, default))
+        api.Setup(a => a.GetEntity(fakeState.EntityId, default))
             .ReturnsAsync(apiReturn).Verifiable();
 
         Mock<ILogger<HaEntityProvider>> logger = new();
@@ -75,7 +75,7 @@ public class HaEntityProviderTests
         HaEntityProvider sut = new HaEntityProvider(cache.Object, api.Object, logger.Object);
 
         // When
-        var result = await sut.GetEntityState(fakeState.EntityId);
+        var result = await sut.GetEntity(fakeState.EntityId);
     
         // Then
         cache.Verify();

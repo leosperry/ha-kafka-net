@@ -51,15 +51,15 @@ public class TestHarness
 
         if (defaultState is not null)
         {
-            ApiProvider.Setup(ep => ep.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            ApiProvider.Setup(ep => ep.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState(entityId, defaultState)));
 
             Func<string, CancellationToken, HaEntityState> valueFunction = (string entityId, CancellationToken _) => TestHelpers.GetState(entityId, defaultState);
 
-            EntityProvider.Setup(ep => ep.GetEntityState(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            EntityProvider.Setup(ep => ep.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(valueFunction);
 
-            Cache.Setup(c => c.Get(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            Cache.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(valueFunction);
         }
     }
@@ -141,11 +141,13 @@ public class TestHarness
             _logger.Object);
     }
 
+    [Obsolete("", false)]
     public void SetServiceGenericDefaults<T>(string state) where T : new()
     {
         SetServiceGenericDefaults<T>(state, new());
     }
 
+    [Obsolete("SetServicesGenericDefaults", false)]
     public void SetServiceGenericDefaults<T>(string state, T atttributes)
     {
         ApiProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -156,6 +158,19 @@ public class TestHarness
         EntityProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(valueFunction);
         Cache.Setup(ep => ep.Get<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(valueFunction);
+    }
+
+    public void SetServicesGenericDefaults<Tstate, Tatt>(Tstate state, Tatt attributes)
+    {
+        ApiProvider.Setup(api => api.GetEntity<HaEntityState<Tstate,Tatt>>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetEntity(entityId, state, attributes)));
+        
+        Func<string, CancellationToken, HaEntityState<Tstate, Tatt>> valueFunction = (string entityId, CancellationToken _) => TestHelpers.GetEntity(entityId, state, attributes);
+
+        EntityProvider.Setup(ep => ep.GetEntity<HaEntityState<Tstate, Tatt>>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(valueFunction);
+        Cache.Setup(ep => ep.GetEntity<HaEntityState<Tstate, Tatt>>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(valueFunction);
     }
 

@@ -33,8 +33,10 @@ internal class AutomationFactory : IAutomationFactory
         EventTiming timngs = EventTiming.PostStartup
     )
     {
-        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError);
-        scheduled.EventTimings = timngs;
+        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError)
+        {
+            EventTimings = timngs
+        };
         return scheduled;
     }
 
@@ -52,9 +54,9 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new ConditionalAutomation(
             [entity_id],
-            (sc,ct)=> Task.FromResult(sc.New.State == "on"), 
+            (sc,ct)=> Task.FromResult(sc.New.GetStateEnum<OnOff>() == OnOff.On), 
             timeToLeaveOn, 
-            ct => _services.Api.TurnOff(entity_id));
+            ct => _services.Api.TurnOff(entity_id, ct));
     }
 
     public ConditionalAutomation EntityAutoOff(string lightId, int minutes)
@@ -152,6 +154,4 @@ internal class AutomationFactory : IAutomationFactory
     {
         return new SunMidnightAutomation(execution, offset, timings, executePast);
     }
-
-    
 }

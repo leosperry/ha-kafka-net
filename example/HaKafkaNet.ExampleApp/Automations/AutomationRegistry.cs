@@ -30,14 +30,14 @@ public class AutomationRegistry : IAutomationRegistry
             TimeSpan.FromMinutes(-15)));
     }
 
-    [Obsolete("No longer a part of IAutomationRegistry", false)] // for information only
+    //[Obsolete("No longer a part of IAutomationRegistry", false)] // for information only
     public IEnumerable<IAutomation> Register()
     {
         return Enumerable.Empty<IAutomation>();
     }
 
 
-    [Obsolete("No longer a part of IAutomationRegistry", false)] // for information only
+    //[Obsolete("No longer a part of IAutomationRegistry", false)] // for information only
     public IEnumerable<IConditionalAutomation> RegisterContitionals()
     {
         return Enumerable.Empty<IConditionalAutomation>();

@@ -1,12 +1,8 @@
-global using RgbTuple = (byte red, byte green, byte blue);
-global using RgbwTuple = (byte red, byte green, byte blue, byte white);
-global using RgbwwTuple = (byte red, byte green, byte blue, byte white, byte warmWhite);
-global using XyColor = (float x, float y);
-global using HsColor = (float hue, float saturation);
-
 using System.Text.Json.Serialization;
 
 namespace HaKafkaNet;
+
+
 
 /// <summary>
 /// A model representing the settings you can use when adjusting lights
@@ -94,7 +90,7 @@ public record LightTurnOnModel
     /// Change brightness by a percentage. Should be between -100..100.
     /// </summary>
     [JsonPropertyName("brightness_step_pct")]
-    public int? BrightnessStepPctt { get; init; }
+    public int? BrightnessStepPct { get; init; }
 
     
     /// <summary>

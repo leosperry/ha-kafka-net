@@ -9,7 +9,8 @@ public abstract class SunAutomation : SchedulableAutomationBase
         EventTiming.PostStartup | EventTiming.PreStartupSameAsLastCached | 
         EventTiming.PreStartupPostLastCached | EventTiming.PreStartupNotCached;
 
-    public SunAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true): base(["sun.sun"], executePast)
+    public SunAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+        : base(["sun.sun"], executePast)
     {
         base.IsReschedulable = false;
         base.EventTimings = timings;
@@ -22,23 +23,13 @@ public abstract class SunAutomation : SchedulableAutomationBase
         DateTime? next = base.GetNextScheduled();
         if (next < DateTime.Now)
         {
-            var sunAtts = GetSunAttributes(stateChange);
+            var sunAtts = stateChange.New.GetAttributes<SunAttributes>()!;
             next = this.GetNextSunEvent(sunAtts) + _offset;
         }
         return Task.FromResult(next);
     }
 
     protected abstract DateTime GetNextSunEvent(SunAttributes atts);
-
-    private SunAttributes GetSunAttributes(HaEntityStateChange haEntityStateChange)
-    {
-        var sunAtts = haEntityStateChange.New.Convert<SunAttributes>().Attributes;
-        if (sunAtts is null)
-        {
-            throw new HaKafkaNetException("Could not calculate sunrise. Sun schema invalid");
-        }
-        return sunAtts;
-    }
 
     public override Task Execute(CancellationToken cancellationToken)
     {

@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>HaKafkaNet</PackageId>
-    <Version>3.0.2</Version>
+    <Version>4.0.0-prerelease</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
     <Description>A library for creating Home Assistant automations using the Home Assistant Kafka integration.</Description>
@@ -50,11 +50,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Implementations/Automations/BaseAutomations/" />
-    <Folder Include="Implementations/Automations/Prebuilt/" />
-    <Folder Include="Implementations/Automations/Wrappers/" />
-    <Folder Include="Implementations/Core/" />
-    <Folder Include="Implementations/Services/" />
-  </ItemGroup>
 </Project>

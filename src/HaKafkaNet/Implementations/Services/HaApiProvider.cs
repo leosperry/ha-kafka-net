@@ -12,6 +12,7 @@ internal class HaApiProvider : IHaApiProvider
     readonly HomeAssistantConnectionInfo _apiConfig;
     readonly JsonSerializerOptions _options = new JsonSerializerOptions()
     {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters = 
         {
@@ -58,7 +59,23 @@ internal class HaApiProvider : IHaApiProvider
     }
 
 
-    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
+    public Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
+    {
+        return GetEntity(entity_id, cancellationToken);
+    }
+
+    public async Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    {
+        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<string, T>>(response.Content.ReadAsStream())!),
+            _ => (response, null!)
+        };
+    }
+
+    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 
@@ -69,14 +86,14 @@ internal class HaApiProvider : IHaApiProvider
         };
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState<T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    public async Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 
         return response.StatusCode switch
         {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<T>>(response.Content.ReadAsStream())!),
-            _ => (response, null!)
+            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream())!),
+            _ => (response, default(T?))
         };
     }
 
@@ -118,6 +135,9 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, "restart", new{}, cancellationToken);
+
+    public Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default)
+        => CallService("remote", "send_command", new{ entity_id,  command }, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);

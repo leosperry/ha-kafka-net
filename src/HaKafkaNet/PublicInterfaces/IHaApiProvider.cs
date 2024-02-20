@@ -20,6 +20,7 @@ public interface IHaApiProvider
     /// </summary>
     /// <param name="entity_id"></param>
     /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
+    [Obsolete("please use GetEntity", false)]
     Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default);
     
     /// <summary>
@@ -28,7 +29,11 @@ public interface IHaApiProvider
     /// <typeparam name="T">The type to construct from the attributes</typeparam>
     /// <param name="entity_id"></param>
     /// <returns>A tuple with the response and the entity. If the response is not 200, entityState will be null</returns>
-    Task<(HttpResponseMessage response, HaEntityState<T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
+    [Obsolete("please use GetEntity", false)]
+    Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default);
+
+    Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default);
+    Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets the brightness of a light
@@ -40,7 +45,10 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> LightSetBrightness(IEnumerable<string> entity_id, byte brightness = 255, CancellationToken cancellationToken = default);
     
+    [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default);
+    
+    [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
 
@@ -109,6 +117,8 @@ public interface IHaApiProvider
     /// </summary>
     /// <returns></returns>
     Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default);
+
+    Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns off a switch
