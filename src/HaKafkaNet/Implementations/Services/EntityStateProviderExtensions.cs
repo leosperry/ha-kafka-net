@@ -11,31 +11,41 @@ public static class EntityStateProviderExtensions
     public static Task<HaEntityState<string, T>?> GetAttributeTypedEntity<T>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<string, T>>(entityId, cancellationToken);
     
-    public static Task<HaEntityState<DateTime?, JsonElement>?> GetDateTimeEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
-        provider.GetEntity<HaEntityState<DateTime?, JsonElement>>(entityId, cancellationToken);
-    public static Task<HaEntityState<DateTime?, Tatt>?> GetDateTimeEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
-        provider.GetEntity<HaEntityState<DateTime?, Tatt>>(entityId, cancellationToken);
-    
-    public static Task<HaEntityState<double?, JsonElement>?> GetDoubleEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
-        provider.GetEntity<HaEntityState<double?, JsonElement>>(entityId, cancellationToken);
-    public static Task<HaEntityState<double?, Tatt>?> GetDoubleEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
-        provider.GetEntity<HaEntityState<double?, Tatt>>(entityId, cancellationToken);
-    
     public static Task<HaEntityState<int?, JsonElement>?> GetIntegerEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<int?, JsonElement>>(entityId, cancellationToken);
     public static Task<HaEntityState<int?, Tatt>?> GetIntegerEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<int?, Tatt>>(entityId, cancellationToken);
+    
+    public static Task<HaEntityState<float?, JsonElement>?> GetFloatEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<float?, JsonElement>>(entityId, cancellationToken);
+    public static Task<HaEntityState<float?, Tatt>?> GetFloatEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<float?, Tatt>>(entityId, cancellationToken);
+        
+    public static Task<HaEntityState<double?, JsonElement>?> GetDoubleEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<double?, JsonElement>>(entityId, cancellationToken);
+    public static Task<HaEntityState<double?, Tatt>?> GetDoubleEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<double?, Tatt>>(entityId, cancellationToken);
+        
+    public static Task<HaEntityState<DateTime?, JsonElement>?> GetDateTimeEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<DateTime?, JsonElement>>(entityId, cancellationToken);
+    public static Task<HaEntityState<DateTime?, Tatt>?> GetDateTimeEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<DateTime?, Tatt>>(entityId, cancellationToken);
     
     public static Task<HaEntityState<OnOff, JsonElement>?> GetOnOffEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<OnOff, JsonElement>>(entityId, cancellationToken);
     public static Task<HaEntityState<OnOff, Tatt>?> GetOnOffEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<OnOff, Tatt>>(entityId, cancellationToken);
 
+    public static Task<HaEntityState<BatteryState, JsonElement>?> GetBatteryStateEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<BatteryState, JsonElement>>(entityId, cancellationToken);
+    public static Task<HaEntityState<BatteryState, Tatt>?> GetBatteryStateEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        provider.GetEntity<HaEntityState<BatteryState, Tatt>>(entityId, cancellationToken);
+    
+    public static Task<SunModel?> GetSun(this IEntityStateProvider provider, CancellationToken cancellationToken = default) 
+        => provider.GetEntity<SunModel>("sun.sun", cancellationToken);
+
     public static Task<HaEntityState<OnOff, LightModel>?> GetLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<OnOff, LightModel>>(entityId, cancellationToken);
     public static Task<HaEntityState<OnOff, ColorLightModel>?> GetColorLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<OnOff, ColorLightModel>>(entityId, cancellationToken);
-    
-    public static Task<SunModel?> GetSun(this IEntityStateProvider provider, CancellationToken cancellationToken = default) 
-        => provider.GetEntity<SunModel>("sun.sun", cancellationToken);
 }

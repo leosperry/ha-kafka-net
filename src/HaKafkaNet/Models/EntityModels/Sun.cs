@@ -12,8 +12,7 @@ public record SunModel : HaEntityState<SunState, SunAttributes>
 [JsonConverter(typeof(JsonStringEnumConverter<SunState>))]
 public enum SunState
 {
-    Above_Horizon,
-    Below_Horizon
+    Above_Horizon, Below_Horizon
 }
 
 public record SunAttributes()
