@@ -53,6 +53,7 @@ internal class HaEntityProvider : IHaEntityProvider
     public async Task<T?> GetEntity<T>(string entityId, CancellationToken cancellationToken = default) where T : class
     {
         using (_logger.BeginScope("fetching entity {entity_id}", entityId))
+        using (_logger.BeginScope("fetching entity {entity_id}", entityId))
         {
             try
             {
