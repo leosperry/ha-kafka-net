@@ -76,7 +76,7 @@ public static class StateExtensions
     private static bool checkForUnknown(object obj)
     {
         var str = obj.ToString();
-        return str is null || str == "unknown" || str == "unavailable";
+        return str is null || str.Equals("unknown", StringComparison.OrdinalIgnoreCase) || str.Equals("unavailable", StringComparison.OrdinalIgnoreCase);
     }
 }
 

@@ -4,10 +4,10 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace HaKafkaNet;
 
-public abstract record HaEntityStateBase
+public record HaEntityState<Tstate, Tattributes>
 {    
     [JsonPropertyName("entity_id")]
-    public virtual required string EntityId { get; init; }
+    public required string EntityId { get; init; }
 
     [JsonPropertyName("last_changed")]
     public DateTime LastChanged { get; init; }
@@ -17,12 +17,9 @@ public abstract record HaEntityStateBase
     
     [JsonPropertyName("context")]
     public HaEventContext? Context { get; init; }
-}
 
-public record HaEntityState<Tstate, Tattributes> : HaEntityStateBase
-{
     [JsonPropertyName("state")]
-    public virtual required Tstate State { get; init; }
+    public required Tstate State { get; init; }
 
     [JsonPropertyName("attributes")]
     public Tattributes? Attributes { get; init; }
