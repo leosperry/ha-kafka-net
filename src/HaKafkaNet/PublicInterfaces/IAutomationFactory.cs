@@ -31,7 +31,7 @@ public interface IAutomationFactory
     LightOffOnNoMotion LightOffOnNoMotion(IEnumerable<string> motionIds, IEnumerable<string> lightIds, TimeSpan duration);
     SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
     SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
-    SunNoonAutomation SunSNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
+    SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
     SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
     SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);
     SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true);

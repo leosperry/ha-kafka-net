@@ -6,8 +6,7 @@ namespace HaKafkaNet;
 
 public record SunModel : HaEntityState<SunState, SunAttributes>
 {
-    [JsonPropertyName("state")]
-    public override required SunState State { get; init; }
+
 } 
 
 [JsonConverter(typeof(JsonStringEnumConverter<SunState>))]

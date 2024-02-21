@@ -1,4 +1,6 @@
-﻿
+
+using System.Text.Json;
+
 namespace HaKafkaNet;
 
 /// <summary>

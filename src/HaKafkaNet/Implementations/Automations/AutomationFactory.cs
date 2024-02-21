@@ -114,7 +114,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunNoonAutomation SunSNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
     {
         return new SunNoonAutomation(execution, offset, timings, executePast);
     }
