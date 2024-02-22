@@ -21,7 +21,7 @@ public abstract class SunAutomation : SchedulableAutomationBase
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         DateTime? next = base.GetNextScheduled();
-        if (next < DateTime.Now)
+        if (next is null || next < DateTime.Now)
         {
             var sunAtts = stateChange.New.GetAttributes<SunAttributes>()!;
             next = this.GetNextSunEvent(sunAtts) + _offset;
