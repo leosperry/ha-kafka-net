@@ -3,7 +3,7 @@
 public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta
 {    
     private AutomationMetaData? _meta;
-    private DateTime _nextExecution;
+    private DateTime? _nextExecution;
     private ReaderWriterLockSlim _lock = new();
 
     public bool IsReschedulable { get; protected set;}
@@ -22,7 +22,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
                 try
                 {
                     _lock.EnterWriteLock();
-                    _nextExecution = nextEvent.Value;
+                    _nextExecution = nextEvent;
                 }
                 finally
                 {
