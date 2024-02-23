@@ -1,8 +1,9 @@
 # HaKafkaNet
 ***
 Version 4 Released! 
-* Durable automations - Automations that will survive restarts.
-* Strong typing entity states - This version brings several improvements to this area including methods for strong typing an entity's `State` property, as well as several models for common entity attributes.
+* [Durable automations](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) - Automations that will survive restarts.
+* Strong typing entity states - This version brings several improvements to this area including methods for strong typing an entity's `State` and `Attributes` properties. See [State](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) and [Provider](https://github.com/leosperry/ha-kafka-net/wiki/Entity-Provider-Extension-Methods) extension methods.
+* [Utility Classes](https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes) - New classes and models for you to use
 
 > Note: Several methods for retrieving entities have been marked deprecated, but should still function to allow time to upgrade. The reasons for these changes are to add consistency.  In most cases, you can simply change `Get()` or `GetEntityState()` to `GetEntity()`.
 
