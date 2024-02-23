@@ -17,7 +17,7 @@ jobs:
       working-directory: ./example/HaKafkaNet.ExampleApp
     - name: Build
       run: dotnet build
-      working-directory: ./src/HaKafkaNet.ExampleApp
+      working-directory: ./example/HaKafkaNet.ExampleApp
     - name: Test
       run: dotnet test
       working-directory: ./src/HaKafkaNet.ExampleApp.Tests
