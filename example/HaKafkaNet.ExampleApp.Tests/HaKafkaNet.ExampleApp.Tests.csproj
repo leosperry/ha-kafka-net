@@ -23,17 +23,17 @@
 
     <PackageReference Include="Moq" Version="4.20.70" />
     
-    <!-- <PackageReference Include="HaKafkaNet" Version="3.*" />
-    <PackageReference Include="HaKafkaNet.TestHarness" Version="3.*" /> -->
+    <PackageReference Include="HaKafkaNet" Version="4.*" />
+    <PackageReference Include="HaKafkaNet.TestHarness" Version="4.*" />
 
   </ItemGroup>
 
-  <ItemGroup>
+   <ItemGroup>
     <ProjectReference Include="..\HaKafkaNet.ExampleApp\HaKafkaNet.ExampleApp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\..\src\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>
