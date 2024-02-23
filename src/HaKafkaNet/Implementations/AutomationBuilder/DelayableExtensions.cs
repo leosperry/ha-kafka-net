@@ -8,9 +8,32 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
+    /// <summary>
+    /// Tells the builder that automation should execute past events. It does not by default.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="info"></param>
+    /// <returns></returns>
     public static T ShouldExecutePastEvents<T>(this T info) where T : DelayableAutomationBuildingInfo
     {
         info.ShouldExecutePastEvents = true;
+        return info;
+    }
+
+    /// <summary>
+    /// Creates an automation that will survive restarts.
+    /// Sets EventTimings to Durable
+    /// Sets both ShouldExecutePastEvents and IsReschedulable to true
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    public static T MakeDurable<T>(this T info) where T : SchedulableAutomationBuildingInfo
+    {
+        info.ShouldExecutePastEvents = true;
+        info.EventTimings = EventTiming.Durable;
+        info.IsReschedulable = true;
+
         return info;
     }
 
@@ -89,6 +112,12 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
+    /// <summary>
+    /// Tells the automation how to get the next scheuled time
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="getNextFromState">Asynchronous method that should return a DateTime? based on input state change. Return null if you do not want to schedule</param>
+    /// <returns></returns>
     public static SchedulableAutomationBuildingInfo GetNextScheduled(this SchedulableAutomationBuildingInfo info, GetNextEventFromEntityState getNextFromState)
     {
         info.GetNextScheduled = getNextFromState;

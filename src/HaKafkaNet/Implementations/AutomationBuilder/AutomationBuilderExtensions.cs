@@ -110,22 +110,22 @@ public static partial class AutomationBuilderExtensions
         {
             SunEventType.Dawn => new SunDawnAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Rise => new SunRiseAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Noon => new SunNoonAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Set => new SunSetAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Dusk => new SunDuskAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Midnight => new SunMidnightAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
-                info.Offset, info.EventTimings ?? SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, info.ExecutePast),
+                info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             _ => throw new AutomationBuilderException("Unknown sun type. This should not be possible")
         };
     }

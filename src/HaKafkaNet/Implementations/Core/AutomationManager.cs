@@ -29,7 +29,7 @@ internal class AutomationManager : IAutomationManager
     private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
-        IEnumerable<IAutomationRegistry> registries,
+        IEnumerable<IAutomationRegistry>? registries,
         IInternalRegistrar registrar,
         ISystemObserver observer,
         ILogger<AutomationManager> logger)
@@ -38,7 +38,7 @@ internal class AutomationManager : IAutomationManager
         _observer = observer;
         this._logger = logger;
 
-        foreach (var reg in registries)
+        foreach (var reg in registries ?? Enumerable.Empty<IAutomationRegistry>())
         {
             reg.Register(_registrar);
         }

@@ -187,7 +187,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                     {
                         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                        return Task.Delay(delay, _cts.Token).ContinueWith(t => ActualExecute(cancellationToken, CleanUpTokenSource), _cts.Token);
+                        return Task.Delay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
                     }
                     finally
                     {

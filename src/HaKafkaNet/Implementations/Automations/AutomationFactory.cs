@@ -40,6 +40,22 @@ internal class AutomationFactory : IAutomationFactory
         return scheduled;
     }
 
+    public SchedulableAutomation CreateDurable(
+        IEnumerable<string> triggerIds, 
+        GetNextEventFromEntityState getNextEvent,
+        Func<CancellationToken, Task> execution,
+        bool shouldExecutePastEvents = true,
+        bool shouldExecuteOnError = false
+    )
+    {
+        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError)
+        {
+            IsReschedulable = true,
+            EventTimings = EventTiming.Durable
+        };
+        return scheduled;    
+    }
+
     public SimpleAutomation SimpleAutomation(IEnumerable<string> triggerEntities, Func<HaEntityStateChange, CancellationToken, Task> execute, 
         EventTiming eventTimings = EventTiming.PostStartup)
     {
@@ -61,7 +77,70 @@ internal class AutomationFactory : IAutomationFactory
 
     public ConditionalAutomation EntityAutoOff(string lightId, int minutes)
         => EntityAutoOff(lightId, TimeSpan.FromMinutes(minutes));
-    
+
+    public SchedulableAutomation DurableAutoOn(string entityId, TimeSpan timeToLeaveOff)
+    {
+        if (timeToLeaveOff < TimeSpan.Zero)
+        {
+            throw new ArgumentException($"{nameof(timeToLeaveOff)} cannot be negative", nameof(timeToLeaveOff));
+        }
+        return new SchedulableAutomation([entityId],
+             (sc, ct) =>{
+                var onOffState = sc.ToOnOff();
+                if (onOffState.New.State == OnOff.On)
+                {
+                    return Task.FromResult<DateTime?>(null);
+                }
+                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
+            },ct => _services.Api.TurnOn(entityId), true)
+            {
+                IsReschedulable = true,
+                EventTimings = EventTiming.Durable
+            };
+    }
+
+    public SchedulableAutomation DurableAutoOff(string entityId, TimeSpan timeToLeaveOn)
+    {
+        if (timeToLeaveOn < TimeSpan.Zero)
+        {
+            throw new ArgumentException($"{nameof(timeToLeaveOn)} cannot be negative", nameof(timeToLeaveOn));
+        }
+        return new SchedulableAutomation([entityId],
+             (sc, ct) =>{
+                var onOffState = sc.ToOnOff();
+                if (onOffState.New.State == OnOff.Off)
+                {
+                    return Task.FromResult<DateTime?>(null);
+                }
+                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+            },ct => _services.Api.TurnOff(entityId), true)
+            {
+                IsReschedulable = true,
+                EventTimings = EventTiming.Durable
+            };
+    }
+
+    public SchedulableAutomation DurableAutoOffOnEntityOff(string entityToTurnOff, string triggerEntity, TimeSpan timeToLeaveOn)
+    {
+        if (timeToLeaveOn < TimeSpan.Zero)
+        {
+            throw new ArgumentException($"{nameof(timeToLeaveOn)} cannot be negative", nameof(timeToLeaveOn));
+        }
+        return new SchedulableAutomation([triggerEntity],
+             (sc, ct) =>{
+                var onOffState = sc.ToOnOff();
+                if (onOffState.New.State == OnOff.Off)
+                {
+                    return Task.FromResult<DateTime?>(null);
+                }
+                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+            },ct => _services.Api.TurnOff(entityToTurnOff), true)
+            {
+                IsReschedulable = true,
+                EventTimings = EventTiming.Durable,
+                ShouldExecutePastEvents = true
+            };
+    }
 
     public LightOnMotionAutomation LightOnMotion(string motionId, string lightId)
     {
@@ -90,7 +169,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunrise</param>
     /// <returns></returns>
-    public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunDawnAutomation(execution, offset, timings, executePast);
     }
@@ -102,7 +181,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunrise</param>
     /// <returns></returns>
-    public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunRiseAutomation(execution, offset, timings, executePast);
     }
@@ -114,7 +193,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunNoonAutomation(execution, offset, timings, executePast);
     }
@@ -126,7 +205,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunSetAutomation(execution, offset, timings, executePast);
     }
@@ -138,7 +217,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunDuskAutomation(execution, offset, timings, executePast);
     }
@@ -150,7 +229,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <param name="execution"></param>
     /// <param name="offset">Positive or negative offset from Sunset</param>
     /// <returns></returns>
-    public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = SunAutomation.DEFAULT_SUN_EVENT_TIMINGS, bool executePast = true)
+    public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunMidnightAutomation(execution, offset, timings, executePast);
     }

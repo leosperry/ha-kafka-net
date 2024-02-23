@@ -6,7 +6,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
     private DateTime? _nextExecution;
     private ReaderWriterLockSlim _lock = new();
 
-    public bool IsReschedulable { get; protected set;}
+    public bool IsReschedulable { get; set;}
 
     public override sealed async Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
     {
@@ -102,12 +102,20 @@ public class SchedulableAutomation : SchedulableAutomationBase
 
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        return _getNext(stateChange, cancellationToken);
+        if (!cancellationToken.IsCancellationRequested)
+        {
+            return _getNext(stateChange, cancellationToken);
+        }
+        return Task.FromResult<DateTime?>(null);
     }
 
     public override Task Execute(CancellationToken cancellationToken)
     {
-        return _execution(cancellationToken);
+        if (!cancellationToken.IsCancellationRequested)
+        {
+            return _execution(cancellationToken);
+        }
+        return Task.CompletedTask;
     }
 }
 

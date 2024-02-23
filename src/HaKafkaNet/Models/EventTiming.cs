@@ -29,6 +29,10 @@ public enum EventTiming
     /// </summary>
     PostStartup =                   0b100000,
     /// <summary>
+    /// Primarily used for schedulable events that need to survive restarts 
+    /// </summary>
+    Durable =                       0b110101,
+    /// <summary>
     /// When IAutomation.EventTiming is set to this value, all events will be passed to the IAutomation
     /// </summary>
     All =                           0b111111
