@@ -1,9 +1,11 @@
-# ha-kafka-net
+# HaKafkaNet
 ***
-Version 4 pre-release changes have been merged. This version brings significant improvements for strong typing entity states and attributes.
+Version 4 Released! 
+* Durable automations - Automations that will survive restarts.
+* Strong typing entity states - This version brings several improvements to this area including methods for strong typing an entity's `State` property, as well as several models for common entity attributes.
+
 > Note: Several methods for retrieving entities have been marked deprecated, but should still function to allow time to upgrade. The reasons for these changes are to add consistency.  In most cases, you can simply change `Get()` or `GetEntityState()` to `GetEntity()`.
 
-Documentation on new features coming soon. To get a peek at most of the new features, look for extension methods on `HaEntityState`, `HaEntityStateChange`, `IHaEntityProvider`, and `IHaStateCache`. Also look for new methods on `IHaApiProvider`.
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
