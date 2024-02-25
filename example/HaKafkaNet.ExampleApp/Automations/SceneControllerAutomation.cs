@@ -1,7 +1,10 @@
 ﻿
-
 namespace HaKafkaNet.ExampleApp;
 
+/// <summary>
+/// https://github.com/leosperry/ha-kafka-net/wiki/Scene-Controllers
+/// </summary>
+[ExcludeFromDiscovery]
 public class SceneControllerAutomation : IAutomation
 {
     public Task Execute(HaEntityStateChange stateChange, CancellationToken ct)
