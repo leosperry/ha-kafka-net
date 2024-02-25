@@ -23,12 +23,12 @@ public static class StateExtensions
     {
         try
         {
-            //hack
-            var stringToDeserialize = typeof(T) == typeof(string) ? $"\"{state.State}\"" : state.State;
-            return JsonSerializer.Deserialize<T>(stringToDeserialize);
+            var stringToDeserialize = $"\"{state.State}\"";
+            return JsonSerializer.Deserialize<T>(stringToDeserialize, _options);
         }
-        catch (System.Exception) 
+        catch (Exception) 
         {
+            //System.Console.WriteLine(ex);
             // if state is unknown or unavailable, return default
         }
         return default;
@@ -55,6 +55,11 @@ public static class StateExtensions
         return state.Attributes.GetProperty(key).Deserialize<T>(_options);
     }
 
+    public static T? GetFromElement<T>(this JsonElement element, string key)
+    {
+        return element.GetProperty(key).Deserialize<T>(_options);
+    }
+
     /// <summary>
     /// returns true when state is null or state.State is null or state.State equals "unknown" or "unavailable"
     /// </summary>
@@ -77,6 +82,18 @@ public static class StateExtensions
     {
         var str = obj.ToString();
         return str is null || str.Equals("unknown", StringComparison.OrdinalIgnoreCase) || str.Equals("unavailable", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// returns true if the state and last updated times have less than one second difference.
+    /// sometimes scene controllers update state, but wern't actually pressed
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
+    public static bool StateAndLastUpdatedWithin1Second<_>(this HaEntityState<DateTime?, _> state)
+    {
+        var diff = state?.State - state?.LastUpdated;
+        return diff is not null && Math.Abs(diff.Value.TotalSeconds) < 1;
     }
 }
 
