@@ -122,6 +122,11 @@ internal class AutomationFactory : IAutomationFactory
 
     public SchedulableAutomation DurableAutoOffOnEntityOff(string entityToTurnOff, string triggerEntity, TimeSpan timeToLeaveOn)
     {
+        return DurableAutoOffOnEntityOff([entityToTurnOff], triggerEntity, timeToLeaveOn);
+    }
+
+    public SchedulableAutomation DurableAutoOffOnEntityOff(IEnumerable<string> entitiesToTurnOff, string triggerEntity, TimeSpan timeToLeaveOn)
+    {
         if (timeToLeaveOn < TimeSpan.Zero)
         {
             throw new ArgumentException($"{nameof(timeToLeaveOn)} cannot be negative", nameof(timeToLeaveOn));
@@ -134,12 +139,12 @@ internal class AutomationFactory : IAutomationFactory
                     return Task.FromResult<DateTime?>(null);
                 }
                 return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
-            },ct => _services.Api.TurnOff(entityToTurnOff), true)
+            },ct => _services.Api.TurnOff(entitiesToTurnOff), true)
             {
                 IsReschedulable = true,
                 EventTimings = EventTiming.Durable,
                 ShouldExecutePastEvents = true
-            };
+            };    
     }
 
     public LightOnMotionAutomation LightOnMotion(string motionId, string lightId)
@@ -232,5 +237,35 @@ internal class AutomationFactory : IAutomationFactory
     public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
         return new SunMidnightAutomation(execution, offset, timings, executePast);
+    }
+
+    public SimpleAutomation EntityOnOffWithAnother(string primaryEntityId, params string[] secondaries)
+    {
+        return new SimpleAutomation([primaryEntityId],
+            (sc, ct) =>{
+                var onOffState = sc.ToOnOff();
+                return onOffState.New.State switch
+                {
+                    OnOff.On => _services.Api.TurnOn(secondaries),
+                    OnOff.Off => _services.Api.TurnOff(secondaries),
+                    _ => Task.CompletedTask
+                };
+
+            }, EventTiming.PostStartup);
+    }
+
+    public SimpleAutomation EntityOnOffOppositeAnother(string primaryEntityId, params string[] secondaries)
+    {
+        return new SimpleAutomation([primaryEntityId],
+            (sc, ct) =>{
+                var onOffState = sc.ToOnOff();
+                return onOffState.New.State switch
+                {
+                    OnOff.On => _services.Api.TurnOff(secondaries),
+                    OnOff.Off => _services.Api.TurnOn(secondaries),
+                    _ => Task.CompletedTask
+                };
+
+            }, EventTiming.PostStartup);
     }
 }

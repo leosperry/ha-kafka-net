@@ -31,11 +31,14 @@ public interface IAutomationFactory
         bool shouldExecuteOnError = false
     );
 
+    SimpleAutomation EntityOnOffWithAnother(string primaryEntityId, params string[] secondaries);
+    SimpleAutomation EntityOnOffOppositeAnother(string primaryEntityId, params string[] secondaries);
     ConditionalAutomation EntityAutoOff(string entity_id, TimeSpan timeToLeaveOn);
     ConditionalAutomation EntityAutoOff(string entity_id, int minutes);
     SchedulableAutomation DurableAutoOn(string entityId, TimeSpan timeToLeaveOff);
     SchedulableAutomation DurableAutoOff(string entityId, TimeSpan timeToLeaveOn);
     SchedulableAutomation DurableAutoOffOnEntityOff(string entityToTurnOff, string triggerEntity, TimeSpan timeToLeaveOn);
+    SchedulableAutomation DurableAutoOffOnEntityOff(IEnumerable<string> entitiesToTurnOff, string triggerEntity, TimeSpan timeToLeaveOn);
     LightOnMotionAutomation LightOnMotion(string motionId, string lightId);
     LightOnMotionAutomation LightOnMotion(IEnumerable<string> motionId, IEnumerable<string> lightId);
     LightOffOnNoMotion LightOffOnNoMotion(string motionId, string lightId, TimeSpan duration);
