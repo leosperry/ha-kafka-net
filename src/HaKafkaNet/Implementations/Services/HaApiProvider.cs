@@ -33,6 +33,7 @@ internal class HaApiProvider : IHaApiProvider
         TURN_OFF = "turn_off",
         TOGGLE = "toggle",
         LIGHT = "light",
+        LOCK = "lock",
         SWITCH = "switch" ;
     #endregion
 
@@ -124,6 +125,13 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> LightTurnOn(LightTurnOnModel settings, CancellationToken cancellationToken = default)
         => CallService(LIGHT, TURN_ON, settings, cancellationToken);
 
+    public Task<HttpResponseMessage> LockLock(string entity_id, CancellationToken cancellationToken = default) 
+        => CallService(LOCK, LOCK, new{entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> LockUnLock(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(LOCK, "unlock", new{entity_id}, cancellationToken);
+    public Task<HttpResponseMessage> LockOpen(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(LOCK, "open", new{entity_id}, cancellationToken);
     public Task<HttpResponseMessage> NotifyGroupOrDevice(string groupName, string message, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, groupName, new { message }, cancellationToken);
 
@@ -174,5 +182,7 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TOGGLE, new {entity_id}, cancellationToken);
-
+    
+    public Task<HttpResponseMessage> ZwaveJs_SetConfigParameter(object config, CancellationToken cancellationToken = default)
+        => CallService("zwave_js", "set_config_parameter", config, cancellationToken);
 }

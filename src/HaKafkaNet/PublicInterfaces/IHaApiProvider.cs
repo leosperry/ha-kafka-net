@@ -51,6 +51,9 @@ public interface IHaApiProvider
     [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
+    Task<HttpResponseMessage> LockLock(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LockUnLock(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> LockOpen(string entity_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns on a light
@@ -162,4 +165,13 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Beta functionality: May break in future versions
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="config"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [Obsolete("Not obsolete, but likly to change.", false)]
+    Task<HttpResponseMessage> ZwaveJs_SetConfigParameter(object config, CancellationToken cancellationToken = default);
 }
