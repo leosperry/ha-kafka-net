@@ -12,7 +12,7 @@ public abstract record LatLongModel : BaseEntityModel
     
 }
 
-public record ZoneAttributes : LatLongModel
+public record ZoneModel : LatLongModel
 {
     [JsonPropertyName("radius")]
     public int radius { get; set; }

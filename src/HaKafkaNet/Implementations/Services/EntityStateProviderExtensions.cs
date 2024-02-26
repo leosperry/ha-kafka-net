@@ -48,4 +48,15 @@ public static class EntityStateProviderExtensions
         provider.GetEntity<HaEntityState<OnOff, LightModel>>(entityId, cancellationToken);
     public static Task<HaEntityState<OnOff, ColorLightModel>?> GetColorLightEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<OnOff, ColorLightModel>>(entityId, cancellationToken);
+
+
+    public static Task<HaEntityState<string, PersonModel>?> GetPersonEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<string, PersonModel>>(entityId, cancellationToken);
+
+    public static Task<HaEntityState<string, DeviceTrackerModel>?> GetDeviceTrackerEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<string, DeviceTrackerModel>>(entityId, cancellationToken);
+
+    public static Task<HaEntityState<int?, ZoneModel>?> GetZoneEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<int?, ZoneModel>>(entityId, cancellationToken);
+
 }

@@ -70,6 +70,6 @@ public static class StateChangeExtensions
 
     public static HaEntityStateChange<HaEntityState<string, DeviceTrackerModel>> ToDeviceTracker(this HaEntityStateChange change) => Transform<HaEntityState<string, DeviceTrackerModel>, string, DeviceTrackerModel>(change);
     public static HaEntityStateChange<HaEntityState<string, PersonModel>> ToPerson(this HaEntityStateChange change) => Transform<HaEntityState<string, PersonModel>, string, PersonModel>(change);
-    public static HaEntityStateChange<HaEntityState<int, ZoneAttributes>> ToZone(this HaEntityStateChange change) => Transform<HaEntityState<int, ZoneAttributes>, int, ZoneAttributes>(change);
+    public static HaEntityStateChange<HaEntityState<int, ZoneModel>> ToZone(this HaEntityStateChange change) => Transform<HaEntityState<int, ZoneModel>, int, ZoneModel>(change);
 }
 
