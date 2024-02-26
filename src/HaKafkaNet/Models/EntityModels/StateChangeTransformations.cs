@@ -41,7 +41,6 @@ public static class StateChangeExtensions
     /// <returns></returns>
     public static HaEntityStateChange<HaEntityState<string,Tatt>> ToAttributeTyped<Tatt>(this HaEntityStateChange change) =>  Transform<HaEntityState<string,Tatt>, string, Tatt>(change);
 
-
     // specialized types
     public static HaEntityStateChange<HaEntityState<OnOff, JsonElement>> ToOnOff(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, JsonElement>, OnOff, JsonElement>(change);
     public static HaEntityStateChange<HaEntityState<OnOff, T>> ToOnOff<T>(this HaEntityStateChange change) =>  Transform<HaEntityState<OnOff, T>, OnOff, T>(change);
@@ -67,5 +66,10 @@ public static class StateChangeExtensions
     public static HaEntityStateChange<HaEntityState<OnOff, ColorLightModel>> ToColorLight(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, ColorLightModel>, OnOff, ColorLightModel>(change);
     
     public static HaEntityStateChange<HaEntityState<DateTime?, SceneControllerEvent>> ToSceneControllerEvent(this HaEntityStateChange change) => Transform<HaEntityState<DateTime?, SceneControllerEvent>, DateTime?, SceneControllerEvent>(change);
+
+
+    public static HaEntityStateChange<HaEntityState<string, DeviceTrackerModel>> ToDeviceTracker(this HaEntityStateChange change) => Transform<HaEntityState<string, DeviceTrackerModel>, string, DeviceTrackerModel>(change);
+    public static HaEntityStateChange<HaEntityState<string, PersonModel>> ToPerson(this HaEntityStateChange change) => Transform<HaEntityState<string, PersonModel>, string, PersonModel>(change);
+    public static HaEntityStateChange<HaEntityState<int, ZoneAttributes>> ToZone(this HaEntityStateChange change) => Transform<HaEntityState<int, ZoneAttributes>, int, ZoneAttributes>(change);
 }
 

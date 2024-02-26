@@ -46,10 +46,12 @@ public static class StateExtensions
         }
         return default;
     }
+
     public static T? GetAttributes<T>(this HaEntityState state)
     {
         return JsonSerializer.Deserialize<T>(state.Attributes, _options);
     }
+
     public static T? GetFromAttributes<T>(this HaEntityState state, string key)
     {
         return state.Attributes.GetProperty(key).Deserialize<T>(_options);
@@ -94,6 +96,11 @@ public static class StateExtensions
     {
         var diff = state?.State - state?.LastUpdated;
         return diff is not null && Math.Abs(diff.Value.TotalSeconds) < 1;
+    }
+
+    public static bool IsHome<_>(this HaEntityState<string, _> state) where _ : TrackerModelBase
+    {
+        return state.State == "home";
     }
 }
 
