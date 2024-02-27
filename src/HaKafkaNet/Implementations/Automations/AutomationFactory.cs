@@ -30,12 +30,13 @@ internal class AutomationFactory : IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false,
-        EventTiming timngs = EventTiming.PostStartup
+        EventTiming timngs = EventTiming.PostStartup,
+        bool reschedudulable = false
     )
     {
-        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError)
+        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError, reschedudulable)
         {
-            EventTimings = timngs
+            EventTimings = timngs,
         };
         return scheduled;
     }
@@ -45,12 +46,13 @@ internal class AutomationFactory : IAutomationFactory
         GetNextEventFromEntityState getNextEvent,
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = true,
-        bool shouldExecuteOnError = false
+        bool shouldExecuteOnError = false,
+        bool reschedudulable = false
     )
     {
         var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError)
         {
-            IsReschedulable = true,
+            IsReschedulable = reschedudulable,
             EventTimings = EventTiming.Durable
         };
         return scheduled;    
@@ -86,15 +88,14 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([entityId],
              (sc, ct) =>{
-                var onOffState = sc.ToOnOff();
-                if (onOffState.New.State == OnOff.On)
+                if (sc.ToOnOff().TurnedOff())
                 {
-                    return Task.FromResult<DateTime?>(null);
+                    Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
                 }
-                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
-            },ct => _services.Api.TurnOn(entityId), true)
+                return Task.FromResult(default(DateTime?));
+            },
+            ct => _services.Api.TurnOn(entityId), true,false,false)
             {
-                IsReschedulable = true,
                 EventTimings = EventTiming.Durable
             };
     }
@@ -107,15 +108,13 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([entityId],
              (sc, ct) =>{
-                var onOffState = sc.ToOnOff();
-                if (onOffState.New.State == OnOff.Off)
+                if (sc.ToOnOff().TurnedOn())
                 {
-                    return Task.FromResult<DateTime?>(null);
+                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
-                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+                return Task.FromResult(default(DateTime?));
             },ct => _services.Api.TurnOff(entityId), true)
             {
-                IsReschedulable = true,
                 EventTimings = EventTiming.Durable
             };
     }
@@ -133,15 +132,13 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([triggerEntity],
              (sc, ct) =>{
-                var onOffState = sc.ToOnOff();
-                if (onOffState.New.State == OnOff.Off)
+                if (sc.ToOnOff().TurnedOff())
                 {
-                    return Task.FromResult<DateTime?>(null);
+                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
-                return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+                return Task.FromResult<DateTime?>(null);                
             },ct => _services.Api.TurnOff(entitiesToTurnOff), true)
             {
-                IsReschedulable = true,
                 EventTimings = EventTiming.Durable,
                 ShouldExecutePastEvents = true
             };    

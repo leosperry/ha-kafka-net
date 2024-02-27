@@ -20,7 +20,8 @@ public interface IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false,
-        EventTiming timngs = EventTiming.PostStartup
+        EventTiming timngs = EventTiming.PostStartup, 
+        bool reschedudulable = false
     );
 
     SchedulableAutomation CreateDurable(
@@ -28,7 +29,8 @@ public interface IAutomationFactory
         GetNextEventFromEntityState getNextEvent,
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = true,
-        bool shouldExecuteOnError = false
+        bool shouldExecuteOnError = false,
+        bool reschedudulable = false
     );
 
     SimpleAutomation EntityOnOffWithAnother(string primaryEntityId, params string[] secondaries);

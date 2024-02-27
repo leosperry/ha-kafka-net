@@ -1,7 +1,4 @@
-﻿using System.Data.SqlTypes;
-using System.Numerics;
-using FluentValidation.Validators;
-using Microsoft.Extensions.Options;
+﻿using System.Numerics;
 
 namespace HaKafkaNet;
 

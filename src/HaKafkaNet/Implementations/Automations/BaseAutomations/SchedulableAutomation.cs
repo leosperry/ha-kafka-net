@@ -94,10 +94,12 @@ public class SchedulableAutomation : SchedulableAutomationBase
         GetNextEventFromEntityState getNextEvent,
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
-        bool shouldExecuteOnError = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
+        bool shouldExecuteOnError = false,
+        bool reschedudulable = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
     {
         _getNext = getNextEvent;
         _execution = execution;
+        IsReschedulable = reschedudulable;
     }
 
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
