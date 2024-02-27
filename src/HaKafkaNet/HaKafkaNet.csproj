@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>HaKafkaNet</PackageId>
-    <Version>4.1.0</Version>
+    <Version>4.1.1</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
     <Description>A library for creating Home Assistant automations using the Home Assistant Kafka integration.</Description>
