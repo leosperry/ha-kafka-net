@@ -153,6 +153,10 @@ public static class ServicesExtensions
                         ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(conditional);
                         break;
+                    case var _ when typeof(ISchedulableAutomation).IsAssignableFrom(type):
+                        ServiceDescriptor schedulable = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
+                        services.TryAddEnumerable(schedulable);
+                        break;
                     case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
                         ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Singleton);
                         services.TryAddEnumerable(registry);
