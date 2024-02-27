@@ -1,12 +1,7 @@
 # HaKafkaNet
-***
-Version 4 Released! 
-* [Durable automations](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) - Automations that will survive restarts.
-* Strong typing entity states - This version brings several improvements to this area including methods for strong typing an entity's `State` and `Attributes` properties. See [State](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) and [Provider](https://github.com/leosperry/ha-kafka-net/wiki/Entity-Provider-Extension-Methods) extension methods.
-* [Utility Classes](https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes) - New classes and models for you to use
-
-> Note: Several methods for retrieving entities have been marked deprecated, but should still function to allow time to upgrade. The reasons for these changes are to add consistency.  In most cases, you can simply change `Get()` or `GetEntityState()` to `GetEntity()`.
-
+Version 4.1 Released! 
+* New Geolocation models
+* New state change helpers - For example, if you want to check that a switch changed from off to on (not check only the current state): `stateChange.ToOnOff().TurnedOn()`
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
@@ -21,20 +16,19 @@ It was created with the following goals:
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
 * Join the new [Discord Server](https://discord.gg/RaGu72RbCt)
 
-## Why ha-kafka-net ?
-* Kafka allows you to replay events. Therefore, when your application starts, it can quickly load the states of all your Home Assistant entities, and even handle missed events based on your choosing. See [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings) for more details.
-* Strongly typed access to entities
+## Why ha-kafka-net ? 
+* [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
+* Durability - Schedule automations that will [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) and even catch state changes that happened durring the restart. See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
 * UI to manage your automations and inspect Kafka consumers. 
 * Monitoring capabilities through [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
   * Global Exception Handler
   * Be alerted of non-responsive entities
-* Pre-built automations
-* Extensible framework - create your own reusable automations
+* [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
+* Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
   * Create your own automamtions from scratch
-* Delayed event handling with multiple scheduling options
-* Automation builder with fluent syntax for quickly creating automations.
-* Full unit testability and componet level testing with Test Harness
+* [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax for quickly creating automations.
+* Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
 * MIT license
 
 ### Dashboard
@@ -52,6 +46,8 @@ This is an image of the dashboard from the example app.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
 
 ## Features recently added
+* Geolocation models
+* More helpers and API calls
 * [Strongly typed access to Entities](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods).
 
 ## More examples
