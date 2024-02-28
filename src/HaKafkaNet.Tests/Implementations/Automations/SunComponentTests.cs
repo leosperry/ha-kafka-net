@@ -32,7 +32,7 @@ public class SunComponentTests
 
 
         // When
-        await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached));
+        autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached));
         await Task.Delay(1000);
     
         // Then
@@ -62,7 +62,7 @@ public class SunComponentTests
 
 
         // When
-        await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));
+        autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));
         await Task.Delay(500);
     
         // Then
@@ -92,7 +92,7 @@ public class SunComponentTests
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object, observer.Object,  autoLogger.Object);
 
         // When
-        await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));
+        autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));
         await Task.Delay(500);
     
         // Then

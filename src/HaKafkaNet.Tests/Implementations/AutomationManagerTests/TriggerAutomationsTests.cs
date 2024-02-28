@@ -43,7 +43,8 @@ public class TriggerAutomationsTests
         var fakeStateChange = TestHelpers.GetStateChange();
         AutomationManager sut = GetManager(auto, oabserver);
         //act
-        await sut.TriggerAutomations(fakeStateChange, default);
+        sut.TriggerAutomations(fakeStateChange, default);
+        await Task.Delay(1000);
 
         //assert
         oabserver.Verify(o => o.OnUnhandledException(It.IsAny<AutomationMetaData>(), It.Is<AggregateException>(ae => ae.InnerExceptions.Any(e => e.Message == "self destruct"))));
