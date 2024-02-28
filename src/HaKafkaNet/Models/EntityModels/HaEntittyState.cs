@@ -85,6 +85,14 @@ public record HaEntityState<Tstate, Tattributes>
 
 public record HaEntityState : HaEntityState<string, JsonElement>
 {
+    /// <summary>
+    /// Used internally for startup EventTiming.PreStartupSameAsLastCached
+    /// for a state change, change.Old should be same as change.New.Previous
+    /// except for pre-startup pre cached
+    /// Will be null if fetched from IHaApi
+    /// </summary>
+    public HaEntityState? Previous{ get; internal set; }
+
     [Obsolete("please use Attributes extension method", true)]
     public HaEntityState<T> Convert<T>()
     {

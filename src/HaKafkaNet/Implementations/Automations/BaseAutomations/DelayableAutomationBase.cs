@@ -7,7 +7,7 @@ public abstract class DelayableAutomationBase : IDelayableAutomation
     public EventTiming EventTimings 
     { 
         get => _timings;
-        internal set => _timings = value; 
+        set => _timings = value; 
     }
     public bool ShouldExecutePastEvents { get; set; }
     public bool ShouldExecuteOnContinueError { get; set; }

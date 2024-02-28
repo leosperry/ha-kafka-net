@@ -28,11 +28,37 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
     public async Task Handle(IMessageContext context, HaEntityState message)
     {
+        HaEntityState? cached = await HandleCacheAndPrevious(context, message);
+
+        //if no automations need trigger, return
+        if (!_autoMgr.HasAutomationsForEntity(message.EntityId))
+        {
+            return;
+        }
+
+        var timing = getEventTiming(cached, message);
+
+        var stateChange = new HaEntityStateChange()
+        {
+            EventTiming = timing,
+            EntityId = message.EntityId,
+            New = message,
+            Old = timing == EventTiming.PreStartupSameAsLastCached ? cached?.Previous: cached
+        };
+
+        _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped);
+    }
+
+
+    private async Task<HaEntityState?> HandleCacheAndPrevious(IMessageContext context, HaEntityState message)
+    {
         var cachedBytes = await _cache.GetAsync(message.EntityId);
         HaEntityState cached = null!;
         if (cachedBytes is not null)
         {
             cached = JsonSerializer.Deserialize<HaEntityState>(cachedBytes)!;
+            cached.Previous = null; // don't recursivly explode the cache
+            message.Previous = cached;
         }
 
         if (cached is null || message.LastUpdated > cached.LastUpdated)
@@ -42,26 +68,16 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             _ = _cache.SetAsync(message.EntityId, value, _cacheOptions, context.ConsumerContext.WorkerStopped);
         }
 
-        //if no automations need trigger, return
-        if (!_autoMgr.HasAutomationsForEntity(message.EntityId))
-        {
-            return;
-        }
-
-        var stateChange = new HaEntityStateChange()
-        {
-            EventTiming = message.LastUpdated >= _startTime ? EventTiming.PostStartup : getStartupEventTiming(cached!, message),
-            EntityId = message.EntityId,
-            New = message,
-            Old = cached
-        };
-        
-        _ = _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped);
+        return cached;
     }
 
-    EventTiming getStartupEventTiming(HaEntityState cached, HaEntityState current)
+    EventTiming getEventTiming(HaEntityState? cached, HaEntityState current)
     {
-        if (cached == null)
+        if (current.LastUpdated >= _startTime)
+        {
+            return EventTiming.PostStartup;
+        }
+        if (cached is null)
         {
             return EventTiming.PreStartupNotCached;
         }
