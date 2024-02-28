@@ -98,6 +98,12 @@ public static class StateExtensions
         return diff is not null && Math.Abs(diff.Value.TotalSeconds) < 1;
     }
 
+    public static bool IsOn<_>(this HaEntityState<OnOff, _> state)
+        => state.State == OnOff.On;
+
+    public static bool IsOff<_>(this HaEntityState<OnOff, _> state)
+        => state.State == OnOff.Off;
+
     public static bool IsHome<_>(this HaEntityState<string, _> state) where _ : TrackerModelBase
     {
         return state.State == "home";

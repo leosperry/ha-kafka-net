@@ -4,6 +4,10 @@
 public enum EventTiming
 {
     /// <summary>
+    /// Can be used in development to effectivly disable an automation
+    /// </summary>
+    None =                          0b000000,
+    /// <summary>
     /// There is no corresponding cache entry for the state currently being handled
     /// </summary>
     PreStartupNotCached =           0b000001,
@@ -32,6 +36,11 @@ public enum EventTiming
     /// Primarily used for schedulable events that need to survive restarts 
     /// </summary>
     Durable =                       0b110101,
+    /// <summary>
+    /// Used for making durable schedulable automations, but will not trigger event if item was not cached.
+    /// For certain edge cases where the cache was wiped and compaction has not run, where old events may exist in topic
+    /// </summary>
+    DurableIfCached =               0b110100,
     /// <summary>
     /// When IAutomation.EventTiming is set to this value, all events will be passed to the IAutomation
     /// </summary>

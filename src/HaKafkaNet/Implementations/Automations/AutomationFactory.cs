@@ -72,7 +72,7 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new ConditionalAutomation(
             [entity_id],
-            (sc,ct)=> Task.FromResult(sc.New.GetStateEnum<OnOff>() == OnOff.On), 
+            (sc,ct)=> Task.FromResult(sc.New.GetStateEnum<OnOff>() == OnOff.On),
             timeToLeaveOn, 
             ct => _services.Api.TurnOff(entity_id, ct));
     }
@@ -88,7 +88,7 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([entityId],
              (sc, ct) =>{
-                if (sc.ToOnOff().TurnedOff())
+                if (sc.ToOnOff().IsOff())
                 {
                     Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
                 }
@@ -108,7 +108,7 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([entityId],
              (sc, ct) =>{
-                if (sc.ToOnOff().TurnedOn())
+                if (sc.ToOnOff().IsOn())
                 {
                     return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
@@ -132,11 +132,11 @@ internal class AutomationFactory : IAutomationFactory
         }
         return new SchedulableAutomation([triggerEntity],
              (sc, ct) =>{
-                if (sc.ToOnOff().TurnedOff())
+                if (sc.ToOnOff().IsOff())
                 {
                     return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
-                return Task.FromResult<DateTime?>(null);                
+                return Task.FromResult<DateTime?>(null);
             },ct => _services.Api.TurnOff(entitiesToTurnOff), true)
             {
                 EventTimings = EventTiming.Durable,
