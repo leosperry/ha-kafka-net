@@ -27,7 +27,7 @@ public class SimpleLightAutomation : IAutomation, IAutomationMeta
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        var currentLightState = await _services.EntityProvider.GetAttributeTypedEntity<LightAttributes>(_idOfLightToDim);
+        var currentLightState = await _services.EntityProvider.GetColorLightEntity(_idOfLightToDim);
         if (currentLightState == null)
         {
             return;

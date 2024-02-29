@@ -1,6 +1,7 @@
 ﻿
 namespace HaKafkaNet.ExampleApp;
 
+[ExcludeFromDiscovery] //remove this line in your implementation
 public class ExampleDurableAutomation2 : SchedulableAutomationBase
 {
     // constants defined for code clairy only

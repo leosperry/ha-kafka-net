@@ -5,7 +5,7 @@ namespace MyHome.Dev;
 /// <summary>
 /// https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations
 /// </summary>
-[ExcludeFromDiscovery]
+[ExcludeFromDiscovery] //remove this line in your implementation
 public class ExampleDurableAutomation : ISchedulableAutomation
 {
     private DateTime? _nextScheduled;

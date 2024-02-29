@@ -4,7 +4,7 @@ namespace MyHome.Dev;
 /// <summary>
 /// https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations
 /// </summary>
-[ExcludeFromDiscovery]
+[ExcludeFromDiscovery] //remove this line in your implementation
 public class MotionBehaviorTuttorial : IAutomation, IAutomationMeta
 {
     readonly string _motion, _light;
@@ -20,8 +20,8 @@ public class MotionBehaviorTuttorial : IAutomation, IAutomationMeta
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        var homeState = await _services.EntityProvider.GetOnOffEntity("input_boolean.am_home", cancellationToken);
-        var isHome = homeState?.State == OnOff.On;
+        var homeState = await _services.EntityProvider.GetPersonEntity("person.name", cancellationToken);
+        var isHome = homeState?.IsHome() ?? false;
 
         if (isHome)
             await _services.Api.TurnOn(_light);
