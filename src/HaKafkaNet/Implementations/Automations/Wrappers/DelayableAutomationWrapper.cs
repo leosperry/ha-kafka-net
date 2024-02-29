@@ -1,7 +1,4 @@
-﻿
-using System.Diagnostics;
-using Confluent.Kafka;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 

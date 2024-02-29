@@ -1,6 +1,4 @@
 ﻿
-using Microsoft.Extensions.Logging;
-
 namespace HaKafkaNet;
 
 internal class AutomationFactory : IAutomationFactory

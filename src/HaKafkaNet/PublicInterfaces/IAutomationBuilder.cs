@@ -1,7 +1,4 @@
-﻿using System.Data;
-using Confluent.Kafka;
-using Microsoft.AspNetCore.Http;
-
+﻿
 namespace HaKafkaNet;
 
 public interface IAutomationBuilder

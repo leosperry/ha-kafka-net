@@ -1,8 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography.Xml;
-using System.Text.Json;
-using Microsoft.AspNetCore.Routing.Internal;
-
+﻿
 namespace HaKafkaNet;
 
 public record HaEntityStateChange<T>
