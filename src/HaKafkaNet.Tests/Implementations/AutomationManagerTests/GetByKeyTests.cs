@@ -70,7 +70,7 @@ public class GetByKeyTests
         Mock<ILogger> logger = new();
         var fake = new FakeAutoWithMeta();
         fake.SetKey("!@#$ Evil !@#$ Spock !@#$");
-        AutomationWrapper wrapper = new AutomationWrapper(new FakeAutoWithMeta(), logger.Object, "test");
+        AutomationWrapper wrapper = new AutomationWrapper(fake, logger.Object, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
