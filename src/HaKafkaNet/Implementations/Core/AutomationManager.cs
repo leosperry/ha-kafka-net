@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
@@ -16,6 +17,8 @@ internal interface IAutomationManager
     /// <returns>true if found and updated, otherwise false</returns>
     bool EnableAutomation(Guid id, bool Enable);
 
+    IAutomationWrapper GetByKey(string key);
+
     IEnumerable<string> GetAllEntitiesToTrack();
 }
 
@@ -25,7 +28,8 @@ internal class AutomationManager : IAutomationManager
     readonly ISystemObserver _observer;
     private readonly ILogger<AutomationManager> _logger;
 
-    private  Dictionary<Guid, IAutomationWrapper> _internalAutomations = new();
+    private  Dictionary<Guid, IAutomationWrapper> _internalAutomations;
+    private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey;
     private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
@@ -43,8 +47,12 @@ internal class AutomationManager : IAutomationManager
             reg.Register(_registrar);
         }
 
-        _internalAutomations = _registrar.Registered
-            .ToDictionary(a => a.GetMetaData().Id);
+        var allRegistered = _registrar.Registered.ToArray();
+        SetKeys(allRegistered);
+
+        _internalAutomations = _registrar.Registered.ToDictionary(a => a.GetMetaData().Id);
+
+        _internalAutomationsByKey = allRegistered.ToDictionary(a => a.GetMetaData().GivenKey);
 
         //get by trigger
         this._automationsByTrigger = (
@@ -56,9 +64,44 @@ internal class AutomationManager : IAutomationManager
             select (key, collection)).ToDictionary();
     }
 
+    private void SetKeys(IAutomationWrapper[] allRegistered)
+    {
+        Dictionary<string, int> takenKeys = new();
+        foreach (var auto in allRegistered)
+        {
+            var meta = auto.GetMetaData();
+
+            var cleaned = CleanName(meta.KeyRequest ?? meta.Name);
+            if (!takenKeys.TryAdd(cleaned, 1))
+            {
+                takenKeys[cleaned]++;
+            }
+            if (takenKeys[cleaned] == 1)
+            {
+                meta.GivenKey = cleaned;
+            }
+            else
+            {
+                meta.GivenKey = cleaned + takenKeys[cleaned].ToString();
+            }
+        }
+    }
+
+    private string CleanName(string name)
+    {
+        Regex stripper = new Regex("[^A-Za-z0-9_-]+");
+        var stripped = stripper.Replace(name, " ").Trim();
+        return stripped.Replace(' ', '_');
+    }
+
     public IEnumerable<IAutomationWrapper> GetAll()
     {
         return _internalAutomations.Values;
+    }
+
+    public IAutomationWrapper GetByKey(string key)
+    {
+        return _internalAutomationsByKey[key];
     }
 
     public IEnumerable<IAutomationWrapper> GetByTriggerEntityId(string entityId)

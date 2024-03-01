@@ -2,12 +2,6 @@
 
 public interface IAutomationRegistry
 {
-    // [Obsolete("Please use Register(IRegistrar reg) instead",false)]
-    // IEnumerable<IAutomation> Register() => Enumerable.Empty<IAutomation>();
-
-    // [Obsolete("Please use Register(IRegistrar reg) instead",false)]
-    // IEnumerable<IConditionalAutomation> RegisterContitionals() => Enumerable.Empty<IConditionalAutomation>();
-
     void Register(IRegistrar reg);
 }
 
