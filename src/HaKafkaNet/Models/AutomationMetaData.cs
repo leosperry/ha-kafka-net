@@ -5,6 +5,7 @@ public record AutomationMetaData
     public bool Enabled { get; set; } = true;
     public required string Name { get; init; }
     public string? Description { get; init;}
+    [Obsolete("will be replace with a key in V5", false)]
     public Guid Id { get; init; } = Guid.NewGuid();
     public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
     public string? UnderlyingType { get; internal set; }
