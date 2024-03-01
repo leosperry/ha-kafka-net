@@ -10,7 +10,6 @@ public static class SimpleAutomationExtensions
             Name = name,
             Description = description,
             Enabled = enabledAtStartup,
-            Id = id ?? Guid.NewGuid(),
         };
         auto.SetMeta(meta);
         return auto;
@@ -35,7 +34,6 @@ public static class ContitionalAutomationExtensions
             Name = name,
             Description = description,
             Enabled = enabledAtStartup,
-            Id = id ?? Guid.NewGuid(),
         };
         auto.SetMeta(meta);
         return auto;
@@ -66,7 +64,6 @@ public static class SchedulableExtensions
             Name = name,
             Description = description,
             Enabled = enabledAtStartup,
-            Id = id ?? Guid.NewGuid(),
         };
         auto.SetMeta(meta);
         return auto;

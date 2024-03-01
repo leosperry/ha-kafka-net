@@ -37,7 +37,6 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                 Name = _automation.GetType().Name,
                 Description = _automation.GetType().Name,
                 Enabled = true,
-                Id = Guid.NewGuid(),
                 UnderlyingType = _automation.GetType().Name
             };
         }

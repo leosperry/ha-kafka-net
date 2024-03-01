@@ -21,7 +21,6 @@ public abstract class ConditionalAutomationBase : DelayableAutomationBase, ICond
             Name = thisType.Name,
             Description = thisType.FullName,
             Enabled = true,
-            Id = Guid.NewGuid(),
             UnderlyingType = thisType.Name
         };
     }

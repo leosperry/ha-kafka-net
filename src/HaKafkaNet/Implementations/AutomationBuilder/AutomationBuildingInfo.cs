@@ -2,7 +2,7 @@
 
 public abstract class AutomationBuildingInfo
 {
-    internal Guid? Id { get; set; }
+    internal string? KeyRequest { get; set; }
     internal string? Name { get; set; }
     internal string? Description { get; set; }
     internal bool EnabledAtStartup { get; set; }
