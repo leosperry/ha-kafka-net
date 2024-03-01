@@ -43,7 +43,7 @@ public class TriggerAutomationsTests
         var fakeStateChange = TestHelpers.GetStateChange();
         AutomationManager sut = GetManager(auto, oabserver);
         //act
-        sut.TriggerAutomations(fakeStateChange, default);
+        await sut.TriggerAutomations(fakeStateChange, default);
         await Task.Delay(1000);
 
         //assert

@@ -6,7 +6,7 @@ internal interface IAutomationManager
 {
     IEnumerable<IAutomationWrapper> GetAll();
     bool HasAutomationsForEntity(string entityId);
-    void TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default);
+    Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Enables or disables an automation
@@ -70,7 +70,7 @@ internal class AutomationManager : IAutomationManager
         return Enumerable.Empty<AutomationWrapper>();
     }
 
-    public void TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default)
+    public Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default)
     {
         var tasks = 
             from a in GetByTriggerEntityId(stateChange.EntityId)
@@ -84,7 +84,7 @@ internal class AutomationManager : IAutomationManager
                 }
             });
             
-        _ = Task.WhenAll(tasks.ToArray());
+        return Task.WhenAll(tasks.ToArray());
     }
 
     public bool HasAutomationsForEntity(string entityId)
