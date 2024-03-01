@@ -27,6 +27,9 @@ internal class AutomationWrapper : IAutomationWrapper
         _log = logger;
         var underlyingType = automation is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
         
+        _triggers = automation.TriggerEntityIds();
+        _eventTimings = automation.EventTimings;
+
         if (automation is IAutomationMeta metaAuto)
         {
             _meta = metaAuto.GetMetaData();
@@ -40,13 +43,20 @@ internal class AutomationWrapper : IAutomationWrapper
                 Description = underlyingType.FullName,
                 Enabled = true,
                 Id = Guid.NewGuid(),
+                KeyRequest = GenerateKey(source, underlyingType.Name),
                 UnderlyingType = underlyingType.Name
             };
         }
+
+        
+
+        if (string.IsNullOrEmpty(_meta.KeyRequest))
+        {
+            _meta.KeyRequest = _meta.Name;
+        }
+
         _meta.Source = source;
         
-        _triggers = automation.TriggerEntityIds();
-        _eventTimings = automation.EventTimings;
     }
 
     /// <summary>
@@ -72,7 +82,13 @@ internal class AutomationWrapper : IAutomationWrapper
             }
         }
     }
-    
+
+    private string GenerateKey(string source, string name)
+    {
+        var triggers = _triggers.Any() ? _triggers.Aggregate((s1,s2) => $"{s1}-{s2}") : string.Empty;
+        return $"{source}-{name}-{triggers}";
+    }    
+
     public AutomationMetaData GetMetaData()
     {
         return _meta;
