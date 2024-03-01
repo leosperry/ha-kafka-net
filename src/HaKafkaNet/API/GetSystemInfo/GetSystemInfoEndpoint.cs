@@ -39,7 +39,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                     var meta = a.GetMetaData();
                     return new AutomationInfo()
                     {
-                        Id = meta.Id,
+                        Key = meta.GivenKey,
                         Name = meta.Name,
                         Description = meta.Description ?? string.Empty,
                         TypeName = meta.UnderlyingType ?? string.Empty,
@@ -50,7 +50,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                         LastTriggered = meta.LastTriggered?.ToString() ?? "None",
                         LastExecuted = meta.IsDelayable ? meta.LastExecuted?.ToString() ?? "None" : "N/A"
                     };
-                }).ToDictionary(item => item.Id)
+                }).ToDictionary(item => item.Key)
             }
         });
     }

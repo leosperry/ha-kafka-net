@@ -22,7 +22,7 @@ internal class EnableAutomationEndpoint : Endpoint<EnableEndpointRequest>
 
     public override Task HandleAsync(EnableEndpointRequest req, CancellationToken ct)
     {
-        if (_automationManager.EnableAutomation(req.Id, req.Enable))
+        if (_automationManager.EnableAutomation(req.Key, req.Enable))
         {
             return SendOkAsync(ct);
         }
@@ -32,6 +32,7 @@ internal class EnableAutomationEndpoint : Endpoint<EnableEndpointRequest>
 
 public class EnableEndpointRequest
 {
-    public Guid Id { get; set; }
+    //public Guid Id { get; set; }
+    public required string Key { get; set; }
     public bool Enable { get; set; }
 }

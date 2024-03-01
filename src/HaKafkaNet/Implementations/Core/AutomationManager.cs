@@ -12,10 +12,10 @@ internal interface IAutomationManager
     /// <summary>
     /// Enables or disables an automation
     /// </summary>
-    /// <param name="id">The ID of the automation to update</param>
+    /// <param name="key">The key of the automation to update</param>
     /// <param name="Enable">true to enable; false to disable</param>
     /// <returns>true if found and updated, otherwise false</returns>
-    bool EnableAutomation(Guid id, bool Enable);
+    bool EnableAutomation(string key, bool enable);
 
     IAutomationWrapper GetByKey(string key);
 
@@ -28,7 +28,7 @@ internal class AutomationManager : IAutomationManager
     readonly ISystemObserver _observer;
     private readonly ILogger<AutomationManager> _logger;
 
-    private  Dictionary<Guid, IAutomationWrapper> _internalAutomations;
+    //private  Dictionary<Guid, IAutomationWrapper> _internalAutomations;
     private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey;
     private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
 
@@ -50,13 +50,13 @@ internal class AutomationManager : IAutomationManager
         var allRegistered = _registrar.Registered.ToArray();
         SetKeys(allRegistered);
 
-        _internalAutomations = _registrar.Registered.ToDictionary(a => a.GetMetaData().Id);
+        //_internalAutomations = _registrar.Registered.ToDictionary(a => a.GetMetaData().Id);
 
         _internalAutomationsByKey = allRegistered.ToDictionary(a => a.GetMetaData().GivenKey);
 
         //get by trigger
         this._automationsByTrigger = (
-            from a in _internalAutomations.Values
+            from a in _internalAutomationsByKey.Values
             from t in a.TriggerEntityIds() ?? Enumerable.Empty<string>()
             group a by t into autoGroup
             let key = autoGroup.Key
@@ -96,7 +96,7 @@ internal class AutomationManager : IAutomationManager
 
     public IEnumerable<IAutomationWrapper> GetAll()
     {
-        return _internalAutomations.Values;
+        return _internalAutomationsByKey.Values;
     }
 
     public IAutomationWrapper GetByKey(string key)
@@ -133,9 +133,9 @@ internal class AutomationManager : IAutomationManager
     public bool HasAutomationsForEntity(string entityId)
         => _automationsByTrigger.ContainsKey(entityId);
 
-    public bool EnableAutomation(Guid id, bool enable)
+    public bool EnableAutomation(string key, bool enable)
     {
-        if (_internalAutomations.TryGetValue(id, out var auto))
+        if (_internalAutomationsByKey.TryGetValue(key, out var auto))
         {
             auto.GetMetaData().Enabled = enable;
             if (auto.WrappedAutomation is DelayablelAutomationWrapper conditional)
@@ -162,7 +162,7 @@ internal class AutomationManager : IAutomationManager
     public IEnumerable<string> GetAllEntitiesToTrack()
     {
         var ids = 
-            from a in _internalAutomations.Values
+            from a in _internalAutomationsByKey.Values
             let meta = a.GetMetaData()
             where meta.Enabled
             let autoIds = 

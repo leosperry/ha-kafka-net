@@ -4,12 +4,15 @@ public record SystemInfoResponse
 {
     public bool StateHandlerInitialized { get; init; }
     public required string Version { get; init; }
-    public required Dictionary<Guid, AutomationInfo> Automations{ get; init; }
+    public required Dictionary<string, AutomationInfo> Automations{ get; init; }
 }
 
 public record AutomationInfo
 {
+    [Obsolete("use key instead", true)]
     public Guid Id { get; set; }
+
+    public required string Key { get; set; }
     public required string Name { get; init; }
     public required string Description { get; set; }
     public required string TypeName { get; init; }

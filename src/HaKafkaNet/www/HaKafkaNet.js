@@ -24,11 +24,11 @@ class HaKafkaNetRoot extends React.Component {
 
     async handleCheckboxChange(evt)
     {
-        var automationId = evt.target.getAttribute('data-id');
+        var automationKey = evt.target.getAttribute('data-key');
         var checked = evt.target.checked;
 
         var payload = {
-            id : automationId,
+            key : automationKey,
             enable: checked
         };
 
@@ -42,7 +42,7 @@ class HaKafkaNetRoot extends React.Component {
 
         if (response.ok) {
            this.setState(prevState => {
-            prevState.systemInfo.data.automations[automationId].enabled = checked;
+            prevState.systemInfo.data.automations[automationKey].enabled = checked;
             return {systemInfo: prevState.systemInfo};
            });
         }
@@ -86,10 +86,10 @@ class HaKafkaNetRoot extends React.Component {
                     <tbody>
                         { this.state.systemInfo.data && 
                             Object.entries(this.state.systemInfo.data.automations).map(([id, item]) =>(
-                                <tr key={item.id.toString()}>
+                                <tr key={item.key}>
                                     <td>
                                         <div className="form-check form-switch">
-                                            <input className="form-check-input" type="checkbox" checked={item.enabled ? 'checked' : ''} onChange={this.handleCheckboxChange} data-id={item.id} />
+                                            <input className="form-check-input" type="checkbox" checked={item.enabled ? 'checked' : ''} onChange={this.handleCheckboxChange} data-key={item.key} />
                                         </div>
                                     </td>
                                     <td>{item.name}</td>
@@ -100,28 +100,28 @@ class HaKafkaNetRoot extends React.Component {
 
                                     <div id="accordion">
                                         <div className="card">
-                                            <div className="card-header" id={"heading1" + item.id}>
+                                            <div className="card-header" id={"heading1" + item.key}>
                                                 <h5 className="mb-0">
-                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#triggers" + item.id} aria-expanded="false" aria-controls={"triggers" + item.id}>
+                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#triggers" + item.key} aria-expanded="false" aria-controls={"triggers" + item.key}>
                                                     Triggers
                                                     </button>
                                                 </h5>
                                             </div>  
-                                            <div id={"triggers" + item.id} className="collapse" aria-labelledby={"heading1" + item.id} data-parent="#accordion">
+                                            <div id={"triggers" + item.key} className="collapse" aria-labelledby={"heading1" + item.key} data-parent="#accordion">
                                                 <div className="card-body">
                                                     {item.triggerIds.map(trigger =>(<p key={trigger}>{trigger}</p>))}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="card">
-                                            <div className="card-header" id={"heading2" + item.id}>
+                                            <div className="card-header" id={"heading2" + item.key}>
                                                 <h5 className="mb-0">
-                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#additional" + item.id} aria-expanded="false" aria-controls="collapseOne">
+                                                    <button className="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target={"#additional" + item.key} aria-expanded="false" aria-controls="collapseOne">
                                                     Additional
                                                     </button>
                                                 </h5>
                                             </div>  
-                                            <div id={"additional" + item.id} className="collapse" aria-labelledby={"heading2" + item.id} data-parent="#accordion">
+                                            <div id={"additional" + item.key} className="collapse" aria-labelledby={"heading2" + item.key} data-parent="#accordion">
                                                 <div className="card-body">
                                                     {item.additionalEntitiesToTrack.map(e =>(<p key={e}>{e} </p>))}
                                                 </div>
