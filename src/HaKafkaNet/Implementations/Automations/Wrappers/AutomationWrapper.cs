@@ -42,7 +42,6 @@ internal class AutomationWrapper : IAutomationWrapper
                 Name = underlyingType.Name,
                 Description = underlyingType.FullName,
                 Enabled = true,
-                Id = Guid.NewGuid(),
                 KeyRequest = GenerateKey(source, underlyingType.Name),
                 UnderlyingType = underlyingType.Name
             };

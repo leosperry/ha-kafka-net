@@ -77,7 +77,6 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
             Name = thisType.Name,
             Description = thisType.FullName,
             Enabled = true,
-            Id = Guid.NewGuid(),
             UnderlyingType = thisType.Name
         };
     }

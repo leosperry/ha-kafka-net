@@ -26,7 +26,6 @@ public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta
             Name = thisType.Name,
             Description = thisType.FullName,
             Enabled = true,
-            Id = Guid.NewGuid(),
             UnderlyingType = thisType.Name
         };
     }

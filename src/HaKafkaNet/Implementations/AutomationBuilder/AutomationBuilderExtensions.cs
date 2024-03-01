@@ -1,9 +1,10 @@
 ﻿namespace HaKafkaNet;
 public static partial class AutomationBuilderExtensions
 {
+    [Obsolete("Id has been replaced with key. This method does nothing", false)]
     public static T WithId<T>(this T info, Guid id) where T: AutomationBuildingInfo
     {
-        info.Id = id;
+        //info.Id = id;
         return info;
     }
 
@@ -155,7 +156,6 @@ public static partial class AutomationBuilderExtensions
             Name = info.Name ?? $"from builder {info.GetType().Name}",
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
-            Id = Guid.NewGuid(),
             AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null
         };
     }
