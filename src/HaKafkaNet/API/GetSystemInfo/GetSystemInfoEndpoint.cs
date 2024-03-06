@@ -50,7 +50,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
                         LastTriggered = meta.LastTriggered?.ToString() ?? "None",
                         LastExecuted = meta.IsDelayable ? meta.LastExecuted?.ToString() ?? "None" : "N/A"
                     };
-                }).ToDictionary(item => item.Key)
+                }).ToArray()
             }
         });
     }

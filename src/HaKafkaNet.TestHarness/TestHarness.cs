@@ -239,7 +239,7 @@ public class TestHarness
     {
         foreach (var auto in _autoMgr!.GetAll())
         {
-            _autoMgr.EnableAutomation(auto.GetMetaData().Id, true);
+            _autoMgr.EnableAutomation(auto.GetMetaData().GivenKey, true);
         }
     }
 
