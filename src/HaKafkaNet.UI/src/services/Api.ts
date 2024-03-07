@@ -1,9 +1,13 @@
 import { SystemInfo } from "../models/SystemInfo";
 
 class HknApi {
-    
+    baseUrl = import.meta.env.VITE_SOME_KEY ?? '';
+    sysInfoUrl = this.baseUrl + '/api/systeminfo';
+    enableUrl = this.baseUrl + '/api/automation/enable';
+
+
      async GetSystemInfo() : Promise<SystemInfo> {
-        const response = await fetch('http://localhost:5062/api/systeminfo',{
+        const response = await fetch(this.sysInfoUrl,{
           mode: "cors"
         });
         const responseData = await response.json();
@@ -17,14 +21,13 @@ class HknApi {
             enable: enable
         };
 
-        return fetch('http://localhost:5062/api/automation/enable', {
+        return fetch(this.enableUrl, {
             method: 'POST',
             headers:{
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(payload)
         });  
-        
       }
 
 
