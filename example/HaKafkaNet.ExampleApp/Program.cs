@@ -4,6 +4,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
+// // for local development of dashboard only
+// services.AddCors(options => {
+//     options.AddPolicy("hknDev", policy =>{
+//         policy.WithOrigins("*");
+//         policy.AllowAnyHeader();
+//     });
+// });
+
 HaKafkaNetConfig config = new HaKafkaNetConfig();
 builder.Configuration.GetSection("HaKafkaNet").Bind(config);
 services.AddHaKafkaNet(config);
@@ -27,7 +35,10 @@ services.AddStackExchangeRedisCache(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Redirect("dashboard.html"));
+app.MapGet("/", () => Results.Redirect("index.html"));
+
+// // for local development of dashboard only
+// app.UseCors("hknDev");
 
 await app.StartHaKafkaNet();
 
