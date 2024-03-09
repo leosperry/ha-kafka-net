@@ -8,7 +8,7 @@ public static class StateChangeHelperExtensions
         => change.New.IsOn();
 
     public static bool IsOff<_>(this HaEntityStateChange<HaEntityState<OnOff, _>> change)
-        => change.New.IsOn();
+        => change.New.IsOff();
 
     public static bool TurnedOn<_>(this HaEntityStateChange<HaEntityState<OnOff, _>> change, bool allowOldNull = true)
         => Turned(change, OnOff.On, allowOldNull);
