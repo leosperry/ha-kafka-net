@@ -1,7 +1,6 @@
 # HaKafkaNet
-Version 4.1 Released! 
-* New Geolocation models
-* New state change helpers - For example, if you want to check that a switch changed from off to on (not check only the current state): `stateChange.ToOnOff().TurnedOn()`
+Version 4.2 Released! 
+New UI! - Dashboard has moved from `~/dashboard.html` to `~/index.html`.
 ***
 HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
 It was created with the following goals:
