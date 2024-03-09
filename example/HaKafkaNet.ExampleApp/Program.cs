@@ -35,7 +35,7 @@ services.AddStackExchangeRedisCache(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Redirect("index.html"));
+app.MapGet("/", () => Results.Redirect("hakafkanet"));
 
 // // for local development of dashboard only
 // app.UseCors("hknDev");

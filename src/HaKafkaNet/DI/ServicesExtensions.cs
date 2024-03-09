@@ -61,8 +61,8 @@ public static class ServicesExtensions
         if(config.UseDashboard)
         {
             services.AddFastEndpoints();
+            services.AddMvc().AddApplicationPart(Assembly.GetAssembly(typeof(ServicesExtensions))!);
         }
-
         return services;
     }
 
@@ -80,13 +80,12 @@ public static class ServicesExtensions
             var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             app.UseStaticFiles(new StaticFileOptions()
             {
-                RequestPath = "",
-                FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www")),
+                RequestPath = "/assets",
+                FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www/assets")),
             });
-            if (config.UseDashboard)
-            {
-                app.UseFastEndpoints();
-            }
+            app.UseFastEndpoints();
+            app.UseRouting();
+            app.MapControllers();
         }
 
         if (config.ExposeKafkaFlowDashboard)
