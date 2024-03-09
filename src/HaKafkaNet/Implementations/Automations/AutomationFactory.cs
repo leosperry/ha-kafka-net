@@ -138,7 +138,6 @@ internal class AutomationFactory : IAutomationFactory
             },ct => _services.Api.TurnOff(entitiesToTurnOff), true)
             {
                 EventTimings = EventTiming.Durable,
-                ShouldExecutePastEvents = true
             };    
     }
 
