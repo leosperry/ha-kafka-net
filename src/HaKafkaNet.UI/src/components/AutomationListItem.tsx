@@ -1,6 +1,8 @@
 import { AutomationData } from "../models/AutomationData";
 import {useEffect, useState } from "react";
 import { Api } from "../services/Api";
+import { useNavigate } from "react-router-dom";
+
 
 
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 
 
 function AutomationListItem(props :Props ) {
+    const navigate = useNavigate();
 
     const [enabled, setEnabled] = useState<boolean>(props.item.enabled);
 
@@ -50,7 +53,7 @@ function AutomationListItem(props :Props ) {
             </div>
             <div id={additionalId} className="collapse card-body row">
                 <div className="col-4">
-                    <div>Key:{item.key}</div>
+                    <button onClick={() => navigate('/automation/' + item.key)}>Details</button>
                     <div>Last Triggered: {item.lastTriggered}</div>
                     <div>Last Executed: {item.lastExecuted}</div>
                 </div>

@@ -1,9 +1,15 @@
 import { SystemInfo } from "../models/SystemInfo";
 
 class HknApi {
-    baseUrl = import.meta.env.VITE_SOME_KEY ?? '';
-    sysInfoUrl = this.baseUrl + '/api/systeminfo';
-    enableUrl = this.baseUrl + '/api/automation/enable';
+    private readonly baseUrl: string;
+    private readonly sysInfoUrl : string;
+    private readonly enableUrl : string;
+
+    public constructor(){
+      this.baseUrl = import.meta.env.VITE_BASE_URl ?? '';
+      this.sysInfoUrl = this.baseUrl + '/api/systeminfo';
+      this.enableUrl = this.baseUrl + '/api/automation/enable';
+    }
 
 
      async GetSystemInfo() : Promise<SystemInfo> {
