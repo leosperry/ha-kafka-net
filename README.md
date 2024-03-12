@@ -1,8 +1,18 @@
-# HaKafkaNet
-Version 4.2 Released! 
-New UI! - Dashboard has moved from `~/dashboard.html` to `~/index.html`.
+
+<img src="/images/hkn_128.png?raw=true" align="left" />
+
+<h3>HaKafkaNet</h3> 
+A library for easily creating Home Assistant automations in .NET and C#.
+
+Kafka ensures automations are durable and state is restored between restarts.
+
 ***
-HaKafkaNet is an integration that uses Home Assistant Kafka integration for creating home automations in .NET
+
+Version 5 Released! 
+New UI! - Dashboard has moved to `~/hakafkanet`.
+The new UI sports an automation details page which shows all the automation details along with the state change that last triggered the automation. Version 5.1 will expand this UI to include trace data.
+***
+
 It was created with the following goals:
 * Create Home Assistant automations in .NET with abilities to:
   * track/retrieve states of all entities in Home Assistant
