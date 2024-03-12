@@ -12,7 +12,7 @@ internal class GetSystemInfoEndpoint : EndpointWithoutRequest<ApiResponse<System
     {
         var ver = System.Reflection.Assembly.GetAssembly(typeof(IAutomation))?.GetName().Version;
         
-        _version = ver?.ToString(3) ?? "unknown";
+        _version = ver?.ToString(3)!;
     }
 
     public GetSystemInfoEndpoint(ISystemObserver observer ,IAutomationManager manager)

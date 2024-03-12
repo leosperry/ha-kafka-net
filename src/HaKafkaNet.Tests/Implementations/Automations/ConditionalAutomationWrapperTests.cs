@@ -207,7 +207,7 @@ public class ConditionalAutomationWrapperTests
             sut.Execute(stateChange, default),
             sut.Execute(stateChange, default),
             sut.Execute(stateChange, default),
-            Task.Delay(delay * 2)
+            Task.Delay(delay * 3)
         );
     
         // Then
