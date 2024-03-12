@@ -41,7 +41,7 @@ It was created with the following goals:
 * MIT license
 
 ### Dashboard
-![Image of dashboard](/images/HaKafkaNetDashboardV4.png?raw=true)
+![Image of dashboard](/images/HaKafkaNetDashboard.png?raw=true)
 This is an image of the dashboard from the example app.
 
 ## How it works
