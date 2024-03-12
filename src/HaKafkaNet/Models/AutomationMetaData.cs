@@ -17,4 +17,5 @@ public record AutomationMetaData
     public string? Source { get; internal set; }
     public DateTime? LastTriggered { get; internal set; }
     public DateTime? LastExecuted { get; internal set; }
+    public HaEntityStateChange? LatestStateChange { get; internal set;}
 }

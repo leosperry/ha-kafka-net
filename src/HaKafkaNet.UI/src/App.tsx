@@ -22,8 +22,8 @@ function App() {
 
   return (<>
     {!data ? (<div>Loading ...</div>): (<>
-      <HknHeader version={data.version} initialized={data.stateHandlerInitialized}/>
       <BrowserRouter basename="hakafkanet">
+        <HknHeader version={data.version} initialized={data.stateHandlerInitialized}/>
         <Routes>
           <Route index element={<AutomationList automations={data.automations} />} />
           <Route path="automation/:key" element={<AutomationDetails />}/>

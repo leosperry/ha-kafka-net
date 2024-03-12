@@ -17,7 +17,7 @@ internal interface IAutomationManager
     /// <returns>true if found and updated, otherwise false</returns>
     bool EnableAutomation(string key, bool enable);
 
-    IAutomationWrapper GetByKey(string key);
+    IAutomationWrapper? GetByKey(string key);
 
     IEnumerable<string> GetAllEntitiesToTrack();
 }
@@ -99,9 +99,13 @@ internal class AutomationManager : IAutomationManager
         return _internalAutomationsByKey.Values;
     }
 
-    public IAutomationWrapper GetByKey(string key)
+    public IAutomationWrapper? GetByKey(string key)
     {
-        return _internalAutomationsByKey[key];
+        if (_internalAutomationsByKey.TryGetValue(key, out var wrapper))
+        {
+            return wrapper;
+        }
+        return null;
     }
 
     public IEnumerable<IAutomationWrapper> GetByTriggerEntityId(string entityId)

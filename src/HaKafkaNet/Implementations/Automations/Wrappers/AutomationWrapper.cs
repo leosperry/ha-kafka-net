@@ -47,8 +47,6 @@ internal class AutomationWrapper : IAutomationWrapper
             };
         }
 
-        
-
         if (string.IsNullOrEmpty(_meta.KeyRequest))
         {
             _meta.KeyRequest = _meta.Name;
@@ -67,6 +65,7 @@ internal class AutomationWrapper : IAutomationWrapper
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         this._meta.LastTriggered = DateTime.Now;
+        this._meta.LatestStateChange = stateChange;
         using (_log.BeginScope("Start [{automationName}] of Type [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", 
             _meta.Name, _auto.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
         {
