@@ -11,6 +11,8 @@ Kafka ensures automations are durable and state is restored between restarts.
 Version 5 Released! 
 New UI! - Dashboard has moved to `~/hakafkanet`.
 The new UI sports an automation details page which shows all the automation details along with the state change that last triggered the automation. Version 5.1 will expand this UI to include trace data.
+
+Version 5.1 changes with automation tracing features have been merged and prerelease created. Documentation forthcoming.
 ***
 
 It was created with the following goals:
