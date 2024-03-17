@@ -98,9 +98,18 @@ public static class ServicesExtensions
             var entityTracker = app.Services.GetRequiredService<EntityTracker>();
             app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
         }
-
-        LogManager.Configuration.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, app.Services.GetRequiredService<HknLogTarget>());
-        LogManager.ReconfigExistingLoggers();
+        try
+        {
+            LogManager.Configuration.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, app.Services.GetRequiredService<HknLogTarget>());
+            LogManager.ReconfigExistingLoggers();
+        }
+        catch (System.Exception)
+        {
+            System.Console.WriteLine("**************************************");
+            System.Console.WriteLine("** Log tracing could not be enabled **");
+            System.Console.WriteLine("** Configure NLog to enable tracing **");
+            System.Console.WriteLine("**************************************");
+        }
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
