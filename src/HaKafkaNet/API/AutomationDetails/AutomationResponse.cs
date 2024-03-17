@@ -2,6 +2,7 @@
 
 public record AutomationDetailResponse(
     string Name,
+    string? Description,
     string KeyRequest,
     string GivenKey,
     string EventTimings,
@@ -12,12 +13,10 @@ public record AutomationDetailResponse(
     bool IsDelayable,
     string LastTriggered,
     string LastExecuted,
-    HaEntityStateChange? LatestStateChange,
-    IEnumerable<AutomationTraceResponse> Trace
+    IEnumerable<AutomationTraceResponse> Traces
 );
 
 public record AutomationTraceResponse(
-    string TraceType,
-    DateTime Time,
-    string TraceData
+    TraceEvent Event,
+    IEnumerable<LogInfo> Logs
 );

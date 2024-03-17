@@ -44,7 +44,7 @@ public class AutomationWithPreStartup : IAutomation
             case EventTiming.PreStartupNotCached:
             case EventTiming.PreStartupSameAsLastCached:
             case EventTiming.PreStartupPostLastCached:
-                System.Console.WriteLine(message + $" - {stateChange.EventTiming}");
+                _logger.LogInformation(message + " - {timing}", stateChange.EventTiming);
                 return Task.CompletedTask;
             case EventTiming.PostStartup:
                 _logger.LogInformation("Sending Persistent Notification");

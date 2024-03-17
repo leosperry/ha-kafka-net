@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
@@ -9,6 +10,7 @@ internal class HaApiProvider : IHaApiProvider
 {
     readonly HttpClient _client;
     readonly HomeAssistantConnectionInfo _apiConfig;
+    readonly ILogger<HaApiProvider> _logger;
     readonly JsonSerializerOptions _options = new JsonSerializerOptions()
     {
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
@@ -36,7 +38,7 @@ internal class HaApiProvider : IHaApiProvider
         SWITCH = "switch" ;
     #endregion
 
-    public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config)
+    public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config, ILogger<HaApiProvider> logger)
     {
         _client = clientFactory.CreateClient();
         _apiConfig = config;
@@ -45,12 +47,32 @@ internal class HaApiProvider : IHaApiProvider
         
         _client.DefaultRequestHeaders.Authorization = 
             new AuthenticationHeaderValue("Bearer", _apiConfig.AccessToken);
+
+        _logger = logger;
     }
 
     public async Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default)
     {
-        using StringContent json = new StringContent(JsonSerializer.Serialize(data, _options));
-        return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
+        Dictionary<string, object> scope = new()
+        {
+            {"HaApi.domain" , domain},
+            {"HaApi.service", service},
+            {"HaApi.data", data}
+        };
+        using(_logger.BeginScope(scope))
+        using (StringContent json = new StringContent(JsonSerializer.Serialize(data, _options)))
+        {
+            _logger.LogDebug("Calling Home Assistant API");
+            try
+            {
+                return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, "Error calling Home Assistant API: " + ex.Message);
+                throw;
+            }
+        }
     }
 
     public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)

@@ -17,9 +17,10 @@ public class GetAllTests
         
         Mock<ILogger<AutomationRegistrar>> logger = new();
         Mock<ISystemObserver> observer = new();
+        Mock<IAutomationTraceProvider> trace = new();
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, observer.Object, logger.Object);
+            autos, conditionals, schedulables, observer.Object, trace.Object, logger.Object);
         // When
 
         var result = sut.RegisteredAutomations;
@@ -43,9 +44,11 @@ public class GetAllTests
         
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationRegistrar>> logger = new();
+                Mock<IAutomationTraceProvider> trace = new();
+
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, observer.Object, logger.Object);
+            autos, conditionals, schedulables, observer.Object, trace.Object, logger.Object);
         // When
 
         sut.Register(auto.Object);

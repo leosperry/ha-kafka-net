@@ -10,10 +10,12 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
 //Endpoint<AutomationDetailRequest, ApiResponse<AutomationDetailResponse>>
 {
     readonly IAutomationManager _autoMgr;
+    readonly IAutomationTraceProvider _trace;
 
-    public AutomationEndpoint(IAutomationManager automationManager)
+    public AutomationEndpoint(IAutomationManager automationManager, IAutomationTraceProvider traceProvider)
     {
         _autoMgr = automationManager;
+        _trace = traceProvider;
     }
 
     public override void Configure()
@@ -22,19 +24,21 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
         AllowAnonymous();
     }
 
-    public override Task<Results<Ok<ApiResponse<AutomationDetailResponse>>, NotFound>> ExecuteAsync(AutomationDetailRequest req, CancellationToken ct)
+    public override async Task<Results<Ok<ApiResponse<AutomationDetailResponse>>, NotFound>> ExecuteAsync(AutomationDetailRequest req, CancellationToken ct)
     {
         Results<Ok<ApiResponse<AutomationDetailResponse>>, NotFound> response;
         var auto = _autoMgr.GetByKey(req.Key);
         if (auto is null)
         {
             response = TypedResults.NotFound();
-            return Task.FromResult(response);
+            return response;
         }
         var meta = auto.GetMetaData();
+        var traces = (await _trace.GetTraces(req.Key)).Select(t => new AutomationTraceResponse(t.TraceEvent, t.Logs));
 
         var autoResponse = new AutomationDetailResponse(
             meta.Name,
+            meta.Description,
             meta.KeyRequest ??  "none",
             meta.GivenKey,
             auto.EventTimings.ToString(),
@@ -45,19 +49,13 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
             meta.IsDelayable,
             meta.LastTriggered?.ToString() ?? "never",
             meta.LastExecuted.ToString() ?? (meta.IsDelayable ? "never" : "N/A"),
-            meta.LatestStateChange,
-            Enumerable.Empty<AutomationTraceResponse>()
+            traces
         );
 
         response = TypedResults.Ok(new ApiResponse<AutomationDetailResponse>()
         {
             Data = autoResponse
         });
-        return Task.FromResult(response);
+        return response;
     }
-
-
-
 }
-
-

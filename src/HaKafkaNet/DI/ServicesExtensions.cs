@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using FastEndpoints;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using NLog;
+using NLog.Config;
 
 namespace HaKafkaNet;
 
@@ -66,12 +69,6 @@ public static class ServicesExtensions
         return services;
     }
 
-    [Obsolete("config is no no longer needed for this method",true)]
-    public static Task StartHaKafkaNet(this WebApplication app, HaKafkaNetConfig config)
-    {
-        throw new Exception("please call overload without configuration passed in");
-    }
-
     public static async Task StartHaKafkaNet(this WebApplication app)
     {
         var config = app.Services.GetRequiredService<HaKafkaNetConfig>();
@@ -101,6 +98,9 @@ public static class ServicesExtensions
             var entityTracker = app.Services.GetRequiredService<EntityTracker>();
             app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
         }
+
+        LogManager.Configuration.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, app.Services.GetRequiredService<HknLogTarget>());
+        LogManager.ReconfigExistingLoggers();
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
@@ -130,6 +130,8 @@ public static class ServicesExtensions
             services.AddSingleton<ISystemObserver, SystemObserver>();
             services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
             services.AddSingleton<IInternalRegistrar, AutomationRegistrar>();
+            services.AddSingleton<IAutomationTraceProvider, AutomationTraceProvider>();
+            services.AddSingleton<HknLogTarget>();
 
             var eligibleTypes = 
                 (from a in AppDomain.CurrentDomain.GetAssemblies()
