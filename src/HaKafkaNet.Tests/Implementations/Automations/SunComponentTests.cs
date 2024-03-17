@@ -14,6 +14,9 @@ public class SunComponentTests
     {
         // Given
         Mock<ISystemObserver> observer = new();
+        Mock<IAutomationTraceProvider> trace = new();
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, Func<Task>>((_, f) => f());
         Mock<ILogger> logger = new();
         Mock<ILogger<AutomationManager>> autoLogger = new();
 
@@ -22,8 +25,8 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(execution);
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
@@ -44,6 +47,9 @@ public class SunComponentTests
     {
         // Given
         Mock<ISystemObserver> observer = new();
+        Mock<IAutomationTraceProvider> trace = new();
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, Func<Task>>((_, f) => f());
         Mock<ILogger> logger = new();
         Mock<ILogger<AutomationManager>> autoLogger = new();
 
@@ -52,8 +58,8 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(execution);
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
@@ -74,6 +80,9 @@ public class SunComponentTests
     {
         // Given
         Mock<ISystemObserver> observer = new();
+        Mock<IAutomationTraceProvider> trace = new();
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, Func<Task>>((_, f) => f());
         Mock<ILogger> logger = new();
         Mock<ILogger<AutomationManager>> autoLogger = new();
 
@@ -83,8 +92,8 @@ public class SunComponentTests
         SunRiseAutomation sut = new SunRiseAutomation(execution);
         sut.ShouldExecutePastEvents = false;
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));

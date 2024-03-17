@@ -13,9 +13,10 @@ public class AutomationWrapperTests
         // Given
         FakeAuto auto = new();
         Mock<ILogger> logger = new();
+        Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -30,9 +31,10 @@ public class AutomationWrapperTests
         // Given
         FakeAutoWithMeta auto = new();
         Mock<ILogger> logger = new();
+        Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -48,9 +50,10 @@ public class AutomationWrapperTests
         FakeAutoWithMeta auto = new();
         auto.SetKey();
         Mock<ILogger> logger = new();
+        Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();

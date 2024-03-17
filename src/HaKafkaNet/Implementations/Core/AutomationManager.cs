@@ -50,8 +50,6 @@ internal class AutomationManager : IAutomationManager
         var allRegistered = _registrar.Registered.ToArray();
         SetKeys(allRegistered);
 
-        //_internalAutomations = _registrar.Registered.ToDictionary(a => a.GetMetaData().Id);
-
         _internalAutomationsByKey = allRegistered.ToDictionary(a => a.GetMetaData().GivenKey);
 
         //get by trigger

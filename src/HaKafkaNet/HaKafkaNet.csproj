@@ -48,6 +48,9 @@
     <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.3" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+
+  <PackageReference Include="NLog.Web.AspNetCore" Version="5.*" />
+  <PackageReference Include="NLog" Version="5.*" />
   </ItemGroup>
 
 </Project>

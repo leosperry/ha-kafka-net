@@ -1,6 +1,9 @@
 using HaKafkaNet;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseNLog(); // enable tracing
 
 var services = builder.Services;
 

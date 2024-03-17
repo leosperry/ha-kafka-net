@@ -11,6 +11,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     internal IDelayableAutomation WrappedConditional { get => _automation; }
 
     private readonly ISystemObserver _observer;
+    readonly IAutomationTraceProvider _trace;
     private readonly ILogger _logger;
 
     private readonly ReaderWriterLockSlim lockObj = new ReaderWriterLockSlim();
@@ -19,10 +20,11 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(IDelayableAutomation automation, ISystemObserver observer, ILogger logger, Func<TimeSpan>? evaluator = null)
+    public DelayablelAutomationWrapper(IDelayableAutomation automation, ISystemObserver observer, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
     {
         this._automation = automation;
         this._observer = observer;
+        this._trace = traceProvider;
         _logger = logger;
 
         if (automation is IAutomationMeta metaAuto)
@@ -138,6 +140,10 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                     _observer.OnUnhandledException(this._meta, t.Exception);
                     return _automation.ShouldExecuteOnContinueError;
                 }
+                else
+                {
+                    this._logger.LogInformation("ContinuesToBeTrue returned {continueResult}", t.Result);
+                }
                 return t.Result;
             }, cancellationToken);
     }
@@ -202,9 +208,13 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
     private Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
-        using (_logger!.BeginScope("Start [{automationType}]", _meta.UnderlyingType?.GetType().Name ?? _automation.GetType().Name))
-        {
-            return _automation.Execute(token)
+        var evt = new TraceEvent(){
+            EventType = "Delayed-Execution",
+            AutomationKey = _meta.GivenKey,
+            EventTime = DateTime.Now,
+        };
+        return _trace.Trace(evt, () => 
+             _automation.Execute(token)
             .ContinueWith(t =>
             {
                 this._meta.LastExecuted = DateTime.Now;
@@ -213,8 +223,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                     _observer.OnUnhandledException(this._meta, t.Exception);
                 }
                 postRun?.Invoke();
-            });
-        }
+            }));
     }
 
     private void CleanUpTokenSource()

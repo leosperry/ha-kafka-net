@@ -12,7 +12,10 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     readonly ILogger<HaStateHandler> _logger;
 
     DateTime _startTime = DateTime.Now;
-    DistributedCacheEntryOptions _cacheOptions = new ();
+    DistributedCacheEntryOptions _cacheOptions = new ()
+    {
+        SlidingExpiration = TimeSpan.FromDays(30)
+    };
     
     public HaStateHandler(
         IDistributedCache cache, IAutomationManager automationMgr,
@@ -21,6 +24,8 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         _cache = cache;
         _autoMgr = automationMgr;
         _logger = logger;
+
+        _cacheOptions.SlidingExpiration = TimeSpan.FromDays(30);
 
         observer.OnStateHandlerInitialized();
         _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
@@ -53,7 +58,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     private async Task<HaEntityState?> HandleCacheAndPrevious(IMessageContext context, HaEntityState message)
     {
         var cachedBytes = await _cache.GetAsync(message.EntityId);
-        HaEntityState cached = null!;
+        HaEntityState? cached = null;
         if (cachedBytes is not null)
         {
             cached = JsonSerializer.Deserialize<HaEntityState>(cachedBytes)!;
