@@ -88,7 +88,7 @@ internal class AutomationFactory : IAutomationFactory
              (sc, ct) =>{
                 if (sc.ToOnOff().IsOff())
                 {
-                    Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
+                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
                 }
                 return Task.FromResult(default(DateTime?));
             },
