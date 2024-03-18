@@ -33,7 +33,7 @@ It was created with the following goals:
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-  * [Tracing including log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
+  * [Tracing including log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
