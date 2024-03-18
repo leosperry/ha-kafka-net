@@ -61,11 +61,8 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 * More helpers and API calls
 * [Strongly typed access to Entities](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods).
 
-## Coming Soon
-[Version 5](https://github.com/users/leosperry/projects/2?pane=info) is in the works. It's all about tracability and interoperability. Let us know what features you'd like to see.
-
 ## More examples
-I have decided to make [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
+I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
 
 If you have some examples you would like to share, please start a [discussion](https://github.com/leosperry/ha-kafka-net/discussions). I'd be happy to link it here.
 
