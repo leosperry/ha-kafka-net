@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.1" />
-    <PackageReference Include="HaKafkaNet" Version="5.1.0-prerelease"/>
+    <PackageReference Include="HaKafkaNet" Version="5.1.*"/>
   </ItemGroup>
 
   <PropertyGroup>

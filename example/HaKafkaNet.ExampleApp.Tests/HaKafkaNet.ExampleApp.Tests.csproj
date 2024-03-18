@@ -23,8 +23,8 @@
 
     <PackageReference Include="Moq" Version="4.20.70" />
     
-    <PackageReference Include="HaKafkaNet" Version="5.1.0-prerelease" />
-    <PackageReference Include="HaKafkaNet.TestHarness" Version="5.1.0-prerelease" />
+    <PackageReference Include="HaKafkaNet" Version="5.1.*" />
+    <PackageReference Include="HaKafkaNet.TestHarness" Version="5.1.*" />
 
   </ItemGroup>
 
