@@ -29,8 +29,8 @@ It was created with the following goals:
 
 ## Why ha-kafka-net ? 
 * [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
-* Durability - Schedule automations that will [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) and even catch state changes that happened durring the restart. See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
-* UI to manage your automations and inspect Kafka consumers. 
+* Durability - Schedule automations that [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) and respond to state changes that happened durring the restart. See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
+* [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
   * [Tracing including log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
@@ -57,6 +57,7 @@ This is an image of the dashboard from the example app. See [UI](https://github.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
 
 ## Features recently added
+* [Tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
 * Geolocation models
 * More helpers and API calls
 * [Strongly typed access to Entities](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods).
