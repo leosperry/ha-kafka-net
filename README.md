@@ -31,9 +31,9 @@ It was created with the following goals:
 * [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
 * Durability - Schedule automations that will [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) and even catch state changes that happened durring the restart. See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
 * UI to manage your automations and inspect Kafka consumers. 
-* Monitoring capabilities through [`ISystemMonitor`](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-  * Global Exception Handler
-  * Be alerted of non-responsive entities
+* Observability through
+  * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
+  * [Tracing including log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
@@ -43,8 +43,8 @@ It was created with the following goals:
 * MIT license
 
 ### Dashboard
-![Image of dashboard](/images/HaKafkaNetDashboard.png?raw=true)
-This is an image of the dashboard from the example app.
+![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_1.PNG)
+This is an image of the dashboard from the example app. See [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) for additional details.
 
 ## How it works
 * Events are streamed from Home Assistant to the `home_assistant` topic. Unfortunately, the key is not utilizied by the provided home assistant kafka integration. Please upvote [this feature request](https://community.home-assistant.io/t/set-key-in-kafka-topic/671757/2)
