@@ -12,7 +12,7 @@ public record AutomationDetailResponse(
     string Source,
     bool IsDelayable,
     string LastTriggered,
-    string LastExecuted,
+    string? LastExecuted,
     IEnumerable<AutomationTraceResponse> Traces
 );
 

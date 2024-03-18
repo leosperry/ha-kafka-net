@@ -4,9 +4,10 @@ export interface AutomationData {
     description : string;
     typeName : string;
     source : string;
+    isDelayable : boolean;
     enabled : boolean;
     triggerIds : string[];
     additionalEntitiesToTrack : string[];
     lastTriggered : string;
-    lastExecuted : string;
+    lastExecuted? : string;
 }

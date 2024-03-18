@@ -12,6 +12,7 @@ function HknHeader(props : HeaderProps) {
     //const version = "V5.0.1";
     return (<>
         <div className="float-end">
+            <br />
             <p><a href="/kafkaflow" target="_blank">Kafka Flow Admin</a></p>
             <p><a href="https://github.com/leosperry/ha-kafka-net/wiki" target="_blank">Documentation</a></p>
         </div>

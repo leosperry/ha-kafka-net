@@ -19,11 +19,11 @@ function TraceData(props : Props) {
             </Accordion.Header>
             <Accordion.Body>
                 {props.trace.event.stateChange ? <><div>State Change</div>
-                    <textarea disabled={true} cols={100} rows={10} defaultValue={JSON.stringify(props.trace.event.stateChange, null, 2)} /></>
+                    <textarea disabled={true} cols={100} rows={5} defaultValue={JSON.stringify(props.trace.event.stateChange, null, 2)} /></>
                     : <></>
                 }
                 {props.trace.event.exception && <><div>Exception</div>
-                    <textarea disabled={true} cols={100} rows={10} defaultValue={JSON.stringify(props.trace.event.exception, null, 2)} />
+                    <textarea disabled={true} cols={100} rows={5} defaultValue={JSON.stringify(props.trace.event.exception, null, 2)} />
                 </>}
                 <div>Logs</div>
                     <Accordion defaultActiveKey={[]} alwaysOpen>

@@ -48,7 +48,7 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
             meta.Source ?? "source error",
             meta.IsDelayable,
             meta.LastTriggered?.ToString() ?? "never",
-            meta.LastExecuted.ToString() ?? (meta.IsDelayable ? "never" : "N/A"),
+            meta.LastExecuted.ToString(),
             traces
         );
 

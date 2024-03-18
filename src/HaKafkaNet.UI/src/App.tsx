@@ -33,7 +33,7 @@ function App() {
       <div>
           Send the developer a thank you, report a bug, or request feature via <a href={"mailto:leonard.sperry@live.com?subject=HaKafkaNet Comment V"+ data.version}>email</a> 
           &nbsp; or <a href="https://github.com/leosperry/ha-kafka-net/discussions" target="_blank">start a discussion</a>
-      </div>
+      </div><br />
     </>)}
   </>);
 }

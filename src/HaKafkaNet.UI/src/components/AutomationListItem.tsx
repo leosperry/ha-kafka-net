@@ -30,6 +30,16 @@ function AutomationListItem(props :Props ) {
          }        
     }
 
+    function detailsClick(url : string ,evt : React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+        console.debug("button is " + evt.button)
+        if (evt.button === 1) {
+            evt.preventDefault();
+            window.open(url, "_blank");
+        } else if(evt.button == 0){
+            navigate(url);
+        }
+    }
+
     const item = props.item;
     var additionalId = item.key + "info";
     return (<>
@@ -53,15 +63,15 @@ function AutomationListItem(props :Props ) {
             </div>
             <div id={additionalId} className="collapse card-body row">
                 <div className="col-4">
-                    <button onClick={() => navigate('/automation/' + item.key)}>Details</button>
+                    <a role="button" className="btn btn-primary" onClick={e => detailsClick('/automation/' + item.key, e)} onAuxClick={e => detailsClick(window.location +'/automation/' + item.key, e)}>Details</a>
                     <div>Last Triggered: {item.lastTriggered}</div>
-                    <div>Last Executed: {item.lastExecuted}</div>
+                    {item.isDelayable && <div>Last Executed: {item.lastExecuted}</div>}
                 </div>
                 <div className="col-4">
                     <div>Trigger IDs:{item.triggerIds.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div>
                 </div>
                 <div className="col-4">
-                    <div>Additional:{item.additionalEntitiesToTrack.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div>
+                    <div>Additional:{item.additionalEntitiesToTrack.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div> 
                 </div>
                 
             </div>
