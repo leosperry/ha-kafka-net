@@ -9,7 +9,7 @@ Kafka ensures automations are durable and state is restored between restarts.
 ***
 
 Version 5.1 Released! 
-New UI and new observability features!
+New [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) and new observability features!
 
 To get the most out of these features be sure to enable [log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing).
 > Note: The dashboard has moved to `~/hakafkanet`.
@@ -57,6 +57,7 @@ This is an image of the dashboard from the example app. See [UI](https://github.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
 
 ## Features recently added
+* Completely overhauled [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) built with React and Bootstrap
 * [Tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
 * Geolocation models
 * More helpers and API calls
