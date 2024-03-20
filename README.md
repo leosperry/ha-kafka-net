@@ -22,7 +22,17 @@ It was created with the following goals:
   * call Home Assistant RESTful services
 * Enable all automation code to be fully unit testable
 
-#### Resources
+## Example
+Example of durable schedulable automation. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
+```csharp
+_factory.SunSetAutomation(
+    cancelToken => _api.TurnOn("light.front_porch", cancelToken),
+    TimeSpan.FromMinutes(-10)
+);
+```
+
+
+## Resources
 * [Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
 * Join the new [Discord Server](https://discord.gg/RaGu72RbCt)
