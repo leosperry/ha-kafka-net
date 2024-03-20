@@ -23,11 +23,14 @@ It was created with the following goals:
 * Enable all automation code to be fully unit testable
 
 ## Example
-Example of durable schedulable automation. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
+Example of multiple durable automations. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
 ```csharp
-_factory.SunSetAutomation(
-    cancelToken => _api.TurnOn("light.front_porch", cancelToken),
-    TimeSpan.FromMinutes(-10)
+registrar.RegisterMultiple(
+    _factory.SunRiseAutomation(
+        cancelToken => _api.TurnOff("light.night_light", cancelToken)),
+    _factory.SunSetAutomation(
+        cancelToken => _api.TurnOn("light.night_light", cancelToken),
+        TimeSpan.FromMinutes(-10))
 );
 ```
 
