@@ -8,7 +8,7 @@ Kafka ensures automations are durable and state is restored between restarts.
 
 ***
 
-Version 5.1 Released! 
+Version 5.2 Released! 
 New [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) and new observability features!
 
 To get the most out of these features be sure to enable [log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing).
@@ -16,7 +16,7 @@ To get the most out of these features be sure to enable [log tracing](https://gi
 ***
 
 It was created with the following goals:
-* Create Home Assistant automations in .NET with abilities to:
+* Create Home Assistant automations in .NET / C# with abilities to:
   * track/retrieve states of all entities in Home Assistant
   * respond to Home Assistant state changes
   * call Home Assistant RESTful services
@@ -47,7 +47,7 @@ registrar.RegisterMultiple(
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-  * [Tracing including log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
+  * [Tracing with log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
@@ -57,7 +57,7 @@ registrar.RegisterMultiple(
 * MIT license
 
 ### Dashboard
-![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_1.PNG)
+![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_2.PNG)
 This is an image of the dashboard from the example app. See [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) for additional details.
 
 ## How it works
