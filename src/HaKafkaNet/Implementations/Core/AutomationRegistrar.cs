@@ -8,7 +8,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 {
     readonly ISystemObserver _observer;
     readonly IAutomationTraceProvider _trace;
-    readonly ILogger<AutomationRegistrar> _logger;
+    readonly ILogger<AutomationWrapper> _logger;
 
     internal List<AutomationWrapper> RegisteredAutomations { get; private set; } = new();
 
@@ -19,7 +19,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         IEnumerable<IConditionalAutomation> conditionalAutomations,
         IEnumerable<ISchedulableAutomation> schedulableAutomations,
         ISystemObserver observer, IAutomationTraceProvider traceProvider,
-        ILogger<AutomationRegistrar> logger)
+        ILogger<AutomationWrapper> logger)
     {
         _observer = observer;
         _trace = traceProvider;

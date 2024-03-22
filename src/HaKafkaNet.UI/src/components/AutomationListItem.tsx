@@ -2,13 +2,12 @@ import { AutomationData } from "../models/AutomationData";
 import {useEffect, useState } from "react";
 import { Api } from "../services/Api";
 import { useNavigate } from "react-router-dom";
-
-
+import { Accordion, Button, Form } from "react-bootstrap";
 
 interface Props {
-    item : AutomationData
+    item : AutomationData;
+    index : number;
 }
-
 
 function AutomationListItem(props :Props ) {
     const navigate = useNavigate();
@@ -30,7 +29,7 @@ function AutomationListItem(props :Props ) {
          }        
     }
 
-    function detailsClick(url : string ,evt : React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+    function detailsClick(url : string ,evt : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         console.debug("button is " + evt.button)
         if (evt.button === 1) {
             evt.preventDefault();
@@ -41,41 +40,38 @@ function AutomationListItem(props :Props ) {
     }
 
     const item = props.item;
-    var additionalId = item.key + "info";
+
     return (<>
-        <div className="card">
-            <div className="card-header">
+        <Accordion.Item eventKey={props.index.toString()}>
+            <Accordion.Header>
                 <div className="row">
                     <div className="col-1">
-                        <div className="form-check form-switch">
-                            <input className="form-check-input" type="checkbox" onChange={handleCheckboxChange} checked={enabled} data-key={item.key} />
-                        </div>
+                        <Form.Switch  onClick={e => e.stopPropagation()} onChange={handleCheckboxChange} checked={enabled} data-key={item.key}/>
                     </div>
-                    <div className="col-3" >
-                        <a data-bs-toggle="collapse" href={"#" + additionalId}>{item.name}</a>
-                    </div>
+                    <div className="col-3" >{item.name}</div>
                     <div className="col-5">{item.description}</div>
                     <div className="col-3">
                         <div>{item.source}</div>
                         <div>{item.typeName}</div>
                     </div>
                 </div> 
-            </div>
-            <div id={additionalId} className="collapse card-body row">
-                <div className="col-4">
-                    <a role="button" className="btn btn-primary" onClick={e => detailsClick('/automation/' + item.key, e)} onAuxClick={e => detailsClick(window.location +'/automation/' + item.key, e)}>Details</a>
-                    <div>Last Triggered: {item.lastTriggered}</div>
-                    {item.isDelayable && <div>Last Executed: {item.lastExecuted}</div>}
+            </Accordion.Header>
+            <Accordion.Body>
+                <div className="row">
+                    <div className="col-4">
+                        <Button variant="primary" onClick={e => detailsClick('/automation/' + item.key, e)} onAuxClick={e => detailsClick(window.location +'/automation/' + item.key, e)}>Details</Button>
+                        <div className="mt-3">Last Triggered: {item.lastTriggered}</div>
+                        {item.isDelayable && <div>Last Executed: {item.lastExecuted}</div>}
+                    </div>
+                    <div className="col-4">
+                        <div>Trigger IDs:{item.triggerIds.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div>
+                    </div>
+                    <div className="col-4">
+                        <div>Additional:{item.additionalEntitiesToTrack.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div> 
+                    </div>
                 </div>
-                <div className="col-4">
-                    <div>Trigger IDs:{item.triggerIds.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div>
-                </div>
-                <div className="col-4">
-                    <div>Additional:{item.additionalEntitiesToTrack.map(trigger =>(<p key={trigger}>{trigger}</p>))}</div> 
-                </div>
-                
-            </div>
-        </div>
+            </Accordion.Body>
+        </Accordion.Item>
     </>);
 }
 

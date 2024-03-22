@@ -13,22 +13,22 @@ public record TraceEvent
 
 public record ExecptionInfo
 {
-    public string Type { get; private set; }
-    public string Message { get; private set; }
-    public string? StackTrace { get; private set; }
-    public ExecptionInfo? InnerException { get; private set; }
-    public IEnumerable<ExecptionInfo>? InnerExceptions { get; private set; }
+    public required string Type { get; init; }
+    public required string Message { get; init; }
+    public string? StackTrace { get; init; }
+    public ExecptionInfo? InnerException { get; init; }
+    public IEnumerable<ExecptionInfo>? InnerExceptions { get; init; }
 
-    public ExecptionInfo(Exception ex)
+    public static ExecptionInfo Create(Exception ex)
     {
-        this.Type = ex.GetType().FullName ?? ex.GetType().Name;
-        this.Message = ex.Message;
-        this.StackTrace = ex.StackTrace;
-        this.InnerException = ex.InnerException is null ?  null : new ExecptionInfo(ex.InnerException);
-        if (ex is AggregateException agg)
+        return new ExecptionInfo()
         {
-            this.InnerExceptions = agg.InnerExceptions.Select(e => new ExecptionInfo(e));
-        }
+            Type = ex.GetType().FullName ?? ex.GetType().Name,
+            Message = ex.Message,
+            StackTrace = ex.StackTrace,
+            InnerException = ex.InnerException is null ?  null : Create(ex.InnerException),
+            InnerExceptions = ex is AggregateException agg ? agg.InnerExceptions.Select(e => Create(e)) : null
+        };
     }
 }
 

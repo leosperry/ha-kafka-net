@@ -4,7 +4,6 @@ public record SystemInfoResponse
 {
     public bool StateHandlerInitialized { get; init; }
     public required string Version { get; init; }
-    public required AutomationInfo[] Automations{ get; init; }
 }
 
 public record AutomationInfo

@@ -171,12 +171,14 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
         if (delay == TimeSpan.Zero)
         {
+            _logger.LogDebug($"{this._meta.Name} automation scheduled now");
             return ActualExecute(cancellationToken);
         }
 
         // run with delay
         if (_cts is null)
         {
+            _logger.LogDebug($"{this._meta.Name} automation scheduled in {delay}");
             // run with delay
             try
             {
@@ -203,6 +205,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
         }
         // if we haven't returned by now, another thread has already stared
+        _logger.LogDebug($"{this._meta.Name} is already scheduled");
         return Task.CompletedTask;
     }
 
@@ -250,13 +253,12 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     {
         if (_cts is not null)
         {
-
             lockObj.EnterWriteLock();
             try
             {
                 if (_cts is not null)
                 {
-                    _logger.LogInformation($"{reason} {_meta.UnderlyingType} Named:{_meta.Name} at {DateTime.Now}");              
+                    _logger.LogWarning($"Automation named [{_meta.Name}] of type [{_meta.UnderlyingType}] was running at {DateTime.Now} and is being stopped because {reason}");              
                     try
                     {
                         _cts.Cancel();

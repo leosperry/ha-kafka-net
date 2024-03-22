@@ -1,4 +1,4 @@
-import { SystemInfo } from "../models/SystemInfo";
+import { AutomationListResponse, SystemInfo } from "../models/SystemInfo";
 import { AutomationDetailsResponse } from "../models/AutomationDetailResponse";
 
 class HknApi {
@@ -6,12 +6,14 @@ class HknApi {
     private readonly sysInfoUrl : string;
     private readonly enableUrl : string;
     private readonly autoDetailsUrl : string;
+    private readonly autoListUrl : string;
 
     public constructor(){
       this.baseUrl = import.meta.env.VITE_BASE_API_URL ?? '';
       this.sysInfoUrl = this.baseUrl + '/api/systeminfo';
       this.enableUrl = this.baseUrl + '/api/automation/enable';
       this.autoDetailsUrl = this.baseUrl + '/api/automation/';
+      this.autoListUrl = this.baseUrl + '/api/automations/';
     }
 
     async GetAutomationDetails(key: string) : Promise<AutomationDetailsResponse> {
@@ -32,6 +34,15 @@ class HknApi {
         return sysInfo;
       }
 
+      async GetAutomationList() : Promise<AutomationListResponse> {
+        const response = await fetch(this.autoListUrl, {
+          mode: "cors"
+        });
+        const responseData = await response.json();
+        const sysInfo = responseData.data as AutomationListResponse;
+        return sysInfo;     
+      }
+
       async EnableAutomation(key:string, enable: boolean) : Promise<Response> {
         var payload = {
             key: key,
@@ -46,8 +57,6 @@ class HknApi {
             body: JSON.stringify(payload)
         });  
       }
-
-
 }
 
 export const Api = new HknApi();

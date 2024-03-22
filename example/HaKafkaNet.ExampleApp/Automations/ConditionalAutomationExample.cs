@@ -2,7 +2,7 @@
 
 namespace HaKafkaNet.ExampleApp;
 
-public class ConditionalAutomationExample : IConditionalAutomation
+public class ConditionalAutomationExample : IConditionalAutomation, IAutomationMeta
 {
 
     private int _buttonTracker = 0;
@@ -55,6 +55,13 @@ public class ConditionalAutomationExample : IConditionalAutomation
         return _services.Api.LightTurnOn((_colorTracker = !_colorTracker) ? color1 : color2, cancellationToken);
     }
 
-
+    public AutomationMetaData GetMetaData()
+    {
+        return new()
+        {
+            Name = "Example conditional automation",
+            Description = "Sets some lights when a test button is pushed",
+        };
+    }
 }
 

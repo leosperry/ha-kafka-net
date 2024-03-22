@@ -3,7 +3,7 @@ import {useEffect, useState } from "react";
 
 import { Api } from "../services/Api";
 import { AutomationDetailsResponse } from '../models/AutomationDetailResponse';
-import TraceData from './TraceData';
+import TraceItem from './TraceItem';
 import { Accordion } from 'react-bootstrap';
 
 function AutomationDetails() {
@@ -45,7 +45,7 @@ function AutomationDetails() {
             <hr />
             <h3>Trace Data</h3>
             <Accordion defaultActiveKey={[]} alwaysOpen>
-              {data.traces.map((t, index) => <TraceData key={"trace" + index} trace={t} index={index}/>)}
+              {data.traces.map((t, index) => <TraceItem key={"trace" + index} trace={t} index={index}/>)}
             </Accordion>
         </>)}
     </>);

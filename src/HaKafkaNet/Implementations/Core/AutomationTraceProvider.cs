@@ -61,7 +61,8 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                     LogLevel = logEvent.Level.ToString(), 
                     Message = renderedMessage, 
                     Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value), 
-                    Scopes = scopes
+                    Scopes = scopes,
+                    Exception = logEvent.Exception is null ? null : ExecptionInfo.Create(logEvent.Exception)
                 });
             }
         }
@@ -79,29 +80,35 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
 
         using(_logger.BeginScope(scopeData))
         {
+            var task = traceFunction();
             try
             {
-                await traceFunction();
+                // if the task is from Task.WhenAll()
+                // awaiting here will only catch the first exception
+                task.Wait();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                data.Item1.Exception = new ExecptionInfo(ex);
-                
+            }
+            if (task.IsFaulted)
+            {
+                // at this point we should have all the exceptions
+                data.Item1.Exception = ExecptionInfo.Create(task.Exception);
                 await WriteToCache(new TraceData()
                 {
                     TraceEvent = data.Item1,
                     Logs = data.Item2
                 });
-
-                throw;
+                // rethrow 
+                // will loose the call stack but we already captured it
+                throw task.Exception;
             }
+            await WriteToCache(new TraceData()
+            {
+                TraceEvent = data.Item1,
+                Logs = data.Item2
+            });        
         }
-
-        await WriteToCache(new TraceData()
-        {
-            TraceEvent = data.Item1,
-            Logs = data.Item2
-        });
     }
 
     public async Task<IEnumerable<TraceData>> GetTraces(string automationKey)
@@ -191,6 +198,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             }
             catch (System.Exception ex)
             {
+                _logger.LogError(ex, "could not deserialize trace data from cache");
                 throw;
             }
             
@@ -205,17 +213,17 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
     }
 }
 
-public class TraceData
+public record TraceData
 {
     public required TraceEvent TraceEvent { get; set; }
     public required IEnumerable<LogInfo> Logs {get; set; }
 }
 
-public class LogInfo
+public record LogInfo
 {
     public required string LogLevel { get; set; }
     public required string Message { get; set; }
     public required IDictionary<string,object> Scopes { get; set; }
     public required IDictionary<string,object> Properties { get; set; }
-    public Exception? Exception { get; set; }
+    public ExecptionInfo? Exception { get; set; }
 }

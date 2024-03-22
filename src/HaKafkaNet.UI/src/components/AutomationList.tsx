@@ -1,47 +1,64 @@
+import { Accordion, InputGroup, Form } from "react-bootstrap";
 import { AutomationData } from "../models/AutomationData";
 import AutomationListItem from "./AutomationListItem";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import icons from '../assets/icons/bootstrap-icons.svg';
+import { Api } from "../services/Api";
 
-interface AutoListProps {
-    automations: AutomationData[];
-}
+function AutomationList() {
 
-function AutomationList(autodata : AutoListProps) {
+    const [data, setData] = useState<AutomationData[]>();
+
+    useEffect(() => {
+      getData();
+    }, []);
+  
+    async function getData() {
+      var sysInfo = await Api.GetAutomationList();
+      setData(sysInfo.automations);
+    }
+
+
     const [searchTxt, setSearchText] = useState('');
 
-    function filter() : AutomationData[] {
-        return autodata.automations.filter(a => {
+    function filter(autodata : AutomationData[]) : AutomationData[] {
+
+        return autodata.filter(a => {
             const lowered = searchTxt.toLowerCase();
             return searchTxt == '' ||
                 a.name.toLowerCase().includes(lowered) ||
                 a.description.toLowerCase().includes(lowered) ||
+                a.source.toLocaleLowerCase().includes(lowered) ||
                 a.triggerIds.filter(t => t.toLowerCase().includes(lowered)).length > 0 ||
                 a.additionalEntitiesToTrack.filter(t => t.toLowerCase().includes(lowered)).length > 0
         });
     }
 
-    return (<>
-        <h3>Automations</h3>
-        <div className="row">
-            <div className="col-8">
-                <p>Tip: you can trigger your automations manually by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a></p>
-            </div>
-            <div className="col-4">
-                <label>
-                    Filter: &nbsp; <input type="text" onChange={e => setSearchText(e.target.value)}/>
-                </label>
-            </div>
+    return !data ? (<>Loading ...</>) : (<>
+        <h2>Automations</h2>
+        <div className="float-start">Tip: You can manually trigger automations <br />by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a></div>
+        <div className="float-end w-50">
+            <InputGroup className="mb-3" size="lg">
+                <InputGroup.Text>
+                <svg height={32} width={32} fill="white" fillOpacity={.9} >
+                    <use href={icons + "#filter"}  />
+                </svg>
+                </InputGroup.Text>
+                <Form.Control  type="search" placeholder="start typing to filter" onChange={e => setSearchText(e.target.value)} />
+            </InputGroup>
         </div>
 
-        <div className="row">
+        <div className="row automation-list-header fs-4">
             <div className="col-1">Enabled</div>
             <div className="col-3">Name</div>
             <div className="col-5">Description</div>
             <div className="col-3">Source/Type</div>
-            <div className="">
-                {filter().map((item, _) =>(<AutomationListItem key={item.key} item={item}/>))}
-            </div>
         </div>
+        
+        <Accordion defaultActiveKey={[]} alwaysOpen>
+            {filter(data).map((item, index) => (<AutomationListItem key={item.key} item={item} index={index}/>))}
+        </Accordion>
+
     </>);
 }
 

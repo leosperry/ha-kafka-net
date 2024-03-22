@@ -15,7 +15,7 @@ public class GetAllTests
         IEnumerable<ISchedulableAutomation> schedulables = Enumerable.Empty<ISchedulableAutomation>();
 
         
-        Mock<ILogger<AutomationRegistrar>> logger = new();
+        Mock<ILogger<AutomationWrapper>> logger = new();
         Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
 
@@ -43,7 +43,7 @@ public class GetAllTests
         IEnumerable<ISchedulableAutomation> schedulables = [schedulable.Object];
         
         Mock<ISystemObserver> observer = new();
-        Mock<ILogger<AutomationRegistrar>> logger = new();
+        Mock<ILogger<AutomationWrapper>> logger = new();
                 Mock<IAutomationTraceProvider> trace = new();
 
 

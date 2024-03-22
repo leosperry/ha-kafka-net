@@ -1,16 +1,18 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using NLog;
-using NLog.Config;
+
 
 namespace HaKafkaNet;
 
@@ -63,6 +65,9 @@ public static class ServicesExtensions
 
         if(config.UseDashboard)
         {
+            services.Configure<JsonOptions>(o => {
+                o.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddFastEndpoints();
             services.AddMvc().AddApplicationPart(Assembly.GetAssembly(typeof(ServicesExtensions))!);
         }
@@ -80,6 +85,7 @@ public static class ServicesExtensions
                 RequestPath = "/assets",
                 FileProvider = new PhysicalFileProvider(Path.Combine(rootPath, "www/assets")),
             });
+            
             app.UseFastEndpoints();
             app.UseRouting();
             app.MapControllers();

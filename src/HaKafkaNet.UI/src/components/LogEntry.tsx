@@ -63,6 +63,12 @@ function LogEntry(props : Props)
                         <label className="control-label">Scope:</label>
                         <textarea disabled={true} className="form-control" cols={40} rows={3} defaultValue={JSON.stringify(log.scopes,null, 2)} />
                     </div>
+                    {log.exception && <div className="row">
+                        <label>Exception: 
+                            <textarea disabled={true} className="form-control" cols={40} rows={3} defaultValue={JSON.stringify(log.exception,null, 2)} />
+                        </label>
+                        
+                    </div>}
                 </Accordion.Body>
         </Accordion.Item>
     </>)

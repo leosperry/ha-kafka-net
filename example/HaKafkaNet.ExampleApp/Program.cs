@@ -3,7 +3,7 @@ using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseNLog(); // enable tracing
+builder.Host.UseNLog(); // enables log tracing
 
 var services = builder.Services;
 
