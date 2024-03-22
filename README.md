@@ -42,7 +42,7 @@ registrar.RegisterMultiple(
 
 ## Why ha-kafka-net ? 
 * [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
-* Durable - Schedule automations that [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations) and respond to state changes that happened durring the restart. See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
+* Durable - Automations that [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations). See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
 * Fast - Automations run in parallel and asynchronously.
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
