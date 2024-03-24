@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>HaKafkaNet</RootNamespace>
     <PackageId>HaKafkaNet.TestHarness</PackageId>
-    <Version>5.1.0</Version>
+    <Version>5.3.0</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet.TestHarness</Product>
     <Description>A library containing test helpers for HaKafkaNet.</Description>
