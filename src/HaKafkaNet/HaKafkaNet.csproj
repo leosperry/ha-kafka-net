@@ -14,10 +14,11 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>hkn_128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="readme.md" Pack="true" PackagePath="\" />
+    <None Include="nugetAssets\*.*" Pack="true" PackagePath="\" />
     <Content Include="www/**/*.*" CopyToOutputDirectory="Always">
       <PackageCopyToOutput>true</PackageCopyToOutput>
     </Content>
@@ -51,6 +52,10 @@
 
   <PackageReference Include="NLog.Web.AspNetCore" Version="5.*" />
   <PackageReference Include="NLog" Version="5.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NugetAssets/" />
   </ItemGroup>
 
 </Project>
