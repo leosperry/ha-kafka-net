@@ -8,7 +8,7 @@ Kafka ensures automations are durable and state is restored between restarts.
 
 ***
 
-Version 5.2 Released! 
+Version 5.3 Released! 
 New [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) and new observability features!
 
 To get the most out of these features be sure to enable [log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing).
