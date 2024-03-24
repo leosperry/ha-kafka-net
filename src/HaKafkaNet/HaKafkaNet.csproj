@@ -9,12 +9,13 @@
     <Version>5.3.0</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
-    <Description>A library for creating Home Assistant automations using the Home Assistant Kafka integration.</Description>
+    <Description>A library for easily creating Home Assistant automations in .NET and C#.</Description>
     <RepositoryUrl>https://github.com/leosperry/ha-kafka-net/</RepositoryUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <IsPackable>true</IsPackable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>hkn_128.png</PackageIcon>
+    <PackageTags>Home Assistant;homeassistant;Kafka</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
