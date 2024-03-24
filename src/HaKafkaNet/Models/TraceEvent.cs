@@ -1,5 +1,4 @@
-﻿using ProtoBuf.Serializers;
-
+﻿
 namespace HaKafkaNet;
 
 public record TraceEvent

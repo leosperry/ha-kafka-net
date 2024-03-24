@@ -9,7 +9,7 @@ public record AutomationMetaData
     public string GivenKey { get; internal set; } = string.Empty;
     
     [Obsolete("will be replace with a key in V5", false)]
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; } = default;
     
     public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
     public string? UnderlyingType { get; internal set; }

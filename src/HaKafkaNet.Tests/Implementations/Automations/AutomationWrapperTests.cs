@@ -12,11 +12,10 @@ public class AutomationWrapperTests
     {
         // Given
         FakeAuto auto = new();
-        Mock<ILogger> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -30,11 +29,10 @@ public class AutomationWrapperTests
     {
         // Given
         FakeAutoWithMeta auto = new();
-        Mock<ILogger> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -49,11 +47,10 @@ public class AutomationWrapperTests
         // Given
         FakeAutoWithMeta auto = new();
         auto.SetKey();
-        Mock<ILogger> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, logger.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -65,8 +62,6 @@ public class AutomationWrapperTests
 
 class FakeAuto : IAutomation
 {
-    //List<string> Triggers = new();
-
     public Task Execute(HaEntityStateChange stateChange, CancellationToken ct)
     {
         return Task.CompletedTask;

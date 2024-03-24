@@ -15,7 +15,6 @@ internal interface ISystemObserver
 /// </summary>
 internal class SystemObserver : ISystemObserver
 {
-    readonly ISystemMonitor[] _monitors;
     public bool IsInitialized { get; private set; }
 
     public event Action? StateHandlerInitialized;
@@ -24,14 +23,28 @@ internal class SystemObserver : ISystemObserver
 
     public SystemObserver(IEnumerable<ISystemMonitor> monitors)
     {
-        _monitors = monitors.ToArray();
-
         foreach (var monitor in monitors)
         {
-            StateHandlerInitialized += () =>    _ = monitor.StateHandlerInitialized();
-            UnhandledException += (meta, ex) => _ = monitor.UnhandledException(meta, ex);
-            BadEntityState += (states) =>       _ = monitor.BadEntityStateDiscovered(states);
+            StateHandlerInitialized += () =>    _ = WrapTask(()=> monitor.StateHandlerInitialized());
+            UnhandledException += (meta, ex) => _ = WrapTask(()=> monitor.UnhandledException(meta, ex));
+            BadEntityState += (states) =>       _ = WrapTask(()=> monitor.BadEntityStateDiscovered(states));
         }
+    }
+
+    private Task WrapTask(Func<Task> funcToErrorHandle)
+    {
+        Task t;
+        try
+        {
+            t = funcToErrorHandle();
+            t.Wait();
+        }
+        catch (System.Exception)
+        {
+            //swallow this for now so that other handlers continue to run
+            return Task.CompletedTask;
+        }
+        return t;
     }
 
     public void OnStateHandlerInitialized()

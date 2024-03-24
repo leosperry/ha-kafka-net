@@ -25,22 +25,15 @@ internal interface IAutomationManager
 internal class AutomationManager : IAutomationManager
 {
     private readonly IInternalRegistrar _registrar;
-    readonly ISystemObserver _observer;
-    private readonly ILogger<AutomationManager> _logger;
 
-    //private  Dictionary<Guid, IAutomationWrapper> _internalAutomations;
     private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey;
     private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
 
     public AutomationManager(
         IEnumerable<IAutomationRegistry>? registries,
-        IInternalRegistrar registrar,
-        ISystemObserver observer,
-        ILogger<AutomationManager> logger)
+        IInternalRegistrar registrar)
     {
         _registrar = registrar;
-        _observer = observer;
-        this._logger = logger;
 
         foreach (var reg in registries ?? Enumerable.Empty<IAutomationRegistry>())
         {
@@ -122,12 +115,7 @@ internal class AutomationManager : IAutomationManager
             where 
                 (a.EventTimings & stateChange.EventTiming) == stateChange.EventTiming
                 && a.GetMetaData().Enabled
-            select a.Execute(stateChange, cancellationToken).ContinueWith(t => {
-                if (t.IsFaulted)
-                {
-                    _observer.OnUnhandledException(a.GetMetaData(), t.Exception!);
-                }
-            });
+            select a.Execute(stateChange, cancellationToken);
             
         return Task.WhenAll(tasks.ToArray());
     }

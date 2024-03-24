@@ -1,6 +1,4 @@
 ﻿
-using Microsoft.Extensions.Logging;
-
 namespace HaKafkaNet;
 
 
@@ -9,8 +7,6 @@ internal class AutomationWrapper : IAutomationWrapper
 {
     readonly IAutomation _auto;
     readonly IAutomationTraceProvider _trace;
-    readonly ILogger _log;
-
     EventTiming _eventTimings;
     AutomationMetaData _meta;
     IEnumerable<string> _triggers;
@@ -22,11 +18,10 @@ internal class AutomationWrapper : IAutomationWrapper
         get => _auto;
     }
 
-    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, ILogger logger, string source)
+    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, string source)
     {
         _auto = automation;
         _trace = traceProvider;
-        _log = logger;
         var underlyingType = automation is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
         
         _triggers = automation.TriggerEntityIds();
@@ -67,26 +62,15 @@ internal class AutomationWrapper : IAutomationWrapper
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         this._meta.LastTriggered = DateTime.Now;
-        using (_log.BeginScope("Start [{automationName}] of Type [{automationType}] from entity [{triggerEntityId}] with context [{contextId}]", 
-            _meta.Name, _auto.GetType().Name, stateChange.EntityId, stateChange.New.Context?.ID))
+        TraceEvent evt = new()
         {
-            try
-            {
-                TraceEvent evt = new()
-                {
-                    EventType = "Trigger",
-                    AutomationKey = this._meta.GivenKey,
-                    EventTime = DateTime.Now,
-                    StateChange = stateChange,
-                };
-                await _trace.Trace(evt, () => _auto.Execute(stateChange, cancellationToken));
-            }
-            catch (System.Exception ex)
-            {
-                _log.LogError(ex, "automation fault");
-                throw;
-            }
-        }
+            EventType = "Trigger",
+            AutomationKey = this._meta.GivenKey,
+            EventTime = DateTime.Now,
+            StateChange = stateChange,
+        };
+
+        await _trace.Trace(evt, _meta, () => _auto.Execute(stateChange, cancellationToken));
     }
 
     private string GenerateKey(string source, string name)

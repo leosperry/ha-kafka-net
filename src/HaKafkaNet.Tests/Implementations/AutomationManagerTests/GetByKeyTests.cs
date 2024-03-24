@@ -8,10 +8,9 @@ public class GetByKeyTests
     public void WheMetaNotSet_ReturnsByCleanedKey()
     {
         // Given
-        Mock<ILogger> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
 
-        AutomationWrapper wrapper = new AutomationWrapper(new FakeAuto(), trace.Object, logger.Object, "test");
+        AutomationWrapper wrapper = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
@@ -21,27 +20,23 @@ public class GetByKeyTests
 
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-        Mock<ISystemObserver> observer = new();
-   
         // When
-        var sut = new AutomationManager(registries, registrar.Object, observer.Object, mgrLogger.Object); 
+        var sut = new AutomationManager(registries, registrar.Object); 
 
         var result = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock");
     
         // Then
-        Assert.Equal("FakeAuto", result.GetMetaData().Name);
+        Assert.Equal("FakeAuto", result!.GetMetaData().Name);
     }
 
     [Fact]
     public void WheMultiple_ReturnsByCleanedKey()
     {
         // Given
-        Mock<ILogger> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
 
-        AutomationWrapper wrapper1 = new AutomationWrapper(new FakeAuto(), trace.Object, logger.Object, "test");
-        AutomationWrapper wrapper2 = new AutomationWrapper(new FakeAuto(), trace.Object, logger.Object, "test");
+        AutomationWrapper wrapper1 = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
+        AutomationWrapper wrapper2 = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
@@ -51,29 +46,25 @@ public class GetByKeyTests
 
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-        Mock<ISystemObserver> observer = new();
-   
         // When
-        var sut = new AutomationManager(registries, registrar.Object, observer.Object, mgrLogger.Object); 
+        var sut = new AutomationManager(registries, registrar.Object); 
 
         var result1 = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock");
         var result2 = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock2");
     
         // Then
-        Assert.Equal("FakeAuto", result1.GetMetaData().Name);
-        Assert.Equal("FakeAuto", result2.GetMetaData().Name);
+        Assert.Equal("FakeAuto", result1!.GetMetaData().Name);
+        Assert.Equal("FakeAuto", result2!.GetMetaData().Name);
     }
 
     [Fact]
     public void WheMetaSet_ReturnsByCleanedKey()
     {
         // Given
-        Mock<ILogger> logger = new();
         var fake = new FakeAutoWithMeta();
         fake.SetKey("!@#$ Evil !@#$ Spock !@#$");
         Mock<IAutomationTraceProvider> trace = new();
-        AutomationWrapper wrapper = new AutomationWrapper(fake, trace.Object, logger.Object, "test");
+        AutomationWrapper wrapper = new AutomationWrapper(fake, trace.Object, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
@@ -83,15 +74,12 @@ public class GetByKeyTests
 
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
         
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-        Mock<ISystemObserver> observer = new();
-   
         // When
-        var sut = new AutomationManager(registries, registrar.Object, observer.Object, mgrLogger.Object); 
+        var sut = new AutomationManager(registries, registrar.Object); 
 
         var result = sut.GetByKey("Evil_Spock");
     
         // Then
-        Assert.Equal("Spock", result.GetMetaData().Name);
+        Assert.Equal("Spock", result!.GetMetaData().Name);
     }
 }

@@ -46,8 +46,7 @@ public class SimpleLightAutomation : IAutomation, IAutomationMeta
         return new()
         {
             Name = "Simple Automation",
-            Description = "When button is pressed, dims a light",
-            Id = Guid.NewGuid(),
+            Description = "When button is pressed, dims a light"
         };
     }
 

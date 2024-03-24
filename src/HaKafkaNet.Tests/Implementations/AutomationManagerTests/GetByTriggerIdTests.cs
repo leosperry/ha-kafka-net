@@ -26,12 +26,9 @@ public class GetByTriggerIdTests
             .Returns([registeredAuto.Object]);
 
         IEnumerable<IAutomationRegistry> registries = [registry.Object];
-        
-        Mock<ILogger<AutomationManager>> logger = new();
-        Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationManager(
-            registries, registrar.Object, observer.Object, logger.Object);
+            registries, registrar.Object);
         // When
         var result = sut.GetByTriggerEntityId(string.Empty);
 
@@ -63,13 +60,9 @@ public class GetByTriggerIdTests
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered)
             .Returns([auto.Object, registeredAuto.Object]);
-        
-        Mock<ILogger<AutomationManager>> logger = new();
-        Mock<ISystemObserver> observer = new();
-
 
         var sut = new AutomationManager(
-            registries, registrar.Object, observer.Object, logger.Object);
+            registries, registrar.Object);
         // When
         var result = sut.GetByTriggerEntityId(triggerId);
 
@@ -99,13 +92,10 @@ public class GetByTriggerIdTests
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered)
-            .Returns([auto1.Object, auto3.Object, auto2.Object]);        
-        Mock<ILogger<AutomationManager>> logger = new();
-        Mock<ISystemObserver> observer = new();
+            .Returns([auto1.Object, auto3.Object, auto2.Object]);
 
-        var sut = new AutomationManager(
-            registries, registrar.Object, observer.Object, logger.Object);
-        // When
+        var sut = new AutomationManager(registries, registrar.Object);
+        // 
         var enterpriseResult = sut.GetByTriggerEntityId(enterprise);
         var excelsiorResult = sut.GetByTriggerEntityId(excelsior);
         var voyagerResult = sut.GetByTriggerEntityId("NCC-74656");

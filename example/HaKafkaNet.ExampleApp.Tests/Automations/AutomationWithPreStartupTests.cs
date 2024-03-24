@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace HaKafkaNet.ExampleApp.Tests;
 

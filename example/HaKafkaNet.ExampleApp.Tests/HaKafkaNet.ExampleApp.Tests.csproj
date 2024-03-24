@@ -23,8 +23,8 @@
 
     <PackageReference Include="Moq" Version="4.20.70" />
     
-    <PackageReference Include="HaKafkaNet" Version="5.1.*" />
-    <PackageReference Include="HaKafkaNet.TestHarness" Version="5.1.*" />
+    <!-- <PackageReference Include="HaKafkaNet" Version="5.2.*" /> -->
+    <!-- <PackageReference Include="HaKafkaNet.TestHarness" Version="5.1.*" /> -->
 
   </ItemGroup>
 
@@ -32,8 +32,8 @@
     <ProjectReference Include="..\HaKafkaNet.ExampleApp\HaKafkaNet.ExampleApp.csproj" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj" />
-  </ItemGroup> -->
+  </ItemGroup>
 
 </Project>

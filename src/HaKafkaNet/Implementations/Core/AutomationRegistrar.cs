@@ -6,7 +6,6 @@ namespace HaKafkaNet;
 
 internal class AutomationRegistrar : IInternalRegistrar
 {
-    readonly ISystemObserver _observer;
     readonly IAutomationTraceProvider _trace;
     readonly ILogger<AutomationWrapper> _logger;
 
@@ -18,10 +17,9 @@ internal class AutomationRegistrar : IInternalRegistrar
         IEnumerable<IAutomation> automations,
         IEnumerable<IConditionalAutomation> conditionalAutomations,
         IEnumerable<ISchedulableAutomation> schedulableAutomations,
-        ISystemObserver observer, IAutomationTraceProvider traceProvider,
+        IAutomationTraceProvider traceProvider,
         ILogger<AutomationWrapper> logger)
     {
-        _observer = observer;
         _trace = traceProvider;
         _logger = logger;
 
@@ -89,22 +87,22 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     private void AddSimple(IAutomation automation)
     {
-        var aWrapped = new AutomationWrapper(automation, _trace, _logger, GetSourceTypeName());
+        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName());
         RegisteredAutomations.Add(aWrapped);    
     }
 
     private void AddDelayable(IDelayableAutomation automation)
     {
-        var dWrapped = new DelayablelAutomationWrapper(automation, _observer, _trace, _logger);
-        var aWrapped = new AutomationWrapper(dWrapped, _trace, _logger, GetSourceTypeName());
+        var dWrapped = new DelayablelAutomationWrapper(automation, _trace, _logger);
+        var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
         RegisteredAutomations.Add(aWrapped);
     }
 
     private void AddDelayableWithEvaluator<T>(T automation, DelayEvaluator<T> evaluator)
         where T : IDelayableAutomation
     {
-        var dWrapped = new DelayablelAutomationWrapper(automation, _observer, _trace, _logger, () => evaluator(automation));
-        var aWrapped = new AutomationWrapper(dWrapped, _trace, _logger, GetSourceTypeName());
+        var dWrapped = new DelayablelAutomationWrapper(automation, _trace, _logger, () => evaluator(automation));
+        var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
     }
 
     private string GetSourceTypeName()

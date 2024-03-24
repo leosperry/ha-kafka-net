@@ -11,7 +11,7 @@ namespace HaKafkaNet;
 
 public interface IAutomationTraceProvider
 {
-    Task Trace(TraceEvent evt, Func<Task> traceFunction);
+    Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction);
 
     Task<IEnumerable<TraceData>> GetTraces(string automationKey);
 
@@ -21,6 +21,7 @@ public interface IAutomationTraceProvider
 internal class AutomationTraceProvider : IAutomationTraceProvider
 {
     readonly IDistributedCache _cache;
+    readonly ISystemObserver _observer;
     readonly ILogger<AutomationTraceProvider> _logger;
 
     const string CachKeyPrefix = "hkn.tracedata.";
@@ -38,11 +39,12 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         automationEventTime = "automationEventTime";
     
     // first string: automationKey, second string: composite from event
-    ConcurrentDictionary<string, ConcurrentDictionary<string,(TraceEvent evt, ConcurrentQueue<LogInfo>)>> _activeTraces = new();
+    ConcurrentDictionary<string, ConcurrentDictionary<string,(TraceEvent evt, ConcurrentQueue<LogInfo> logQueue)>> _activeTraces = new();
 
-    public AutomationTraceProvider(IDistributedCache cache, ILogger<AutomationTraceProvider> logger)
+    public AutomationTraceProvider(IDistributedCache cache, ISystemObserver observer, ILogger<AutomationTraceProvider> logger)
     {
         _cache = cache;
+        _observer = observer;
         _logger = logger;
     }
 
@@ -56,58 +58,80 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             if (_activeTraces.TryGetValue(autoKeyRaw.ToString()!, out var automationRecords))
             {
                 var instanceKey = MakeKey(evtType.ToString()!, evtTime.ToString()!);
-                automationRecords[instanceKey].Item2.Enqueue(new LogInfo()
+                var traceInfo = automationRecords[instanceKey];
+
+                ExecptionInfo? exInfo = null;
+                if (logEvent.Exception is not null)
+                {
+                    exInfo = ExecptionInfo.Create(logEvent.Exception);
+                    traceInfo.evt.Exception = exInfo;
+                }
+
+                traceInfo.logQueue.Enqueue(new LogInfo()
                 {
                     LogLevel = logEvent.Level.ToString(), 
                     Message = renderedMessage, 
                     Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value), 
                     Scopes = scopes,
-                    Exception = logEvent.Exception is null ? null : ExecptionInfo.Create(logEvent.Exception)
+                    Exception = exInfo
                 });
             }
         }
     }
 
-    public async Task Trace(TraceEvent evt, Func<Task> traceFunction)
+    public Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction)
     {
         var data = AddTrace(evt);
         var scopeData = new Dictionary<string, object>()
         {
-            {automationKey, evt.AutomationKey},
+            // required for trace funcionality
+            {automationKey, meta.GivenKey},
             {automationEventType, evt.EventType},
             {automationEventTime, evt.EventTime.ToString("O")},
+
+            // added for benefit of user
+            {"autommationName", meta.Name},
+            {"automationType", meta.UnderlyingType ?? "unknown type"}
         };
+
+        if (evt.StateChange is not null)
+        {
+            scopeData["haContextId"] = evt.StateChange.New.Context?.ID ?? "unknown"; 
+            scopeData["triggerEntityId"] = evt.StateChange.EntityId;
+        }
 
         using(_logger.BeginScope(scopeData))
         {
-            var task = traceFunction();
+            Task task;
+
             try
             {
-                // if the task is from Task.WhenAll()
-                // awaiting here will only catch the first exception
+                // this line will throw an exception
+                // if the automation threw an excption
+                task = traceFunction();
+                // if the task is a non-awaited
+                // this line could throw an exception
+                // this will also catch all exceptions from Task.WhenAll()
                 task.Wait();
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-            }
-            if (task.IsFaulted)
-            {
-                // at this point we should have all the exceptions
-                data.Item1.Exception = ExecptionInfo.Create(task.Exception);
-                await WriteToCache(new TraceData()
+                _observer.OnUnhandledException(meta, ex);
+                evt.Exception = ExecptionInfo.Create(ex);
+                _ = WriteToCache(new TraceData()
                 {
-                    TraceEvent = data.Item1,
-                    Logs = data.Item2
+                    TraceEvent = data.evt,
+                    Logs = data.logQueue
                 });
-                // rethrow 
-                // will loose the call stack but we already captured it
-                throw task.Exception;
+                throw;
             }
-            await WriteToCache(new TraceData()
+
+            _ = WriteToCache(new TraceData()
             {
-                TraceEvent = data.Item1,
-                Logs = data.Item2
-            });        
+                TraceEvent = data.evt,
+                Logs = data.logQueue
+            });
+            return task;  
         }
     }
 
@@ -126,7 +150,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                     select new TraceData()
                     {
                         TraceEvent = tuple.evt,
-                        Logs = tuple.Item2
+                        Logs = tuple.logQueue
                     };
             }
             var cached = await ReadFromCache(CachKeyPrefix + automationKey);
@@ -138,15 +162,23 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
     }
 
-    private (TraceEvent, ConcurrentQueue<LogInfo>) AddTrace(TraceEvent evt)
+    private (TraceEvent evt, ConcurrentQueue<LogInfo> logQueue) AddTrace(TraceEvent evt)
     {
-        _ = _activeTraces.TryAdd(evt.AutomationKey, new());
+        try
+        {
+            _ = _activeTraces.TryAdd(evt.AutomationKey, new());
 
-        var key = MakeKey(evt.EventType, evt.EventTime.ToString("O"));
+            var key = MakeKey(evt.EventType, evt.EventTime.ToString("O"));
 
-        var retVal = _activeTraces[evt.AutomationKey].GetOrAdd(key, (evt, new ConcurrentQueue<LogInfo>()));
+            var retVal = _activeTraces[evt.AutomationKey].GetOrAdd(key, (evt, new ConcurrentQueue<LogInfo>()));
 
-        return retVal;
+            return retVal;
+        }
+        catch (System.Exception ex)
+        {
+            System.Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 
     private async Task WriteToCache(TraceData traceData)
@@ -179,6 +211,10 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             // removed from active
             var instanceKey = MakeKey(traceData.TraceEvent.EventType, traceData.TraceEvent.EventTime.ToString("O"));
             _activeTraces[traceData.TraceEvent.AutomationKey].TryRemove(instanceKey, out _);
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine(ex.Message);
         }
         finally
         {

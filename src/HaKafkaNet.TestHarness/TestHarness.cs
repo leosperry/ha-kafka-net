@@ -22,7 +22,7 @@ public class TestHarness
     public IAutomationBuilder Builder { get; private set; }
 
     static Mock<ILogger<AutomationManager>> _logger = new();
-    static Mock<ILogger<AutomationRegistrar>> _loggerReg = new();
+    static Mock<ILogger<AutomationWrapper>> _loggerReg = new();
     static Mock<ILogger<DelayablelAutomationWrapper>> _wrapperLogger = new();
 
     IInternalRegistrar? _registrar;
@@ -66,61 +66,51 @@ public class TestHarness
 
     public void Initialize(IAutomation automation)
     {
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
 
-        _registrar = new AutomationRegistrar([automation],Enumerable.Empty<IConditionalAutomation>(),Enumerable.Empty<ISchedulableAutomation>(), observer.Object, trace.Object, _loggerReg.Object);
+        _registrar = new AutomationRegistrar([automation],Enumerable.Empty<IConditionalAutomation>(),Enumerable.Empty<ISchedulableAutomation>(), trace.Object, _loggerReg.Object);
 
 
         _autoMgr = new AutomationManager(
             Enumerable.Empty<IAutomationRegistry>(),
-            _registrar,
-            new Mock<ISystemObserver>().Object,
-            _logger.Object);
+            _registrar);
     }
 
     public void Initialize(IConditionalAutomation automation)
     {
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
 
         _registrar = new AutomationRegistrar(
             Enumerable.Empty<IAutomation>(),
             [automation],
             Enumerable.Empty<ISchedulableAutomation>(), 
-            observer.Object, trace.Object, _loggerReg.Object);
+            trace.Object, _loggerReg.Object);
         
         _autoMgr = new AutomationManager(
             Enumerable.Empty<IAutomationRegistry>(),
-            _registrar,
-            observer.Object,
-            _logger.Object
-        );
+            _registrar);
     }
 
     public void Initialize(IAutomationRegistry registry)
     {
         Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
 
         _registrar = new AutomationRegistrar(
             Enumerable.Empty<IAutomation>(),
             Enumerable.Empty<IConditionalAutomation>(),
             Enumerable.Empty<ISchedulableAutomation>(), 
-            observer.Object, trace.Object, _loggerReg.Object);
+            trace.Object, _loggerReg.Object);
         
         _autoMgr = new AutomationManager(
             [registry],
-            _registrar,
-            observer.Object,
-            _logger.Object
-        );
+            _registrar);
     }
 
     public void Initialize(
@@ -129,8 +119,8 @@ public class TestHarness
     {
         Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
         
         if (monitor is null)
         {
@@ -145,13 +135,11 @@ public class TestHarness
             automations ?? Enumerable.Empty<IAutomation>(),
             conditionals ?? Enumerable.Empty<IConditionalAutomation>(),
             schedulables ?? Enumerable.Empty<ISchedulableAutomation>(),
-            observer.Object, trace.Object, _loggerReg.Object);
+            trace.Object, _loggerReg.Object);
         
         _autoMgr = new AutomationManager(
             registries ?? Enumerable.Empty<IAutomationRegistry>(),
-            _registrar,
-            _observer,
-            _logger.Object);
+            _registrar);
     }
 
     [Obsolete("", false)]

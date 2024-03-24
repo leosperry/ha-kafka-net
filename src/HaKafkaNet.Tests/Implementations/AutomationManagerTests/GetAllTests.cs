@@ -16,11 +16,10 @@ public class GetAllTests
 
         
         Mock<ILogger<AutomationWrapper>> logger = new();
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, observer.Object, trace.Object, logger.Object);
+            autos, conditionals, schedulables, trace.Object, logger.Object);
         // When
 
         var result = sut.RegisteredAutomations;
@@ -42,13 +41,12 @@ public class GetAllTests
         Mock<ISchedulableAutomation> schedulable = new();
         IEnumerable<ISchedulableAutomation> schedulables = [schedulable.Object];
         
-        Mock<ISystemObserver> observer = new();
         Mock<ILogger<AutomationWrapper>> logger = new();
                 Mock<IAutomationTraceProvider> trace = new();
 
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, observer.Object, trace.Object, logger.Object);
+            autos, conditionals, schedulables, trace.Object, logger.Object);
         // When
 
         sut.Register(auto.Object);

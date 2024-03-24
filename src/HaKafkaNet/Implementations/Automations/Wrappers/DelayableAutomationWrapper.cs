@@ -10,7 +10,6 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private readonly IDelayableAutomation _automation;
     internal IDelayableAutomation WrappedConditional { get => _automation; }
 
-    private readonly ISystemObserver _observer;
     readonly IAutomationTraceProvider _trace;
     private readonly ILogger _logger;
 
@@ -20,10 +19,9 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(IDelayableAutomation automation, ISystemObserver observer, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
+    public DelayablelAutomationWrapper(IDelayableAutomation automation, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
     {
         this._automation = automation;
-        this._observer = observer;
         this._trace = traceProvider;
         _logger = logger;
 
@@ -98,6 +96,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
             //we are either not running or running and we need to reschedule
             _timeForScheduled = schedulableAutomation.GetNextScheduled();
+            _logger.LogDebug("GetNextScheduled returned {scheduleTime}", _timeForScheduled);
             if (!alreadyScheduled)
             {
                 _ = StartIfNotStarted(cancellationToken);
@@ -133,11 +132,11 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
     public Task<bool> InternalContinueToBeTrue(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
+        // this is running inside IAutomation.Execute() and a trace has already been started.
         return _automation.ContinuesToBeTrue(stateChange, cancellationToken)
             .ContinueWith<bool>(t => {
                 if (t.IsFaulted)
                 {
-                    _observer.OnUnhandledException(this._meta, t.Exception);
                     return _automation.ShouldExecuteOnContinueError;
                 }
                 else
@@ -171,14 +170,14 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
 
         if (delay == TimeSpan.Zero)
         {
-            _logger.LogDebug($"{this._meta.Name} automation scheduled now");
+            _logger.LogDebug("automation scheduled now");
             return ActualExecute(cancellationToken);
         }
 
         // run with delay
         if (_cts is null)
         {
-            _logger.LogDebug($"{this._meta.Name} automation scheduled in {delay}");
+            _logger.LogDebug("automation scheduled in {automationCalculatedDelay}", delay);
             // run with delay
             try
             {
@@ -205,28 +204,26 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
         }
         // if we haven't returned by now, another thread has already stared
-        _logger.LogDebug($"{this._meta.Name} is already scheduled");
+        _logger.LogDebug("automation is already scheduled");
         return Task.CompletedTask;
     }
 
-    private Task ActualExecute(CancellationToken token, Action? postRun = null)
+    private async Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
+        this._meta.LastExecuted = DateTime.Now;
         var evt = new TraceEvent(){
             EventType = "Delayed-Execution",
-            AutomationKey = _meta.GivenKey,
+            AutomationKey = this._meta.GivenKey,
             EventTime = DateTime.Now,
         };
-        return _trace.Trace(evt, () => 
-             _automation.Execute(token)
-            .ContinueWith(t =>
-            {
-                this._meta.LastExecuted = DateTime.Now;
-                if (t.IsFaulted)
-                {
-                    _observer.OnUnhandledException(this._meta, t.Exception);
-                }
-                postRun?.Invoke();
-            }));
+        try
+        {
+            await _trace.Trace(evt, _meta, () => _automation.Execute(token));
+        }
+        finally
+        {
+            postRun?.Invoke();
+        }
     }
 
     private void CleanUpTokenSource()
@@ -258,7 +255,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             {
                 if (_cts is not null)
                 {
-                    _logger.LogWarning($"Automation named [{_meta.Name}] of type [{_meta.UnderlyingType}] was running at {DateTime.Now} and is being stopped because {reason}");              
+                    _logger.LogWarning("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason);
                     try
                     {
                         _cts.Cancel();

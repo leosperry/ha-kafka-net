@@ -27,7 +27,7 @@ services.AddStackExchangeRedisCache(options =>
     //options.InstanceName = "HaKafkaNet";
 });
 
-
+// programatic example of configuration
 // services.AddHaKafkaNet(options =>{
 //     //minimum amount of config
 //     options.KafkaBrokerAddresses = ["your kafka instance"];

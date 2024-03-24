@@ -13,26 +13,23 @@ public class SunComponentTests
     public async Task WhenStartup_ShouldScheduleAndExecute()
     {
         // Given
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
         Mock<ILogger> logger = new();
-        Mock<ILogger<AutomationManager>> autoLogger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
 
         SunRiseAutomation sut = new SunRiseAutomation(execution);
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
 
-        AutomationManager autoMgr = new AutomationManager(null, registrar.Object, observer.Object,  autoLogger.Object);
-
+        AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
 
         // When
         await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached));
@@ -46,26 +43,23 @@ public class SunComponentTests
     public async Task WhenStartup_andEventInPast_ShouldExecuteByDefault()
     {
         // Given
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
         Mock<ILogger> logger = new();
-        Mock<ILogger<AutomationManager>> autoLogger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
 
         SunRiseAutomation sut = new SunRiseAutomation(execution);
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
 
-        AutomationManager autoMgr = new AutomationManager(null, registrar.Object, observer.Object,  autoLogger.Object);
-
+        AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
 
         // When
         await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));
@@ -79,12 +73,10 @@ public class SunComponentTests
     public async Task WhenStartup_andEventInPast_AndUserSpecifiedNoPast_ShouldNotExecute()
     {
         // Given
-        Mock<ISystemObserver> observer = new();
         Mock<IAutomationTraceProvider> trace = new();
-        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<Func<Task>>()))
-            .Callback<TraceEvent, Func<Task>>((_, f) => f());
+        trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
+            .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
         Mock<ILogger> logger = new();
-        Mock<ILogger<AutomationManager>> autoLogger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
@@ -92,13 +84,13 @@ public class SunComponentTests
         SunRiseAutomation sut = new SunRiseAutomation(execution);
         sut.ShouldExecutePastEvents = false;
 
-        DelayablelAutomationWrapper wrapper = new(sut, observer.Object, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, logger.Object, "test");
+        DelayablelAutomationWrapper wrapper = new(sut, trace.Object, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
 
-        AutomationManager autoMgr = new AutomationManager(null, registrar.Object, observer.Object,  autoLogger.Object);
+        AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
 
         // When
         await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));

@@ -20,12 +20,10 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
 
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-
         Mock<ISystemObserver> observer = new();
         AutomationManager manager = new(
             Enumerable.Empty<IAutomationRegistry>(), 
-            registrar.Object, observer.Object, mgrLogger.Object);
+            registrar.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -67,11 +65,9 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
 
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-
         Mock<ISystemObserver> observer = new();
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -102,13 +98,12 @@ public class HaStateHandlerComponentTests
 
         Mock<IAutomation> auto1 = new Mock<IAutomation>();
 
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
         Mock<IInternalRegistrar> registrar = new();
 
         Mock<ISystemObserver> observer = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -153,10 +148,9 @@ public class HaStateHandlerComponentTests
         registrar.Setup(r => r.Registered).Returns([auto1.Object]);
 
         Mock<ISystemObserver> observer = new();
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -201,10 +195,9 @@ public class HaStateHandlerComponentTests
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto1.Object]);
         Mock<ISystemObserver> observer = new();
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -249,10 +242,9 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
@@ -292,10 +284,8 @@ public class HaStateHandlerComponentTests
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -326,10 +316,8 @@ public class HaStateHandlerComponentTests
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
-
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -361,10 +349,9 @@ public class HaStateHandlerComponentTests
         Mock<IAutomationFactory> factory = new();
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -396,10 +383,9 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -431,10 +417,9 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -467,10 +452,9 @@ public class HaStateHandlerComponentTests
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -502,10 +486,9 @@ public class HaStateHandlerComponentTests
         Mock<IAutomationFactory> factory = new();
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns([auto.Object]);
-        Mock<ILogger<AutomationManager>> mgrLogger = new();
 
         AutomationManager collector = new(
-            Enumerable.Empty<IAutomationRegistry>(), registrar.Object, observer.Object, mgrLogger.Object);
+            Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
