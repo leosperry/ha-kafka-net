@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Net.Sockets;
+﻿using System.Collections.Concurrent;
+
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -13,6 +11,7 @@ public interface IAutomationTraceProvider
 {
     Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction);
 
+    Task<IEnumerable<LogInfo>> GetErrorLogs();
     Task<IEnumerable<TraceData>> GetTraces(string automationKey);
 
     void AddLog(string renderedMessage, LogEventInfo logEvent, IDictionary<string, object> scopes);
@@ -26,12 +25,19 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
 
     const string CachKeyPrefix = "hkn.tracedata.";
     ConcurrentDictionary<string, SemaphoreSlim> _automationLocks = new();
+    
+    SemaphoreSlim _errorLogLock = new(1);
+    const string _errorLogKey = "hkn.errorlogs";
+
+    static readonly HashSet<NLog.LogLevel> _errorLogLevels = new()
+    {
+        NLog.LogLevel.Warn, NLog.LogLevel.Error , NLog.LogLevel.Fatal
+    };
 
     readonly DistributedCacheEntryOptions _cacheOptions = new ()
     {
         SlidingExpiration = TimeSpan.FromDays(30)
     };
-
 
     const string 
         automationKey = "automationKey",
@@ -54,27 +60,38 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             scopes.TryGetValue(automationEventType, out var evtType) &&
             scopes.TryGetValue(automationEventTime, out var evtTime))
         {
+            ExecptionInfo? exInfo = null;
+            if (logEvent.Exception is not null)
+            {
+                exInfo = ExecptionInfo.Create(logEvent.Exception);
+            }
+            LogInfo info = new LogInfo()
+            {
+                LogLevel = logEvent.Level.ToString(), 
+                Message = logEvent.Message, 
+                RenderedMessage = renderedMessage,
+                Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value), 
+                Scopes = scopes,
+                Exception = exInfo
+            };
+
             // add to local
             if (_activeTraces.TryGetValue(autoKeyRaw.ToString()!, out var automationRecords))
             {
                 var instanceKey = MakeKey(evtType.ToString()!, evtTime.ToString()!);
                 var traceInfo = automationRecords[instanceKey];
-
-                ExecptionInfo? exInfo = null;
-                if (logEvent.Exception is not null)
+                if (exInfo is not null)
                 {
-                    exInfo = ExecptionInfo.Create(logEvent.Exception);
                     traceInfo.evt.Exception = exInfo;
                 }
 
-                traceInfo.logQueue.Enqueue(new LogInfo()
-                {
-                    LogLevel = logEvent.Level.ToString(), 
-                    Message = renderedMessage, 
-                    Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value), 
-                    Scopes = scopes,
-                    Exception = exInfo
-                });
+                traceInfo.logQueue.Enqueue(info);
+            }
+
+            //handle error log
+            if (_errorLogLevels.Contains(logEvent.Level))
+            {
+                _ = WriteErrorToCache(info);
             }
         }
     }
@@ -90,7 +107,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             {automationEventTime, evt.EventTime.ToString("O")},
 
             // added for benefit of user
-            {"autommationName", meta.Name},
+            {"automationName", meta.Name},
             {"automationType", meta.UnderlyingType ?? "unknown type"}
         };
 
@@ -118,7 +135,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             {
                 _observer.OnUnhandledException(meta, ex);
                 evt.Exception = ExecptionInfo.Create(ex);
-                _ = WriteToCache(new TraceData()
+                _ = WriteTraceToCache(new TraceData()
                 {
                     TraceEvent = data.evt,
                     Logs = data.logQueue
@@ -126,13 +143,19 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                 throw;
             }
 
-            _ = WriteToCache(new TraceData()
+            _ = WriteTraceToCache(new TraceData()
             {
                 TraceEvent = data.evt,
                 Logs = data.logQueue
             });
             return task;  
         }
+    }
+
+    public async Task<IEnumerable<LogInfo>> GetErrorLogs()
+    {
+        var cached = await ReadErrorLogsFromCache();
+        return (cached ?? Enumerable.Empty<LogInfo>()).Reverse().ToArray();            
     }
 
     public async Task<IEnumerable<TraceData>> GetTraces(string automationKey)
@@ -153,7 +176,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                         Logs = tuple.logQueue
                     };
             }
-            var cached = await ReadFromCache(CachKeyPrefix + automationKey);
+            var cached = await ReadTracesFromCache(CachKeyPrefix + automationKey);
             return (cached ?? Enumerable.Empty<TraceData>()).Union(locals ?? Enumerable.Empty<TraceData>()).Reverse().ToArray();            
         }
         finally
@@ -181,7 +204,39 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
     }
 
-    private async Task WriteToCache(TraceData traceData)
+    private async Task WriteErrorToCache(LogInfo logInfo)
+    {
+        await _errorLogLock.WaitAsync();
+        try
+        {
+            var existing = await ReadErrorLogsFromCache();
+            Queue<LogInfo>? q = null;
+            if (existing is not null)
+            {
+                q = new Queue<LogInfo>(existing);
+                while (q.Count >= 100)
+                {
+                    q.Dequeue();
+                }            
+            }
+            q ??= new();
+            q.Enqueue(logInfo);
+
+            var value = JsonSerializer.SerializeToUtf8Bytes(q.ToArray());
+            await _cache.SetAsync(_errorLogKey, value, _cacheOptions);
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("error writing error log to cache");
+            System.Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            _errorLogLock.Release();
+        }
+    }
+
+    private async Task WriteTraceToCache(TraceData traceData)
     {
         var key = CachKeyPrefix + traceData.TraceEvent.AutomationKey;
 
@@ -190,20 +245,17 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         await loc.WaitAsync();
         try
         {
-            var existing = await ReadFromCache(key);
+            var existing = await ReadTracesFromCache(key);
             Queue<TraceData>? q = null;
             if (existing is not null)
             {
                 q = new Queue<TraceData>(existing);
-                while (q.Count > 50)
+                while (q.Count >= 50)
                 {
                     q.Dequeue();
                 }
             }
-            if (q is null)
-            {
-                q = new();
-            }
+            q ??= new();
             q.Enqueue(traceData);
             var value = JsonSerializer.SerializeToUtf8Bytes(q.ToArray());
             await _cache.SetAsync(key, value, _cacheOptions);
@@ -214,6 +266,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
         catch (Exception ex)
         {
+            System.Console.WriteLine("error writing trace to cache");
             System.Console.WriteLine(ex.Message);
         }
         finally
@@ -222,7 +275,28 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
     }
 
-    private async Task<IEnumerable<TraceData>?> ReadFromCache(string prefixedAutomationKey)
+    private async Task<IEnumerable<LogInfo>?> ReadErrorLogsFromCache()
+    {
+        var cachedBytes = await _cache.GetAsync(_errorLogKey);
+        LogInfo[]? cachedData = null;
+        if (cachedBytes is not null)
+        {
+            try
+            {
+                cachedData = JsonSerializer.Deserialize<LogInfo[]>(cachedBytes)!;
+            }
+            catch (System.Exception ex)
+            {
+                // don't cause an infinite loop by logging
+                Console.WriteLine("could not deserialize error logs from cache");
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+        return cachedData;
+    }
+
+    private async Task<IEnumerable<TraceData>?> ReadTracesFromCache(string prefixedAutomationKey)
     {
         var cachedBytes = await _cache.GetAsync(prefixedAutomationKey);
         TraceData[]? cachedData = null;
@@ -234,32 +308,17 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "could not deserialize trace data from cache");
+                // don't cause an infinite loop by logging
+                Console.WriteLine("could not deserialize trace data from cache");
+                Console.WriteLine(ex.Message);
                 throw;
             }
-            
         } 
         return cachedData;
     }
 
     private string MakeKey(string eventType, string time)
     {
-        
         return eventType + time;
     }
-}
-
-public record TraceData
-{
-    public required TraceEvent TraceEvent { get; set; }
-    public required IEnumerable<LogInfo> Logs {get; set; }
-}
-
-public record LogInfo
-{
-    public required string LogLevel { get; set; }
-    public required string Message { get; set; }
-    public required IDictionary<string,object> Scopes { get; set; }
-    public required IDictionary<string,object> Properties { get; set; }
-    public ExecptionInfo? Exception { get; set; }
 }

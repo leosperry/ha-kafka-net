@@ -62,10 +62,17 @@ internal class HaApiProvider : IHaApiProvider
         using(_logger.BeginScope(scope))
         using (StringContent json = new StringContent(JsonSerializer.Serialize(data, _options)))
         {
-            _logger.LogDebug("Calling Home Assistant API");
+            _logger.LogDebug("Calling Home Assistant Service API");
             try
             {
-                return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
+                var response = await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
+
+                int status = (int)response.StatusCode;
+                if (status < 200 || status >= 400)
+                {
+                    _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+                }
+                return response;
             }
             catch (System.Exception ex)
             {
@@ -77,9 +84,16 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)
     {
-        return await _client.GetAsync("/api/error_log", cancellationToken);
+        _logger.LogDebug("Calling Home Assistant error log API");
+        var response = await _client.GetAsync("/api/error_log", cancellationToken);
+        
+        int status = (int)response.StatusCode;
+        if (status < 200 || status >= 400)
+        {
+            _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+        }
+        return response;
     }
-
 
     public Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
     {
@@ -88,7 +102,14 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
     {
+        _logger.LogDebug("Calling Home Assistant States API");
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        int status = (int)response.StatusCode;
+        if (status < 200 || status >= 400)
+        {
+            _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+        }
 
         return response.StatusCode switch
         {
@@ -99,7 +120,14 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default)
     {
+        _logger.LogDebug("Calling Home Assistant States API");
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        int status = (int)response.StatusCode;
+        if (status < 200 || status >= 400)
+        {
+            _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+        }
 
         return response.StatusCode switch
         {
@@ -110,7 +138,14 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default)
     {
+        _logger.LogDebug("Calling Home Assistant States API");
         var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+        int status = (int)response.StatusCode;
+        if (status < 200 || status >= 400)
+        {
+            _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+        }
 
         return response.StatusCode switch
         {
