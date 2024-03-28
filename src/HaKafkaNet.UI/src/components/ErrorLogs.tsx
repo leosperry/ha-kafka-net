@@ -65,13 +65,14 @@ function ErrorLogs() {
     return (<>
         <h2>{displayInfo?.title}</h2>
         {!data ? (<>Loading ...</>) : (<>
+            <div className="m-3">
+                {displayInfo?.description}
+            </div>
             {data.length == 0 ? (<>
                 <h4>No Logs Found</h4>
                 <div>Make sure you have <a href="https://github.com/leosperry/ha-kafka-net/wiki/Tracing" target="_blank">log capturing</a> configured.</div>
             </>) : <>
-                <div className="m-3">
-                    {displayInfo?.description}
-                </div>
+               
 
                 <Accordion defaultActiveKey={[]} alwaysOpen>
                     {data.map((log, logIndex) =>

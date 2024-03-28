@@ -43,9 +43,9 @@ internal class TraceLogProvider : IAutomationTraceProvider
     };
 
     const string
-        _errorLogKey = "hkn.errorlogs",
-        _globalLogKey = "hkn.globallogs",
-        _trackerLogKey = "hkn.trackerlogs",
+        _errorLogKey = "hkn.logs.error",
+        _globalLogKey = "hkn.logs.global",
+        _trackerLogKey = "hkn.logs.tracker",
         scopeTraceAutomationKey = "automationKey",
         scopeTraceAutomationEventType = "automationEventType",
         scopeTraceAutomationEventTime = "automationEventTime",

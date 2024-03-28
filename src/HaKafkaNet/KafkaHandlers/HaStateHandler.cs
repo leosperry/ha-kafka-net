@@ -27,8 +27,10 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
         _cacheOptions.SlidingExpiration = TimeSpan.FromDays(30);
 
+        _logger.LogInformation("state handler initialized at :{startTime}", _startTime);
+
         observer.OnStateHandlerInitialized();
-        _logger.LogInformation("state handler initialized. _startTime:{startTime}", _startTime);
+        
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
