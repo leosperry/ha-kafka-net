@@ -31,6 +31,13 @@ function AutomationDetails() {
     }
   }
 
+  function renderStringArray(arry: string[]): string {
+    if (arry.length > 0) {
+      return arry.reduce((accumulator, currentValue) => accumulator + ", " + currentValue)
+    }
+    return "";
+  }
+
   return (<>
     {_error && (<h4 className='bg-danger'>{_error.toString()}</h4>)}
     {!data ? (<div>Loading {key}...</div>) : (<>
@@ -43,8 +50,8 @@ function AutomationDetails() {
         <div className='col-2 overflow-hidden'>Key Request:</div><div className='col-10'>{data.keyRequest}</div>
         <div className='col-2 overflow-hidden'>Given Key:</div><div className='col-10'>{data.givenKey}</div>
         <div className='col-2 overflow-hidden'>Event Timings:</div><div className='col-10'>{data.eventTimings}</div>
-        <div className='col-2 overflow-hidden'>Trigger IDs:</div><div className='col-10'>{data.triggerIds}</div>
-        <div className='col-2 overflow-hidden'>Additional IDs:</div><div className='col-10'>{(data.additionalEntities.length > 0) ? data.additionalEntities.map(a => a) : "none"}</div>
+        <div className='col-2 overflow-hidden'>Trigger IDs:</div><div className='col-10'>{data.triggerIds.length > 0 ? renderStringArray(data.triggerIds) : "none"}</div>
+        <div className='col-2 overflow-hidden'>Additional IDs:</div><div className='col-10'>{(data.additionalEntities.length > 0) ? renderStringArray(data.additionalEntities) : "none"}</div>
         <div className='col-2 overflow-hidden'>Is Delayable:</div><div className='col-10'>{data.isDelayable.toString()}</div>
       </div>
       <hr />

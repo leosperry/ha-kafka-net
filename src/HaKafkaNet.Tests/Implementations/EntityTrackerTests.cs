@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Tests;
 
@@ -16,8 +17,9 @@ public class EntityTrackerTests
         Mock<IAutomationManager> mgr = new();
         Mock<IHaStateCache> cache = new();
         Mock<IHaApiProvider> provider = new();
+        Mock<ILogger<EntityTracker>> logger = new();
 
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();
@@ -43,8 +45,10 @@ public class EntityTrackerTests
         cache.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(TestHelpers.GetState());
         Mock<IHaApiProvider> provider = new();
+        Mock<ILogger<EntityTracker>> logger = new();
 
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();
@@ -72,7 +76,9 @@ public class EntityTrackerTests
         Mock<IHaApiProvider> provider = new();
         provider.Setup(c => c.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState(state: "all systems normal")));
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+        Mock<ILogger<EntityTracker>> logger = new();
+
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();
@@ -102,7 +108,9 @@ public class EntityTrackerTests
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(lastUpdated : DateTime.Now.AddDays(-1), state: "all systems normal")));
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+        Mock<ILogger<EntityTracker>> logger = new();
+
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();
@@ -133,7 +141,9 @@ public class EntityTrackerTests
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(state: "unknown", lastUpdated : DateTime.Now.AddDays(-1))));
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+        Mock<ILogger<EntityTracker>> logger = new();
+
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();
@@ -166,7 +176,9 @@ public class EntityTrackerTests
             .ReturnsAsync(
                 (new HttpResponseMessage(HttpStatusCode.OK), 
                 TestHelpers.GetState(state: "unknown", lastUpdated : DateTime.Now.AddDays(-1))));
-        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object);
+        Mock<ILogger<EntityTracker>> logger = new();
+
+        EntityTracker sut = new EntityTracker(config, observer.Object, mgr.Object, cache.Object, provider.Object, logger.Object);
         // When
         
         observer.Object.OnStateHandlerInitialized();

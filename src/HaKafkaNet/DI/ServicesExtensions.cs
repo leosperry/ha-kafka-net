@@ -145,7 +145,7 @@ public static class ServicesExtensions
             services.AddSingleton<ISystemObserver, SystemObserver>();
             services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
             services.AddSingleton<IInternalRegistrar, AutomationRegistrar>();
-            services.AddSingleton<IAutomationTraceProvider, AutomationTraceProvider>();
+            services.AddSingleton<IAutomationTraceProvider, TraceLogProvider>();
             services.AddSingleton<HknLogTarget>();
 
             var eligibleTypes = 

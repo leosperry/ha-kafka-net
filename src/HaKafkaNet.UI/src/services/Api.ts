@@ -8,7 +8,7 @@ class HknApi {
     private readonly enableUrl : string;
     private readonly autoDetailsUrl : string;
     private readonly autoListUrl : string;
-    private readonly errorLogUrl : string;
+    private readonly logUrl : string;
 
     public constructor(){
       this.baseUrl = import.meta.env.VITE_BASE_API_URL ?? '';
@@ -16,7 +16,7 @@ class HknApi {
       this.enableUrl = this.baseUrl + '/api/automation/enable';
       this.autoDetailsUrl = this.baseUrl + '/api/automation/';
       this.autoListUrl = this.baseUrl + '/api/automations/';
-      this.errorLogUrl = this.baseUrl + '/api/errorlog/';
+      this.logUrl = this.baseUrl + '/api/log/';
     }
 
     async GetAutomationDetails(key: string) : Promise<AutomationDetailsResponse> {
@@ -56,8 +56,8 @@ class HknApi {
         return sysInfo;     
       }
 
-      async GetErrorLogs() : Promise<LogInfo[]> {
-          const response = await fetch(this.errorLogUrl, {
+      async GetLogs(logType : string) : Promise<LogInfo[]> {
+          const response = await fetch(this.logUrl + logType, {
             mode: "cors"
           });
           if (response.status < 200 || response.status >= 400) {

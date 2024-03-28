@@ -46,7 +46,19 @@ function HknHeaderFooter(props: PropsWithChildren) {
 
   let ErrorLogClick: MouseEventHandler<Element> = event => {
     setShowMenu(false);
-    navigate('errorlogs');
+    navigate('log/error');
+    event.preventDefault()
+  };
+
+  let GlobalLogClick: MouseEventHandler<Element> = event => {
+    setShowMenu(false);
+    navigate('log/global');
+    event.preventDefault()
+  };
+
+  let TrackerLogClick: MouseEventHandler<Element> = event => {
+    setShowMenu(false);
+    navigate('log/tracker');
     event.preventDefault()
   };
 
@@ -58,16 +70,18 @@ function HknHeaderFooter(props: PropsWithChildren) {
         </svg>
       </Button>
 
-      <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} backdrop={false} scroll={true} placement='end'>
+      <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} backdrop={true} scroll={true} placement='end'>
         <Offcanvas.Header closeButton onClick={() => setShowMenu(false)}>
           <Offcanvas.Title>Resources</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <p>
-            State Handler Initialized: <span className='text-uppercase fw-bolder'>{data.stateHandlerInitialized.toString()}</span>&nbsp;{timerDisplay && <>{timerDisplay}</>}
+            State Handler Initialized: <span className='text-uppercase fw-bolder'>{data.stateHandlerInitialized.toString()}</span><br />{timerDisplay && <>{timerDisplay}</>}
           </p>
           <ListGroup>
-            <ListGroup.Item variant="warning" href="/hakafkanet/errorlogs" onClick={ErrorLogClick} action active={false}>Error Log</ListGroup.Item>
+            <ListGroup.Item variant="info" href="/hakafkanet/log/error" onClick={ErrorLogClick} action active={false}>Error Log</ListGroup.Item>
+            <ListGroup.Item variant="info" href="/hakafkanet/log/tracker" onClick={TrackerLogClick} action active={false}>Entity Tracker Log</ListGroup.Item>
+            <ListGroup.Item variant="info" href="/hakafkanet/log/global" onClick={GlobalLogClick} action active={false}>Global Log</ListGroup.Item>
             <ListGroup.Item variant="info" href="/kafkaflow" target="_blank" action active={false}>KafkaFlow Admin</ListGroup.Item>
             <ListGroup.Item variant="info" href="https://github.com/leosperry/ha-kafka-net/wiki" target='_blank' action active={false}>Documentation</ListGroup.Item>
           </ListGroup>
@@ -84,7 +98,7 @@ function HknHeaderFooter(props: PropsWithChildren) {
     </div>
     <div className='d-flex flex-row'>
       <div className='p-2'>
-        <img src={Logo} />&nbsp;
+      <a href='/hakafkanet' onClick={e => { navigate('/'); e.preventDefault() }}><img src={Logo} /></a>
       </div>
       <div className='p-2 mt-3'>
         <h1 className=''>
@@ -93,7 +107,9 @@ function HknHeaderFooter(props: PropsWithChildren) {
         <div>Version: {data.version}</div>
       </div>
     </div>
+    {/* begin page content */}
     {props.children}
+    {/* end page content */}
     <div className='mt-3'>
       Send the developer a thank you, report a bug, or request feature via <a href={"mailto:leonard.sperry@live.com?subject=HaKafkaNet Comment V" + data.version}>email</a>
       &nbsp; or <a href="https://github.com/leosperry/ha-kafka-net/discussions" target="_blank">start a discussion</a>

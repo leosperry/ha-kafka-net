@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route index element={<AutomationList />} />
           <Route path="automation/:key" element={<AutomationDetails />} />
-          <Route path="errorlogs" element={<ErrorLogs />} />
+          <Route path="log/:logType" element={<ErrorLogs />}  />
         </Routes>
       </HknHeaderFooter>
     </BrowserRouter>

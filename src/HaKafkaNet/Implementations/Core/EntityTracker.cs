@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Logging;
+
 namespace HaKafkaNet;
 
 internal class EntityTracker : IDisposable
@@ -16,14 +18,16 @@ internal class EntityTracker : IDisposable
     readonly IAutomationManager _automationMgr;
     readonly IHaStateCache _cache;
     readonly IHaApiProvider _provider;
+    readonly ILogger _logger;
     
     public EntityTracker(EntityTrackerConfig config, ISystemObserver observer, IAutomationManager automationManager, 
-        IHaStateCache cache, IHaApiProvider provider)
+        IHaStateCache cache, IHaApiProvider provider, ILogger<EntityTracker> logger)
     {
         _observer = observer;
         _automationMgr = automationManager;
         _cache = cache;
         _provider = provider;
+        _logger = logger;
         
         _interval = TimeSpan.FromMinutes(config.IntervalMinutes); 
         _maxEntityReportTime = TimeSpan.FromHours(config.MaxEntityNonresponsiveHours);
@@ -53,18 +57,31 @@ internal class EntityTracker : IDisposable
 
     private async Task CheckEntities()
     {
-        // check entities' states
-        var entityIds = _automationMgr.GetAllEntitiesToTrack();
-        var badIds = FilterIds(entityIds).WithCancellation(_cancelSource.Token);
+        Dictionary<string,object> scope = new()
+        {
+            {"tracker_runtime", DateTime.Now}
+        };
+        using(_logger.BeginScope(scope))
+        {
+            _logger.LogInformation("starting tracker run");
+            // check entities' states
+            var entityIds = _automationMgr.GetAllEntitiesToTrack();
+            var badIds = FilterIds(entityIds).WithCancellation(_cancelSource.Token);
 
-        List<BadEntityState> badStates = new();
-        await foreach (var bad in badIds)
-        {
-            badStates.Add(bad);
-        }
-        if (badStates.Any())
-        {
-            _observer.OnBadStateDiscovered(badStates);
+            List<BadEntityState> badStates = new();
+            await foreach (var bad in badIds)
+            {
+                badStates.Add(bad);
+            }
+            if (badStates.Any())
+            {
+                _observer.OnBadStateDiscovered(badStates);
+                _logger.LogInformation($"{badStates.Count} bad entities discovered");
+            }
+            else
+            {
+                _logger.LogInformation("no bad states discovered");
+            }
         }
     }
 

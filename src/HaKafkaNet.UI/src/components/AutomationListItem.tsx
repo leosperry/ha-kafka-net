@@ -18,6 +18,13 @@ function AutomationListItem(props: Props) {
         setEnabled(props.item.enabled);
     }, []);
 
+    function renderStringArray (arry : string[]) : string{
+        if (arry.length > 0) {
+            return arry.reduce( (accumulator, currentValue) => accumulator + ", " + currentValue)
+        }
+        return "";
+    }
+
     async function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
         var autokey = e.target.getAttribute('data-key')!;
         var checked = e.target.checked;
@@ -54,10 +61,10 @@ function AutomationListItem(props: Props) {
                         {item.isDelayable && <div>Last Executed: {item.lastExecuted}</div>}
                     </div>
                     <div className="col-4">
-                        <div>Trigger IDs:{item.triggerIds.map(trigger => (<p key={trigger}>{trigger}</p>))}</div>
+                        <div>Trigger IDs:{renderStringArray(item.triggerIds)}</div>
                     </div>
                     <div className="col-4">
-                        <div>Additional:{item.additionalEntitiesToTrack.map(trigger => (<p key={trigger}>{trigger}</p>))}</div>
+                        <div>Additional:{renderStringArray(item.additionalEntitiesToTrack)}</div>
                     </div>
                 </div>
             </Accordion.Body>

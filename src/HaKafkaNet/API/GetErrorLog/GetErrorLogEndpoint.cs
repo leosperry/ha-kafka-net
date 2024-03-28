@@ -1,8 +1,12 @@
 ﻿using FastEndpoints;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HaKafkaNet;
 
-public class GetErrorLogEndpoint : EndpointWithoutRequest<ApiResponse<IEnumerable<LogInfo>>>
+internal record LogsRequest(string LogType);
+
+internal class GetErrorLogEndpoint : Endpoint< LogsRequest, Results<Ok<ApiResponse<IEnumerable<LogInfo>>>,NotFound>> 
 {
     readonly IAutomationTraceProvider _trace;
 
@@ -13,16 +17,33 @@ public class GetErrorLogEndpoint : EndpointWithoutRequest<ApiResponse<IEnumerabl
 
     public override void Configure()
     {
-        Get("api/errorlog");
+        Get("api/log/{LogType}");
         AllowAnonymous();
     }
 
-    public override async Task<ApiResponse<IEnumerable<LogInfo>>> ExecuteAsync(CancellationToken ct)
+    public override async Task<Results<Ok<ApiResponse<IEnumerable<LogInfo>>>, NotFound>> ExecuteAsync(LogsRequest req, CancellationToken ct)
     {
-        var logs = await _trace.GetErrorLogs();
-        return new ApiResponse<IEnumerable<LogInfo>>()
+        switch (req.LogType)
         {
-            Data = logs
-        };
+            case "error":
+                return TypedResults.Ok(new ApiResponse<IEnumerable<LogInfo>>()
+                {
+                    Data = await _trace.GetErrorLogs()
+                });
+            case "tracker":
+            {
+                return TypedResults.Ok(new ApiResponse<IEnumerable<LogInfo>>()
+                {
+                    Data = await _trace.GetTrackerLogs()
+                });
+            }
+            case "global":
+                return TypedResults.Ok(new ApiResponse<IEnumerable<LogInfo>>()
+                {
+                    Data = await _trace.GetGlobalLogs()
+                });
+            default:
+                return TypedResults.NotFound();
+        }
     }
 }

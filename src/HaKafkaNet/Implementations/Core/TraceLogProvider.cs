@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -10,44 +9,52 @@ namespace HaKafkaNet;
 public interface IAutomationTraceProvider
 {
     Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction);
-
     Task<IEnumerable<LogInfo>> GetErrorLogs();
+    Task<IEnumerable<LogInfo>> GetGlobalLogs();
+    Task<IEnumerable<LogInfo>> GetTrackerLogs();
     Task<IEnumerable<TraceData>> GetTraces(string automationKey);
-
     void AddLog(string renderedMessage, LogEventInfo logEvent, IDictionary<string, object> scopes);
 }
 
-internal class AutomationTraceProvider : IAutomationTraceProvider
+internal class TraceLogProvider : IAutomationTraceProvider
 {
     readonly IDistributedCache _cache;
     readonly ISystemObserver _observer;
-    readonly ILogger<AutomationTraceProvider> _logger;
+    readonly ILogger<TraceLogProvider> _logger;
 
     const string CachKeyPrefix = "hkn.tracedata.";
     ConcurrentDictionary<string, SemaphoreSlim> _automationLocks = new();
-    
-    SemaphoreSlim _errorLogLock = new(1);
-    const string _errorLogKey = "hkn.errorlogs";
+
+    IReadOnlyDictionary<string, SemaphoreSlim> _globalLocks = new Dictionary<string, SemaphoreSlim>()
+    {
+        { _errorLogKey, new SemaphoreSlim(1) },
+        { _globalLogKey, new SemaphoreSlim(1) },
+        { _trackerLogKey, new SemaphoreSlim(1) }
+    };
 
     static readonly HashSet<NLog.LogLevel> _errorLogLevels = new()
     {
         NLog.LogLevel.Warn, NLog.LogLevel.Error , NLog.LogLevel.Fatal
     };
 
-    readonly DistributedCacheEntryOptions _cacheOptions = new ()
+    readonly DistributedCacheEntryOptions _cacheOptions = new()
     {
         SlidingExpiration = TimeSpan.FromDays(30)
     };
 
-    const string 
-        automationKey = "automationKey",
-        automationEventType = "automationEventType",
-        automationEventTime = "automationEventTime";
-    
-    // first string: automationKey, second string: composite from event
-    ConcurrentDictionary<string, ConcurrentDictionary<string,(TraceEvent evt, ConcurrentQueue<LogInfo> logQueue)>> _activeTraces = new();
+    const string
+        _errorLogKey = "hkn.errorlogs",
+        _globalLogKey = "hkn.globallogs",
+        _trackerLogKey = "hkn.trackerlogs",
+        scopeTraceAutomationKey = "automationKey",
+        scopeTraceAutomationEventType = "automationEventType",
+        scopeTraceAutomationEventTime = "automationEventTime",
+        scopeTrackerKey = "tracker_runtime";
 
-    public AutomationTraceProvider(IDistributedCache cache, ISystemObserver observer, ILogger<AutomationTraceProvider> logger)
+    // first string: automationKey, second string: composite from event
+    ConcurrentDictionary<string, ConcurrentDictionary<string, (TraceEvent evt, ConcurrentQueue<LogInfo> logQueue)>> _activeTraces = new();
+
+    public TraceLogProvider(IDistributedCache cache, ISystemObserver observer, ILogger<TraceLogProvider> logger)
     {
         _cache = cache;
         _observer = observer;
@@ -55,44 +62,88 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
     }
 
     public void AddLog(string renderedMessage, LogEventInfo logEvent, IDictionary<string, object> scopes)
-    {          
-        if (scopes.TryGetValue(automationKey, out var autoKeyRaw) &&
-            scopes.TryGetValue(automationEventType, out var evtType) &&
-            scopes.TryGetValue(automationEventTime, out var evtTime))
+    {
+        bool writtenToTrace = false;
+
+        ExecptionInfo? exInfo = null;
+        if (logEvent.Exception is not null)
         {
-            ExecptionInfo? exInfo = null;
-            if (logEvent.Exception is not null)
-            {
-                exInfo = ExecptionInfo.Create(logEvent.Exception);
-            }
-            LogInfo info = new LogInfo()
-            {
-                LogLevel = logEvent.Level.ToString(), 
-                Message = logEvent.Message, 
-                RenderedMessage = renderedMessage,
-                Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value), 
-                Scopes = scopes,
-                Exception = exInfo
-            };
+            exInfo = ExecptionInfo.Create(logEvent.Exception);
+        }
 
-            // add to local
-            if (_activeTraces.TryGetValue(autoKeyRaw.ToString()!, out var automationRecords))
+        LogInfo info = new LogInfo()
+        {
+            LogLevel = logEvent.Level.ToString(),
+            Message = logEvent.Message,
+            RenderedMessage = renderedMessage,
+            Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value),
+            Scopes = scopes,
+            Exception = exInfo
+        };
+
+        // see if the log should be part of a trace
+        if (scopes is not null)
+        {
+            if (scopes.TryGetValue(scopeTrackerKey, out _))
             {
-                var instanceKey = MakeKey(evtType.ToString()!, evtTime.ToString()!);
-                var traceInfo = automationRecords[instanceKey];
-                if (exInfo is not null)
+                _ = UpdateNonTraceLog(info, _trackerLogKey);
+                writtenToTrace = true;
+            }
+            else if (scopes.TryGetValue(scopeTraceAutomationKey, out var autoKeyRaw) &&
+                scopes.TryGetValue(scopeTraceAutomationEventType, out var evtType) &&
+                scopes.TryGetValue(scopeTraceAutomationEventTime, out var evtTime))
+            {
+                // add to local
+                string key = autoKeyRaw.ToString()!;
+
+                var loc = _automationLocks.GetOrAdd(key, new SemaphoreSlim(1));
+                loc.Wait();
+                /*
+                this locks all active traces for a specific automation
+                potential improvment to be made for locking a specific trace instead of all traces
+                this is only an issue where an automation has long running tasks
+                */
+                try
                 {
-                    traceInfo.evt.Exception = exInfo;
+                    if (_activeTraces.TryGetValue(key, out var automationRecords))
+                    {
+                        var instanceKey = MakeKey(evtType.ToString()!, evtTime.ToString()!);
+
+                        // there is a chance here that an automation could have a long running task on another thread
+                        // where the specific trace already completed
+                        if (automationRecords.TryGetValue(instanceKey, out var traceInfo))
+                        {
+                            if (exInfo is not null)
+                            {
+                                traceInfo.evt.Exception = exInfo;
+                            }
+
+                            traceInfo.logQueue.Enqueue(info);
+                            writtenToTrace = true;
+                        }
+                        else
+                        {
+                            // no trace found.
+                        }
+                    }
                 }
-
-                traceInfo.logQueue.Enqueue(info);
+                finally
+                {
+                    loc.Release();
+                }
             }
+        }
 
-            //handle error log
-            if (_errorLogLevels.Contains(logEvent.Level))
-            {
-                _ = WriteErrorToCache(info);
-            }
+        //handle error log
+        if (_errorLogLevels.Contains(logEvent.Level))
+        {
+            _ = UpdateNonTraceLog(info, _errorLogKey);
+        }
+
+        // handle non-trace
+        if (!writtenToTrace)
+        {
+            _ = UpdateNonTraceLog(info, _globalLogKey);
         }
     }
 
@@ -102,9 +153,9 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         var scopeData = new Dictionary<string, object>()
         {
             // required for trace funcionality
-            {automationKey, meta.GivenKey},
-            {automationEventType, evt.EventType},
-            {automationEventTime, evt.EventTime.ToString("O")},
+            {scopeTraceAutomationKey, meta.GivenKey},
+            {scopeTraceAutomationEventType, evt.EventType},
+            {scopeTraceAutomationEventTime, evt.EventTime.ToString("O")},
 
             // added for benefit of user
             {"automationName", meta.Name},
@@ -113,11 +164,11 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
 
         if (evt.StateChange is not null)
         {
-            scopeData["haContextId"] = evt.StateChange.New.Context?.ID ?? "unknown"; 
+            scopeData["haContextId"] = evt.StateChange.New.Context?.ID ?? "unknown";
             scopeData["triggerEntityId"] = evt.StateChange.EntityId;
         }
 
-        using(_logger.BeginScope(scopeData))
+        using (_logger.BeginScope(scopeData))
         {
             Task task;
 
@@ -133,30 +184,46 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
             }
             catch (System.Exception ex)
             {
+                _logger.LogError(ex, "Automation Fault");
+
                 _observer.OnUnhandledException(meta, ex);
                 evt.Exception = ExecptionInfo.Create(ex);
-                _ = WriteTraceToCache(new TraceData()
+                //give any last logs a chance to make it in
+                _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
                 {
                     TraceEvent = data.evt,
                     Logs = data.logQueue
-                });
+                }));
                 throw;
             }
-
-            _ = WriteTraceToCache(new TraceData()
+            //give any last logs a chance to make it in
+            _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
             {
                 TraceEvent = data.evt,
                 Logs = data.logQueue
-            });
-            return task;  
+            }));
+            return task;
         }
     }
 
     public async Task<IEnumerable<LogInfo>> GetErrorLogs()
     {
-        var cached = await ReadErrorLogsFromCache();
-        return (cached ?? Enumerable.Empty<LogInfo>()).Reverse().ToArray();            
+        var cached = await ReadLogsFromCache(_errorLogKey);
+        return (cached ?? Enumerable.Empty<LogInfo>()).Reverse().ToArray();
     }
+
+    public async Task<IEnumerable<LogInfo>> GetGlobalLogs()
+    {
+        var cached = await ReadLogsFromCache(_globalLogKey);
+        return (cached ?? Enumerable.Empty<LogInfo>()).Reverse().ToArray();
+    }
+
+    public async Task<IEnumerable<LogInfo>> GetTrackerLogs()
+    {
+        var cached = await ReadLogsFromCache(_trackerLogKey);
+        return (cached ?? Enumerable.Empty<LogInfo>()).Reverse().ToArray();
+    }
+
 
     public async Task<IEnumerable<TraceData>> GetTraces(string automationKey)
     {
@@ -177,7 +244,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                     };
             }
             var cached = await ReadTracesFromCache(CachKeyPrefix + automationKey);
-            return (cached ?? Enumerable.Empty<TraceData>()).Union(locals ?? Enumerable.Empty<TraceData>()).Reverse().ToArray();            
+            return (cached ?? Enumerable.Empty<TraceData>()).Union(locals ?? Enumerable.Empty<TraceData>()).Reverse().ToArray();
         }
         finally
         {
@@ -204,26 +271,26 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
     }
 
-    private async Task WriteErrorToCache(LogInfo logInfo)
+    private async Task UpdateNonTraceLog(LogInfo logInfo, string key)
     {
-        await _errorLogLock.WaitAsync();
+        await _globalLocks[key].WaitAsync();
         try
         {
-            var existing = await ReadErrorLogsFromCache();
+            var existing = await ReadLogsFromCache(key);
             Queue<LogInfo>? q = null;
             if (existing is not null)
             {
                 q = new Queue<LogInfo>(existing);
-                while (q.Count >= 100)
+                while (q.Count >= 200)
                 {
                     q.Dequeue();
-                }            
+                }
             }
             q ??= new();
             q.Enqueue(logInfo);
 
             var value = JsonSerializer.SerializeToUtf8Bytes(q.ToArray());
-            await _cache.SetAsync(_errorLogKey, value, _cacheOptions);
+            await _cache.SetAsync(key, value, _cacheOptions);
         }
         catch (Exception ex)
         {
@@ -232,7 +299,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
         finally
         {
-            _errorLogLock.Release();
+            _globalLocks[key].Release();
         }
     }
 
@@ -275,9 +342,9 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
         }
     }
 
-    private async Task<IEnumerable<LogInfo>?> ReadErrorLogsFromCache()
+    private async Task<IEnumerable<LogInfo>?> ReadLogsFromCache(string key)
     {
-        var cachedBytes = await _cache.GetAsync(_errorLogKey);
+        var cachedBytes = await _cache.GetAsync(key);
         LogInfo[]? cachedData = null;
         if (cachedBytes is not null)
         {
@@ -313,7 +380,7 @@ internal class AutomationTraceProvider : IAutomationTraceProvider
                 Console.WriteLine(ex.Message);
                 throw;
             }
-        } 
+        }
         return cachedData;
     }
 

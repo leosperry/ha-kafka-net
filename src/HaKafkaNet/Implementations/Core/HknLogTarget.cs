@@ -24,16 +24,8 @@ namespace HaKafkaNet
         protected override void Write(LogEventInfo logEvent) 
         {            
             var scoped = this.GetScopeContextProperties(logEvent);        
-            if (scoped is not null && scoped.ContainsKey("automationKey"))
-            {
-                var rendered = base.RenderLogEvent(_layout, logEvent);
-                _trace.AddLog(rendered, logEvent, scoped);
-            } 
-        }
-
-        protected override void Write(AsyncLogEventInfo logEvent)
-        {
-            base.Write(logEvent);
+            var rendered = base.RenderLogEvent(_layout, logEvent);
+            _trace.AddLog(rendered, logEvent, scoped);
         }
     }
 }
