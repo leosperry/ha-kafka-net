@@ -74,7 +74,7 @@ function ErrorLogs() {
             </>) : <>
                 <Accordion defaultActiveKey={[]} alwaysOpen>
                     {data.map((log, logIndex) =>
-                        (<LogEntry key={"log" + logIndex + (log.timeStamp ?? new Date()).toString()} logData={log} index={logIndex} traceIndex={1} showAutomationLink={true} />))}
+                        (<LogEntry key={"log" + logIndex + (log.timeStamp ?? new Date()).toString()} logData={log} index={logIndex} traceIndex={1} showAutomationLink={logType != "tracker"} />))}
                 </Accordion>
             </>}
         </>)}
