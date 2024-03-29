@@ -32,7 +32,7 @@ function ErrorLogs() {
                     title: "Entity Tracker Logs",
                     description: getTrackerDescription()
                 });
-                break; 
+                break;
             case "global":
                 var logs = await Api.GetLogs(logType);
                 setData(logs);
@@ -72,11 +72,9 @@ function ErrorLogs() {
                 <h4>No Logs Found</h4>
                 <div>Make sure you have <a href="https://github.com/leosperry/ha-kafka-net/wiki/Tracing" target="_blank">log capturing</a> configured.</div>
             </>) : <>
-               
-
                 <Accordion defaultActiveKey={[]} alwaysOpen>
                     {data.map((log, logIndex) =>
-                        (<LogEntry key={"log" + logIndex} logData={log} index={logIndex} traceIndex={1} showAutomationLink={true} />))}
+                        (<LogEntry key={"log" + logIndex + (log.timeStamp ?? new Date()).toString()} logData={log} index={logIndex} traceIndex={1} showAutomationLink={true} />))}
                 </Accordion>
             </>}
         </>)}

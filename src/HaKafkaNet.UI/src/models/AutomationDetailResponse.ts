@@ -30,6 +30,7 @@ export interface TraceEvent {
 
 export interface LogInfo {
     logLevel : string;
+    timeStamp? : Date;
     message : string;
     renderedMessage? : string;
     scopes : any;

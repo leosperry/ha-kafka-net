@@ -70,10 +70,10 @@ internal class TraceLogProvider : IAutomationTraceProvider
         {
             exInfo = ExecptionInfo.Create(logEvent.Exception);
         }
-
         LogInfo info = new LogInfo()
         {
             LogLevel = logEvent.Level.ToString(),
+            TimeStamp = logEvent.TimeStamp,
             Message = logEvent.Message,
             RenderedMessage = renderedMessage,
             Properties = logEvent.Properties.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value),
