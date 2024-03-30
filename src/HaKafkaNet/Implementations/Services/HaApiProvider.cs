@@ -15,7 +15,7 @@ internal class HaApiProvider : IHaApiProvider
     {
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = 
+        Converters =
         {
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
             new RgbConverter(),
@@ -27,7 +27,7 @@ internal class HaApiProvider : IHaApiProvider
     };
 
     #region Constants
-    const string 
+    const string
         HOME_ASSISTANT = "homeassistant",
         NOTIFY = "notify",
         TURN_ON = "turn_on",
@@ -35,7 +35,7 @@ internal class HaApiProvider : IHaApiProvider
         TOGGLE = "toggle",
         LIGHT = "light",
         LOCK = "lock",
-        SWITCH = "switch" ;
+        SWITCH = "switch";
     #endregion
 
     public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config, ILogger<HaApiProvider> logger)
@@ -44,8 +44,8 @@ internal class HaApiProvider : IHaApiProvider
         _apiConfig = config;
 
         _client.BaseAddress = new Uri(config.BaseUri);
-        
-        _client.DefaultRequestHeaders.Authorization = 
+
+        _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", _apiConfig.AccessToken);
 
         _logger = logger;
@@ -59,13 +59,20 @@ internal class HaApiProvider : IHaApiProvider
             {"HaApi.service", service},
             {"HaApi.data", data}
         };
-        using(_logger.BeginScope(scope))
+        using (_logger.BeginScope(scope))
         using (StringContent json = new StringContent(JsonSerializer.Serialize(data, _options)))
         {
-            _logger.LogDebug("Calling Home Assistant API");
+            _logger.LogDebug("Calling Home Assistant Service API");
             try
             {
-                return await _client.PostAsync($"/api/services/{domain}/{service}",json, cancellationToken);
+                var response = await _client.PostAsync($"/api/services/{domain}/{service}", json, cancellationToken);
+
+                int status = (int)response.StatusCode;
+                if (status < 200 || status >= 400)
+                {
+                    _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+                }
+                return response;
             }
             catch (System.Exception ex)
             {
@@ -77,53 +84,62 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)
     {
-        return await _client.GetAsync("/api/error_log", cancellationToken);
-    }
+        _logger.LogDebug("Calling Home Assistant error log API");
+        var response = await _client.GetAsync("/api/error_log", cancellationToken);
 
+        int status = (int)response.StatusCode;
+        if (status < 200 || status >= 400)
+        {
+            _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+        }
+        return response;
+    }
 
     public Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
     {
         return GetEntity(entity_id, cancellationToken);
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
+    public Task<(HttpResponseMessage response, HaEntityState<string, T>? entityState)> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
     {
-        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
-
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState<string, T>>(response.Content.ReadAsStream())!),
-            _ => (response, null!)
-        };
+        return GetEntity<HaEntityState<string, T>>(entity_id, cancellationToken);
     }
 
-    public async Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default)
+    public Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default)
     {
-        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
-
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<HaEntityState>(response.Content.ReadAsStream())!),
-            _ => (response, null!)
-        };
+        return GetEntity<HaEntityState>(entity_id, cancellationToken);
     }
 
     public async Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default)
     {
-        var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
-
-        return response.StatusCode switch
+        Dictionary<string, object> scope = new()
         {
-            HttpStatusCode.OK => (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream())!),
-            _ => (response, default(T?))
+            {"HaApi.entity_id" , entity_id},
         };
+        using (_logger.BeginScope(scope))
+        {
+            _logger.LogDebug("Calling Home Assistant States API");
+            var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
+
+            int status = (int)response.StatusCode;
+            if (status < 200 || status >= 400)
+            {
+                _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+            }
+
+            return response.StatusCode switch
+            {
+                HttpStatusCode.OK => (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream())!),
+                _ => (response, default(T?))
+            };
+        }
     }
 
     public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(LIGHT, TOGGLE, new {entity_id}, cancellationToken);
-    
+        => CallService(LIGHT, TOGGLE, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> LightToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-        => CallService(LIGHT, TOGGLE, new {entity_id}, cancellationToken);
+        => CallService(LIGHT, TOGGLE, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> LightSetBrightness(string entity_id, byte brightness, CancellationToken cancellationToken = default)
         => CallService(LIGHT, TURN_ON, new { entity_id, brightness }, cancellationToken);
@@ -132,10 +148,10 @@ internal class HaApiProvider : IHaApiProvider
         => CallService(LIGHT, TURN_ON, new { entity_id, brightness }, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOff(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(LIGHT, TURN_OFF, new {entity_id}, cancellationToken);
+        => CallService(LIGHT, TURN_OFF, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-        => CallService(LIGHT, TURN_OFF, new {entity_id}, cancellationToken);
+        => CallService(LIGHT, TURN_OFF, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> LightTurnOn(string entity_id, CancellationToken cancellationToken = default)
         => CallService(LIGHT, TURN_ON, new { entity_id }, cancellationToken);
@@ -146,13 +162,13 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> LightTurnOn(LightTurnOnModel settings, CancellationToken cancellationToken = default)
         => CallService(LIGHT, TURN_ON, settings, cancellationToken);
 
-    public Task<HttpResponseMessage> LockLock(string entity_id, CancellationToken cancellationToken = default) 
-        => CallService(LOCK, LOCK, new{entity_id}, cancellationToken);
+    public Task<HttpResponseMessage> LockLock(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(LOCK, LOCK, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> LockUnLock(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(LOCK, "unlock", new{entity_id}, cancellationToken);
+        => CallService(LOCK, "unlock", new { entity_id }, cancellationToken);
     public Task<HttpResponseMessage> LockOpen(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(LOCK, "open", new{entity_id}, cancellationToken);
+        => CallService(LOCK, "open", new { entity_id }, cancellationToken);
     public Task<HttpResponseMessage> NotifyGroupOrDevice(string groupName, string message, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, groupName, new { message }, cancellationToken);
 
@@ -160,13 +176,13 @@ internal class HaApiProvider : IHaApiProvider
         => CallService(NOTIFY, "alexa_media", new { message, target = targets }, cancellationToken);
 
     public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
-        =>  CallService(NOTIFY, "persistent_notification", new {message}, cancellationToken);
+        => CallService(NOTIFY, "persistent_notification", new { message }, cancellationToken);
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, "restart", new{}, cancellationToken);
+        => CallService(HOME_ASSISTANT, "restart", new { }, cancellationToken);
 
     public Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default)
-        => CallService("remote", "send_command", new{ entity_id,  command }, cancellationToken);
+        => CallService("remote", "send_command", new { entity_id, command }, cancellationToken);
 
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);
@@ -186,24 +202,24 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TOGGLE, new { entity_id }, cancellationToken);
 
-    public Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default) 
-        => CallService(HOME_ASSISTANT, TURN_ON, new {entity_id}, cancellationToken);
+    public Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, TURN_ON, new {entity_id}, cancellationToken);
+        => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, TURN_OFF, new {entity_id}, cancellationToken);
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> TurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, TURN_OFF, new {entity_id}, cancellationToken);
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, TOGGLE, new {entity_id}, cancellationToken);
+        => CallService(HOME_ASSISTANT, TOGGLE, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
-        => CallService(HOME_ASSISTANT, TOGGLE, new {entity_id}, cancellationToken);
-    
+        => CallService(HOME_ASSISTANT, TOGGLE, new { entity_id }, cancellationToken);
+
     public Task<HttpResponseMessage> ZwaveJs_SetConfigParameter(object config, CancellationToken cancellationToken = default)
         => CallService("zwave_js", "set_config_parameter", config, cancellationToken);
 }

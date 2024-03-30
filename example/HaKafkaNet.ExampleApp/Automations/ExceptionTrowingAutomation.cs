@@ -39,7 +39,7 @@ public class ExceptionTrowingAutomation : IConditionalAutomation, IAutomationMet
     {
         if (_switchState)
         {
-            _logger.LogCritical("Switch is still on!");
+            _logger.LogWarning("Switch is still on!");
         }
         else
         {

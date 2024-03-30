@@ -1,5 +1,7 @@
 using HaKafkaNet;
 using NLog.Web;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,12 +22,18 @@ builder.Configuration.GetSection("HaKafkaNet").Bind(config);
 services.AddHaKafkaNet(config);
 
 // provide an IDistributedCache implementation
+var redisUri = builder.Configuration.GetConnectionString("RedisConStr");
 services.AddStackExchangeRedisCache(options => 
 {
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConStr");
+    options.Configuration = redisUri;
     /* optionally prefix keys */
     //options.InstanceName = "HaKafkaNet";
 });
+
+// get rid of warning about AspNetCore protecting keys
+var redis = ConnectionMultiplexer.Connect(redisUri!);
+services.AddDataProtection()
+    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
 // programatic example of configuration
 // services.AddHaKafkaNet(options =>{

@@ -31,20 +31,20 @@ internal class SystemObserver : ISystemObserver
         }
     }
 
-    private Task WrapTask(Func<Task> funcToErrorHandle)
+    private async Task WrapTask(Func<Task> funcToErrorHandle)
     {
         Task t;
         try
         {
             t = funcToErrorHandle();
+            await t;
             t.Wait();
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
+            System.Console.WriteLine($"Error in System Observer: {ex.Message}");
             //swallow this for now so that other handlers continue to run
-            return Task.CompletedTask;
         }
-        return t;
     }
 
     public void OnStateHandlerInitialized()

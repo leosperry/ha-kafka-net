@@ -255,7 +255,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             {
                 if (_cts is not null)
                 {
-                    _logger.LogWarning("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason);
+                    _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason.ToString());
                     try
                     {
                         _cts.Cancel();

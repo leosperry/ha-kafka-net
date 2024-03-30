@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>HaKafkaNet</PackageId>
-    <Version>5.3.0</Version>
+    <Version>5.5.1</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
     <Description>A library for easily creating Home Assistant automations in .NET and C#.</Description>
@@ -15,7 +15,7 @@
     <IsPackable>true</IsPackable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>hkn_128.png</PackageIcon>
-    <PackageTags>Home Assistant;homeassistant;Kafka</PackageTags>
+    <PackageTags>Home Assistant;Automation;HomeAssistant;Hass;dotnet;.NET;Kafka;daemon</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
