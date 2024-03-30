@@ -55,7 +55,7 @@ registrar.RegisterMultiple(
 * MIT license
 
 ### Dashboard
-![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_2.PNG)
+![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_5.PNG)
 This is an image of the dashboard from the example app. See [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) for additional details.
 
 ## How it works
