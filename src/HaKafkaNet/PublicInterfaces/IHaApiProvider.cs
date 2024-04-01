@@ -41,8 +41,6 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> HaAutomationTrigger(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> HaAutomationReload(string entity_id, CancellationToken cancellationToken = default);
 
-
-
     /// <summary>
     /// Sets the brightness of a light
     /// </summary>
@@ -132,6 +130,16 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Text to speach
+    /// </summary>
+    /// <param name="speachEntity">The speach engine entity. This will be something like "tts.piper"</param>
+    /// <param name="mediaPlayerEntity">The media player where you want the speach heard. This will be something like "media_player.kitchen"</param>
+    /// <param name="message">The message you want spoken</param>
+    /// <param name="cache"></param>
+    /// <returns></returns>
+    Task<HttpResponseMessage> Speak(string speachEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Turns off a switch
     /// </summary>
     /// <param name="entity_id">id of switch to turn off</param>
@@ -165,6 +173,7 @@ public interface IHaApiProvider
 
     [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+
     Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default);

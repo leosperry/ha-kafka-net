@@ -27,7 +27,7 @@ services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUri;
     /* optionally prefix keys */
-    //options.InstanceName = "HaKafkaNet";
+    options.InstanceName = "ExampleApp.";
 });
 
 // get rid of warning about AspNetCore protecting keys

@@ -195,6 +195,15 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> RemoteSendCommand(string entity_id, string command, CancellationToken cancellationToken = default)
         => CallService("remote", "send_command", new { entity_id, command }, cancellationToken);
 
+    public Task<HttpResponseMessage> Speak(string speachEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default)
+        => CallService("tts", "speak", new
+            { 
+                entity_id = speachEntity, 
+                media_player_entity_id = mediaPlayerEntity, 
+                cache, message, 
+                options
+            } , cancellationToken);
+
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);
 
