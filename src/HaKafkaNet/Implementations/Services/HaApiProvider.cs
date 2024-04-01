@@ -135,6 +135,17 @@ internal class HaApiProvider : IHaApiProvider
         }
     }
 
+    public Task<HttpResponseMessage> ButtonPress(string entity_id, CancellationToken cancellationToken = default)
+        => CallService("button", "press", new { entity_id }, cancellationToken);
+    public Task<HttpResponseMessage> InputButtonPress(string entity_id, CancellationToken cancellationToken = default)
+        => CallService("input_button", "press", new { entity_id }, cancellationToken);
+
+
+    public Task<HttpResponseMessage> HaAutomationTrigger(string entity_id, CancellationToken cancellationToken = default)
+        => CallService("automation", "trigger", new{ entity_id}, cancellationToken);
+
+    public Task<HttpResponseMessage> HaAutomationReload(string entity_id, CancellationToken cancellationToken = default)
+        => CallService("automation", "reload", new{ entity_id}, cancellationToken);
     public Task<HttpResponseMessage> LightToggle(string entity_id, CancellationToken cancellationToken = default)
         => CallService(LIGHT, TOGGLE, new { entity_id }, cancellationToken);
 
@@ -204,6 +215,7 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);
+       
 
     public Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);

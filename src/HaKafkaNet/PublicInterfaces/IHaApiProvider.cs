@@ -35,6 +35,14 @@ public interface IHaApiProvider
     Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default);
     Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default);
 
+    Task<HttpResponseMessage> ButtonPress(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> InputButtonPress(string entity_id, CancellationToken cancellationToken = default);
+
+    Task<HttpResponseMessage> HaAutomationTrigger(string entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> HaAutomationReload(string entity_id, CancellationToken cancellationToken = default);
+
+
+
     /// <summary>
     /// Sets the brightness of a light
     /// </summary>
@@ -157,7 +165,6 @@ public interface IHaApiProvider
 
     [Obsolete("Please use generic Toggle()", false)]
     Task<HttpResponseMessage> SwitchToggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
-
     Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default);

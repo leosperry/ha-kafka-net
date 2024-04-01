@@ -73,5 +73,7 @@ public static class StateChangeExtensions
     public static HaEntityStateChange<HaEntityState<int, ZoneModel>> ToZone(this HaEntityStateChange change) => Transform<HaEntityState<int, ZoneModel>, int, ZoneModel>(change);
 
     public static HaEntityStateChange<HaEntityState<OnOff, CalendarModel>> ToCalendar(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, CalendarModel>, OnOff, CalendarModel>(change);
+
+    public static HaEntityStateChange<HaEntityState<OnOff, HaAutomationModel>> ToHaAutomation(this HaEntityStateChange change) => Transform<HaEntityState<OnOff, HaAutomationModel>, OnOff, HaAutomationModel>(change);
 }
 
