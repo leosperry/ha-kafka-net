@@ -12,13 +12,13 @@ public abstract record BaseEntityModel
 
     [JsonPropertyName("icon")]
     public string? Icon { get; init; }
+
+    [JsonPropertyName("supported_features")]
+    public int? SupportedFeatures { get; init; }
 }
 
 public record DeviceModel : BaseEntityModel
 {
-    [JsonPropertyName("supported_features")]
-    public int? SupportedFeatures { get; init; }
-
     [JsonPropertyName("device_class")]
     public string? DeviceClass { get; init; }
 }

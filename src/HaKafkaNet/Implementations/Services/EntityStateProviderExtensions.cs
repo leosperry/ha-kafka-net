@@ -59,4 +59,7 @@ public static class EntityStateProviderExtensions
     public static Task<HaEntityState<int?, ZoneModel>?> GetZoneEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<int?, ZoneModel>>(entityId, cancellationToken);
 
+    public static Task<HaEntityState<OnOff, CalendarModel>?> GetCalendar(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken) =>
+        provider.GetEntity<HaEntityState<OnOff, CalendarModel>>(entityId, cancellationToken);
+
 }
