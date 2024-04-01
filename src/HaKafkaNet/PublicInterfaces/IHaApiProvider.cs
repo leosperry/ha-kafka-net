@@ -132,12 +132,12 @@ public interface IHaApiProvider
     /// <summary>
     /// Text to speach
     /// </summary>
-    /// <param name="speachEntity">The speach engine entity. This will be something like "tts.piper"</param>
-    /// <param name="mediaPlayerEntity">The media player where you want the speach heard. This will be something like "media_player.kitchen"</param>
+    /// <param name="speachEntity">The speech engine entity. This will be something like "tts.piper"</param>
+    /// <param name="mediaPlayerEntity">The media player where you want the speech heard. This will be something like "media_player.kitchen"</param>
     /// <param name="message">The message you want spoken</param>
     /// <param name="cache"></param>
     /// <returns></returns>
-    Task<HttpResponseMessage> Speak(string speachEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> Speak(string speechEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns off a switch
