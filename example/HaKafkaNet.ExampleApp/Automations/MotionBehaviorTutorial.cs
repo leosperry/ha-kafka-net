@@ -5,11 +5,11 @@ namespace MyHome.Dev;
 /// https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations
 /// </summary>
 [ExcludeFromDiscovery] //remove this line in your implementation
-public class MotionBehaviorTuttorial : IAutomation, IAutomationMeta
+public class MotionBehaviorTutorial : IAutomation, IAutomationMeta
 {
     readonly string _motion, _light;
     readonly IHaServices _services;
-    public MotionBehaviorTuttorial(string motion, string light, IHaServices services)
+    public MotionBehaviorTutorial(string motion, string light, IHaServices services)
     {
         _motion = motion;
         _light = light;
@@ -42,5 +42,5 @@ public class MotionBehaviorTuttorial : IAutomation, IAutomationMeta
 static class FactoryExtensions
 {
     public static IAutomation CreateMotionBehavior(this IAutomationFactory factory, string motion, string light)
-        => new MotionBehaviorTuttorial(motion, light, factory.Services);
+        => new MotionBehaviorTutorial(motion, light, factory.Services);
 }
