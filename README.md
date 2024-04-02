@@ -72,6 +72,7 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 * Completely overhauled [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) built with React and Bootstrap
 * [Tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
 * New Log pages in UI for Errors, Entity Tracker, and Global non-Automation related
+* New methods and models to support Calendars, interact with HA native automations, and buttons
 
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
