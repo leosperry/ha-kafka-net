@@ -74,6 +74,11 @@ internal class HaApiProvider : IHaApiProvider
                 }
                 return response;
             }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogDebug(ex, "Task wass canceled while calling Home Assistant API");
+                throw;
+            }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, "Error calling Home Assistant API: " + ex.Message);
@@ -186,8 +191,8 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> NotifyAlexaMedia(string message, string[] targets, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, "alexa_media", new { message, target = targets }, cancellationToken);
 
-    public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
-        => CallService(NOTIFY, "persistent_notification", new { message }, cancellationToken);
+    public Task<HttpResponseMessage> PersistentNotification(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default)
+        => CallService(NOTIFY, "persistent_notification", new { message, title, data = new {notification_id} }, cancellationToken);
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, "restart", new { }, cancellationToken);
@@ -203,6 +208,24 @@ internal class HaApiProvider : IHaApiProvider
                 cache, message, 
                 options
             } , cancellationToken);
+
+    public Task<HttpResponseMessage> SpeakPiper(string mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default)
+        => CallService("tts", "speak", new
+            {
+                entity_id = "tts.piper", 
+                media_player_entity_id = mediaPlayerEntity, 
+                cache, message, 
+                options
+            }, cancellationToken);
+    public Task<HttpResponseMessage> SpeakPiper(IEnumerable<string> mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default)
+        => CallService("tts", "speak", new
+            {
+                entity_id = "tts.piper", 
+                media_player_entity_id = mediaPlayerEntity, 
+                cache, message, 
+                options
+            }, cancellationToken);
+
 
     public Task<HttpResponseMessage> SwitchTurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(SWITCH, TURN_OFF, new { entity_id }, cancellationToken);

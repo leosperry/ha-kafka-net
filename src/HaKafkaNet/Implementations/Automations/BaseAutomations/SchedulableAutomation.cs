@@ -4,38 +4,27 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
 {    
     private AutomationMetaData? _meta;
     private DateTime? _nextExecution;
-    private ReaderWriterLockSlim _lock = new();
+    private SemaphoreSlim _lock = new(1);
 
     public bool IsReschedulable { get; set;}
 
     public override sealed async Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
     {
-        var now = DateTime.Now;
-        _lock.EnterUpgradeableReadLock();
-        try
-        {
-            var scheduled = this._nextExecution;
-            var nextEvent = await this.CalculateNext(haEntityStateChange, cancellationToken);
+        var nextEvent = await this.CalculateNext(haEntityStateChange, cancellationToken);
 
-            if (scheduled != nextEvent)
-            {
-                try
-                {
-                    _lock.EnterWriteLock();
-                    _nextExecution = nextEvent;
-                }
-                finally
-                {
-                    _lock.ExitWriteLock();
-                }
-            }
-            
-            return nextEvent is not null;
-        }
-        finally
+        if (this._nextExecution != nextEvent)
         {
-            _lock.ExitUpgradeableReadLock();
+            await _lock.WaitAsync();
+            try
+            {
+                _nextExecution = nextEvent;
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
+        return nextEvent is not null;
     }
 
     public SchedulableAutomationBase(IEnumerable<string> triggerIds,
@@ -55,12 +44,12 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
     {
         try
         {
-            _lock.EnterReadLock();
+            _lock.Wait();
             return _nextExecution;
         }
         finally
         {
-            _lock.ExitReadLock();
+            _lock.Release();
         }
     }
 
