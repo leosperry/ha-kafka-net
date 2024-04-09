@@ -119,7 +119,7 @@ public interface IHaApiProvider
     /// <param name="message">contents of the notification</param>
     /// <returns></returns>
     Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default);
-    Task<HttpResponseMessage> PersistentNotification(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> PersistentNotificationDetail(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default);
 
 
     /// <summary>

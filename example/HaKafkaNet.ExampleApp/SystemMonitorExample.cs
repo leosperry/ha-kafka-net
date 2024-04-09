@@ -27,7 +27,7 @@ public class SystemMonitorExample : ISystemMonitor
                 sb.AppendLine($"{item.EntityId} has a state of {item.State.State}");
             }
         }
-        return _api.PersistentNotification(sb.ToString());
+        return _api.PersistentNotification(sb.ToString(), default);
     }
 
     public Task StateHandlerInitialized() => Task.CompletedTask;

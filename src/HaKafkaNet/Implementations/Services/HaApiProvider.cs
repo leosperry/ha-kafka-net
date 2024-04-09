@@ -194,7 +194,7 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, "persistent_notification", new { message }, cancellationToken);
 
-    public Task<HttpResponseMessage> PersistentNotification(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default)
+    public Task<HttpResponseMessage> PersistentNotificationDetail(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, "persistent_notification", new { message, title, data = new { notification_id} }, cancellationToken);
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
