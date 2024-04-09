@@ -191,8 +191,11 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> NotifyAlexaMedia(string message, string[] targets, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, "alexa_media", new { message, target = targets }, cancellationToken);
 
+    public Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default)
+        => CallService(NOTIFY, "persistent_notification", new { message }, cancellationToken);
+
     public Task<HttpResponseMessage> PersistentNotification(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default)
-        => CallService(NOTIFY, "persistent_notification", new { message, title, data = new {notification_id} }, cancellationToken);
+        => CallService(NOTIFY, "persistent_notification", new { message, title, data = new { notification_id} }, cancellationToken);
 
     public Task<HttpResponseMessage> RestartHomeAssistant(CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, "restart", new { }, cancellationToken);

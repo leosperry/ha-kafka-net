@@ -12,7 +12,7 @@ namespace HaKafkaNet;
 public record LightTurnOnModel
 {
     [JsonPropertyName("entity_id")]
-    public required IEnumerable<string> EntityId { get; init; }
+    public required IEnumerable<string> EntityId { get; set; }
 
     /// <summary>
     /// Number that represents the time (in seconds) the light should take to transition to the new state.

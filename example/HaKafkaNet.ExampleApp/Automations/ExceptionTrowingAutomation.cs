@@ -2,7 +2,7 @@
 namespace HaKafkaNet.ExampleApp;
 
 /// <summary>
-/// This class is for demonstration/testing purposes
+/// This automation is for demonstration/testing purposes
 /// The execute method has several exceptions that can be 
 /// commented/uncomented for testing different scenarios
 /// </summary>

@@ -119,6 +119,7 @@ public interface IHaApiProvider
     /// <param name="message">contents of the notification</param>
     /// <returns></returns>
     Task<HttpResponseMessage> PersistentNotification(string message, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> PersistentNotification(string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default);
 
 
     /// <summary>
@@ -138,6 +139,9 @@ public interface IHaApiProvider
     /// <param name="cache"></param>
     /// <returns></returns>
     Task<HttpResponseMessage> Speak(string speechEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default);
+    
+    Task<HttpResponseMessage> SpeakPiper(string mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> SpeakPiper(IEnumerable<string> mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Turns off a switch

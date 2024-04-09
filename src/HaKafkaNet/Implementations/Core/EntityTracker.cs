@@ -38,7 +38,9 @@ internal class EntityTracker : IDisposable
 
     internal void StartTracking()
     {
+        // run it once at the start
         _ = CheckEntities();
+        // now run on a schedule
         _timerTask = TimerTick();
     }
 
