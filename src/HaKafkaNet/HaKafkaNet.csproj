@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>HaKafkaNet</PackageId>
-    <Version>5.5.3</Version>
+    <Version>5.5.4</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet</Product>
     <Description>A library for easily creating Home Assistant automations in .NET and C#.</Description>
