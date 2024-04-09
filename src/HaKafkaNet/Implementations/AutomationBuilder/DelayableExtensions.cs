@@ -32,7 +32,6 @@ public partial class AutomationBuilderExtensions
     {
         info.ShouldExecutePastEvents = true;
         info.EventTimings = EventTiming.Durable;
-        info.IsReschedulable = true;
 
         return info;
     }

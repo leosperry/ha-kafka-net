@@ -96,13 +96,16 @@ public static partial class AutomationBuilderExtensions
 
     public static ISchedulableAutomation Build(this SchedulableAutomationBuildingInfo info)
     {
-        return new SchedulableAutomation(
+        var auto = new SchedulableAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError)
             .WithMeta(GetMeta(info));
+        auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
+        auto.IsReschedulable = info.IsReschedulable;
+        return auto;
     }
 
     public static SunAutomation Build(this SunAutommationBuildingInfo info)
