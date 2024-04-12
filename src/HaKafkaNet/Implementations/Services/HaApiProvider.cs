@@ -134,7 +134,7 @@ internal class HaApiProvider : IHaApiProvider
             try
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream(), new JsonSerializerOptions())!);
+                return (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream(), _options)!);
             }
             catch (TaskCanceledException ex)
             {
