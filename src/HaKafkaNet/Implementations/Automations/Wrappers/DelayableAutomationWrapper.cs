@@ -13,7 +13,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     readonly IAutomationTraceProvider _trace;
     private readonly ILogger _logger;
 
-    private readonly ReaderWriterLockSlim lockObj = new ReaderWriterLockSlim();
+    private readonly SemaphoreSlim lockObj = new (1);
     private CancellationTokenSource? _cts;
 
     private Func<TimeSpan> _getDelay;
@@ -78,14 +78,14 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             // we need to be running
             //find out if we are
             bool alreadyScheduled;
-            lockObj.EnterReadLock();
+            await lockObj.WaitAsync();
             try
             {
                 alreadyScheduled = _cts is not null;
             }
             finally
             {
-                lockObj.ExitReadLock();
+                lockObj.Release();
             }
             // found out
 
@@ -178,29 +178,22 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
         if (_cts is null)
         {
             _logger.LogDebug("automation scheduled in {automationCalculatedDelay}", delay);
+            _meta.NextScheduled = DateTime.Now + delay;
             // run with delay
             try
             {
-                lockObj.EnterUpgradeableReadLock();
+                lockObj.Wait();
 
                 if (_cts is null)
                 {
-                    lockObj.EnterWriteLock();
-                    try
-                    {
-                        _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                        return Task.Delay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
-                    }
-                    finally
-                    {
-                        lockObj.ExitWriteLock();
-                    }
+                    return Task.Delay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
                 }
             }
             finally
             {
-                lockObj.ExitUpgradeableReadLock();
+                lockObj.Release();
             }
         }
         // if we haven't returned by now, another thread has already stared
@@ -211,6 +204,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     private async Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
         this._meta.LastExecuted = DateTime.Now;
+        this._meta.NextScheduled = null;
         var evt = new TraceEvent(){
             EventType = "Delayed-Execution",
             AutomationKey = this._meta.GivenKey,
@@ -230,7 +224,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     {
         if (_cts is not null)
         {
-            lockObj.EnterWriteLock();
+            lockObj.Wait();
             try
             {
                 if (_cts is not null)
@@ -241,7 +235,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
             finally
             {
-                lockObj.ExitWriteLock();
+                lockObj.Release();
             }
         }
     }
@@ -250,12 +244,13 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
     {
         if (_cts is not null)
         {
-            lockObj.EnterWriteLock();
+            lockObj.Wait();
             try
             {
                 if (_cts is not null)
                 {
                     _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason.ToString());
+                    _meta.NextScheduled = null;
                     try
                     {
                         _cts.Cancel();
@@ -269,7 +264,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
             }
             finally
             {
-                lockObj.ExitWriteLock();
+                lockObj.Release();
             }
         }
     }

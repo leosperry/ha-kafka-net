@@ -36,7 +36,8 @@ internal class GetAutomationListEndpoint : EndpointWithoutRequest<ApiResponse<Au
                         AdditionalEntitiesToTrack = meta.AdditionalEntitiesToTrack ?? Enumerable.Empty<string>(),
                         Enabled = meta.Enabled,
                         LastTriggered = meta.LastTriggered?.ToString() ?? "None",
-                        LastExecuted = meta.LastExecuted?.ToString()
+                        LastExecuted = meta.LastExecuted?.ToString(),
+                        NextScheduled = meta.NextScheduled?.ToString()
                     };
                 }).ToArray()
             }

@@ -57,6 +57,7 @@ function ErrorLogs() {
         <ul>
             <li>The log was recorded entirely outside the context of an automaiton or the entity tracker, such as startup or other processes that may be running.</li>
             <li>The log was associated with an automation, but but occurred after a trace completed. This could happen if an automaiton creates independent threads with long running processes.</li>
+            <li>The log was associated with call from an instance of ISystemMonitor.</li>
         </ul>
     </div>);
 

@@ -41,7 +41,7 @@ function AutomationListItem(props: Props) {
     return (<>
         <Accordion.Item eventKey={props.index.toString()}>
             <Accordion.Header>
-                <div className="row my-">
+                <div className="row mb-1">
                     <div className="col-1">
                         <Form.Switch onClick={e => e.stopPropagation()} onChange={handleCheckboxChange} checked={enabled} data-key={item.key} />
                     </div>
@@ -59,6 +59,7 @@ function AutomationListItem(props: Props) {
                         <a href={"/hakafkanet/automation/" + item.key} onClick={(e) => { navigate('/automation/' + item.key); e.preventDefault() }} ><Button>Details</Button> </a>
                         <div className="mt-3">Last Triggered: {item.lastTriggered}</div>
                         {item.isDelayable && <div>Last Executed: {item.lastExecuted}</div>}
+                        {item.isDelayable && <div>Next Scheduled: {item.nextScheduled}</div>}
                     </div>
                     <div className="col-4">
                         <div>Trigger IDs:{renderStringArray(item.triggerIds)}</div>

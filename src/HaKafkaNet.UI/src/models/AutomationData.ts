@@ -10,4 +10,5 @@ export interface AutomationData {
     additionalEntitiesToTrack : string[];
     lastTriggered : string;
     lastExecuted? : string;
+    nextScheduled? : string;
 }
