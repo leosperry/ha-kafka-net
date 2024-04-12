@@ -1,4 +1,3 @@
-version: "3"
 services:
 
   kafka:
@@ -13,17 +12,47 @@ services:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:9094
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://192.168.1.3:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://192.168.1.3:9094 # <-----  modify EXTERNAL ip address. This makes it so that your HaKafkaNet instance can communicate with kafka
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    volumes:
+    # This is completely optional and only needed if you want to persist data
+    # HaKafkaNet is designed to be ephemeral see: https://github.com/leosperry/ha-kafka-net/wiki/Data-Persistence for details
     # the binami image uses a non-root account
     # this directory needs appropriate permissions set
     # in linux, this should be for uid 1001
+    #volumes:
     # - /Path/to/persisted/data:/bitnami/kafka 
-      - /home/leonard/MyData/kafka:/bitnami/kafka 
+    #  - /home/leonard/MyData/kafka:/bitnami/kafka 
 
+# initializes topics
+  init-kafka:
+    image: bitnami/kafka:latest
+    depends_on:
+      kafka:
+        condition: service_started
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: 
+    - |
+      /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
+      /opt/bitnami/kafka/bin/kafka-topics.sh --topic home_assistant --bootstrap-server kafka:9092 --if-not-exists --config "cleanup.policy=delete" --create
+      /opt/bitnami/kafka/bin/kafka-topics.sh --topic home_assistant_states --bootstrap-server kafka:9092 --if-not-exists --config "cleanup.policy=compact" --create
+      /opt/bitnami/kafka/bin/kafka-configs.sh --bootstrap-server kafka:9092 --entity-type topics --entity-name home_assistant_states --alter --add-config max.compaction.lag.ms=1800000
+
+# recommended but optional
+# you must provide an IDistributed cache implementation
+# see https://github.com/leosperry/ha-kafka-net/wiki/Data-Persistence for additional information
+  cache:
+    image: redis:alpine
+    container_name: my-home-automations-redis
+    restart: unless-stopped
+    command: redis-server
+    ports:
+      - 6379:6379  
+
+
+# kafka ui is optional. It is provided here for your convenience
+# can be used to inspect and customize your kafka instance
   kafka-ui:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
@@ -35,11 +64,3 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
-
-  cache:
-    image: redis:alpine
-    container_name: my-home-automations-redis
-    restart: unless-stopped
-    command: redis-server
-    ports:
-      - 6379:6379  

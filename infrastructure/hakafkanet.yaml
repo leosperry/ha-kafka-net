@@ -1,0 +1,65 @@
+# to use this file, add the following snippet uncommented to your configuration.yaml file in Home Assistant
+
+# homeassistant:
+#   packages: !include_dir_named packages
+
+# this allows Home Assistant to load the components in this file
+# then copy this file to a folder called "packages" which should reside in the same directory as configuration.yaml
+
+apache_kafka:
+  ip_address: 192.168.1.3 # <--- modify this line
+  port: 9094
+  topic: home_assistant
+  filter:
+    include_domains: # modify filters to your preference. See https://www.home-assistant.io/integrations/apache_kafka/ for details
+        - light
+        - input_button
+        - input_number
+        - input_datetime
+        - input_boolean
+        - binary_sensor
+        - sensor
+        - event
+        - sun
+        - switch
+        - schedule
+        - automation
+
+# above is required
+
+# below is optional
+# this enables notifications to flow from Home Assistant to HaKafkaNet
+
+rest_command:
+  send_notification:
+    url: http://192.168.1.3:8082/api/notification # <--- modify this line. This should point to your HaKafkaNet instance
+    method: POST
+    headers:
+      accept: "application/json, text/html"
+      user-agent: 'Mozilla/5.0 {{ useragent }}'
+    payload: '{"updatetype":"{{ update_type }}","id":"{{ id }}","title":"{{ title }}","message":"{{ message }}"}'
+    content_type:  'application/json; charset=utf-8'
+    
+# this will create a non editable automation in home assistant
+# which uses the above rest command 
+automation:
+    id: HaKafkaNet_SendNotifications
+    alias: HaKafkaNet - Send Notification updates
+    description: Send all notifications to HaKafkaNet
+    trigger:
+      - platform: persistent_notification
+        update_type:
+          - added
+          - removed
+          - current
+          - updated
+        notification_id: ""
+    condition: []
+    action:
+      - service: rest_command.send_notification
+        data:
+          id: "{{trigger.notification.notification_id}}"
+          update_type: "{{trigger.update_type}}"
+          title: "{{trigger.notification.title}}"
+          message: "{{trigger.notification.message}}"
+    mode: queued

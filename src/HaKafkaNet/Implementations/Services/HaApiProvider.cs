@@ -131,12 +131,21 @@ internal class HaApiProvider : IHaApiProvider
             {
                 _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
             }
-
-            return response.StatusCode switch
+            try
             {
-                HttpStatusCode.OK => (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream())!),
-                _ => (response, default(T?))
-            };
+                var content = await response.Content.ReadAsStringAsync();
+                return (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream(), new JsonSerializerOptions())!);
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogDebug(ex, "Task wass canceled while calling Home Assistant API");
+                throw;
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, "could not parse HA API response");
+            }
+            return (response, default(T?));
         }
     }
 

@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿using Microsoft.Extensions.Logging;
+
+namespace HaKafkaNet;
 
 internal interface ISystemObserver
 {
@@ -7,6 +9,8 @@ internal interface ISystemObserver
     void OnStateHandlerInitialized();
     void OnUnhandledException(AutomationMetaData automationMetaData, Exception exception);
     void OnBadStateDiscovered(IEnumerable<BadEntityState> badStates);
+
+    void OnHaNotification(HaNotification notification, CancellationToken ct);
 }
 
 /// <summary>
@@ -15,35 +19,51 @@ internal interface ISystemObserver
 /// </summary>
 internal class SystemObserver : ISystemObserver
 {
-    public bool IsInitialized { get; private set; }
+    ILogger _logger;
 
+    public bool IsInitialized { get; private set; }
     public event Action? StateHandlerInitialized;
     internal event Action<AutomationMetaData, Exception>? UnhandledException;
     internal event Action<IEnumerable<BadEntityState>>? BadEntityState;
+    internal event Action<HaNotification, CancellationToken>? Notify;
 
-    public SystemObserver(IEnumerable<ISystemMonitor> monitors)
+    public SystemObserver(IEnumerable<ISystemMonitor> monitors, ILogger<SystemObserver> logger)
     {
+        _logger = logger;
         foreach (var monitor in monitors)
         {
-            StateHandlerInitialized += () =>    _ = WrapTask(()=> monitor.StateHandlerInitialized());
-            UnhandledException += (meta, ex) => _ = WrapTask(()=> monitor.UnhandledException(meta, ex));
-            BadEntityState += (states) =>       _ = WrapTask(()=> monitor.BadEntityStateDiscovered(states));
+            StateHandlerInitialized += () =>    _ = WrapTask("State Handler Initialized", ()=> monitor.StateHandlerInitialized());
+            UnhandledException += (meta, ex) => _ = WrapTask("Unhandled Exception", ()=> monitor.UnhandledException(meta, ex));
+            BadEntityState += (states) =>       _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(states));
+            Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
         }
     }
 
-    private async Task WrapTask(Func<Task> funcToErrorHandle)
+    private async Task WrapTask(string taskType, Func<Task> funcToErrorHandle)
     {
         Task t;
-        try
+        Dictionary<string, object> scope = new()
         {
-            t = funcToErrorHandle();
-            await t;
-            t.Wait();
-        }
-        catch (System.Exception ex)
+            {"systemMonitorCall",DateTime.Now},
+            {"systemMonitorCallType", taskType}
+        };
+        using(_logger.BeginScope(scope))
         {
-            System.Console.WriteLine($"Error in System Observer: {ex.Message}");
-            //swallow this for now so that other handlers continue to run
+            try
+            {
+                t = funcToErrorHandle();
+                await t;
+                t.Wait();
+            }
+            catch (TaskCanceledException cancelEx)
+            {
+                _logger.LogInformation(cancelEx, "Task Canceled in System Observer");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, $"Error in System Observer");
+                //swallow this so that other handlers continue to run
+            }
         }
     }
 
@@ -58,4 +78,7 @@ internal class SystemObserver : ISystemObserver
 
     public void OnBadStateDiscovered(IEnumerable<BadEntityState> badStates)
         => BadEntityState?.Invoke(badStates);
+
+    public void OnHaNotification(HaNotification notification, CancellationToken ct)
+        => Notify?.Invoke(notification, ct);
 }
