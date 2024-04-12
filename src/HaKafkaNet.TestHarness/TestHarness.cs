@@ -23,6 +23,7 @@ public class TestHarness
 
     static Mock<ILogger<AutomationManager>> _logger = new();
     static Mock<ILogger<AutomationWrapper>> _loggerReg = new();
+    static Mock<ILogger<SystemObserver>> _observerLogger = new();
     static Mock<ILogger<DelayablelAutomationWrapper>> _wrapperLogger = new();
 
     IInternalRegistrar? _registrar;
@@ -128,7 +129,7 @@ public class TestHarness
         }
         else
         {
-            _observer = new SystemObserver([monitor]);
+            _observer = new SystemObserver([monitor], _observerLogger.Object);
         }
 
         _registrar = new AutomationRegistrar(
