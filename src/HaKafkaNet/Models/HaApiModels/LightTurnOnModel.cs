@@ -66,44 +66,44 @@ public record LightTurnOnModel
     /// A human-readable string of a color name, such as blue or goldenrod. All CSS3 color names are supported.
     /// </summary>
     [JsonPropertyName("color_name")]
-    public string? ColorName { get; init; }
+    public string? ColorName { get; set; }
 
     /// <summary>
     /// Integer between 0 and 255 for how bright the light should be, where 0 means the light is off, 1 is the minimum brightness and 255 is the maximum brightness supported by the light
     /// </summary>
     [JsonPropertyName("brightness")]
-    public byte? Brightness { get; init; }
+    public byte? Brightness { get; set; }
 
     /// <summary>
     /// specify brightness in percent (a number between 0 and 100), where 0 means the light is off, 1 is the minimum brightness and 100 is the maximum brightness supported by the light.
     /// </summary>
     [JsonPropertyName("brightness_pct")]
-    public int? BrightnessPct { get; init; }
+    public int? BrightnessPct { get; set; }
 
     /// <summary>
     /// Change brightness by an amount. Should be between -255..255.
     /// </summary>
     [JsonPropertyName("brightness_step")]
-    public int? BrightnessStep { get; init; }
+    public int? BrightnessStep { get; set; }
 
     /// <summary>
     /// Change brightness by a percentage. Should be between -100..100.
     /// </summary>
     [JsonPropertyName("brightness_step_pct")]
-    public int? BrightnessStepPct { get; init; }
+    public int? BrightnessStepPct { get; set; }
 
     
     /// <summary>
     /// Tell light to flash, can be either value short or long.
     /// </summary>
     [JsonPropertyName("flash")]
-    public Flash? Flash {get; init;}
+    public Flash? Flash {get; set;}
 
     /// <summary>
     /// Tell light to flash, can be either value short or long.
     /// </summary>
     [JsonPropertyName("effect")]
-    public string? Effect {get; init;}
+    public string? Effect {get; set;}
 }
 
 public enum Flash
