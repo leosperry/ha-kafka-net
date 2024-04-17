@@ -7,11 +7,9 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 5.5 Released! 
-New [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) and new observability features!
-
-To get the most out of these features be sure to enable [log tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing).
-> Note: The dashboard has moved to `~/hakafkanet`.
+Version 6.1 Released! 
+* Now supporting subscribing to Persistant Notification Updates. See [System Monitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
+* Home Assistant API support for Turning on/off and Toggling devices by Area or Label.
 ***
 
 It was created with the following goals:
@@ -71,8 +69,9 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 ## Features recently added
 * Completely overhauled [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) built with React and Bootstrap
 * [Tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
-* New Log pages in UI for Errors, Entity Tracker, and Global non-Automation related
-* New methods and models to support Calendars, interact with HA native automations, and buttons
+* New methods and models to support Calendars, HA native automations, and buttons
+* Subscribe to Persistent Notification updates
+* Control devices by Area and Label
 
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
