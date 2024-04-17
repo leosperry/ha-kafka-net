@@ -259,10 +259,21 @@ internal class HaApiProvider : IHaApiProvider
 
     public Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);
-       
 
     public Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_ON, new { entity_id }, cancellationToken);
+    
+    public Task<HttpResponseMessage> TurnOnArea(string area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new { area_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOnAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new { area_id }, cancellationToken);
+    
+    public Task<HttpResponseMessage> TurnOnByLabel(string label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new { label_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOnByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_ON, new { label_id }, cancellationToken);    
 
     public Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_OFF, new { entity_id }, cancellationToken);
@@ -270,11 +281,35 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> TurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TURN_OFF, new { entity_id }, cancellationToken);
 
+    public Task<HttpResponseMessage> TurnOffArea(string area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { area_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOffAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { area_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOffByLabel(string label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { label_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> TurnOffByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TURN_OFF, new { label_id }, cancellationToken);
+
     public Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TOGGLE, new { entity_id }, cancellationToken);
 
     public Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default)
         => CallService(HOME_ASSISTANT, TOGGLE, new { entity_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> ToggleArea(string area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new { area_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> ToggleAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new { area_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> ToggleByLabel(string label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new { label_id }, cancellationToken);
+
+    public Task<HttpResponseMessage> ToggleByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default)
+        => CallService(HOME_ASSISTANT, TOGGLE, new { label_id }, cancellationToken);
 
     public Task<HttpResponseMessage> ZwaveJs_SetConfigParameter(object config, CancellationToken cancellationToken = default)
         => CallService("zwave_js", "set_config_parameter", config, cancellationToken);

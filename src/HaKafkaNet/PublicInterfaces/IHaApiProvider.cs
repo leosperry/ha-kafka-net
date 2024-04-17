@@ -180,10 +180,22 @@ public interface IHaApiProvider
 
     Task<HttpResponseMessage> TurnOn(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOn(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOnArea(string area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOnAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOnByLabel(string label_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOnByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOff(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> TurnOff(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOffArea(string area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOffAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOffByLabel(string label_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> TurnOffByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> Toggle(string entity_id, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> Toggle(IEnumerable<string> entity_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> ToggleArea(string area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> ToggleAreas(IEnumerable<string> area_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> ToggleByLabel(string label_id, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> ToggleByLabels(IEnumerable<string> label_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Beta functionality: May break in future versions
