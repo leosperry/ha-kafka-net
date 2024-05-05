@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastEndpoints" Version="5.25.0.1-beta" />
+    <PackageReference Include="FastEndpoints" Version="5.25.0" />
     <PackageReference Include="KafkaFlow" Version="3.0.7" />
     <PackageReference Include="KafkaFlow.Admin" Version="3.0.7" />
     <PackageReference Include="KafkaFlow.Admin.Dashboard" Version="3.0.7" />
@@ -49,7 +49,7 @@
     <PackageReference Include="KafkaFlow.Serializer.JsonCore" Version="3.0.7" />
     <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.7" />
 
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0-preview.3.24172.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
 
   <PackageReference Include="NLog.Web.AspNetCore" Version="5.*" />
   <PackageReference Include="NLog" Version="5.*" />
