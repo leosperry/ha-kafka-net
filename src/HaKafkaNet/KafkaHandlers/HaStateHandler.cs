@@ -53,7 +53,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             Old = timing == EventTiming.PreStartupSameAsLastCached ? cached?.Previous: cached
         };
 
-        _ = _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped);
+        _ = Task.Run(() => _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped));
     }
 
 

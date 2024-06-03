@@ -4,7 +4,7 @@ public class HaKafkaNetConfig
 {
     HomeAssistantConnectionInfo _haConnection = new();
 
-    public string[] KafkaBrokerAddresses { get; set; } = ["localhost:9094"];
+    public string[] KafkaBrokerAddresses { get; set; } = [];
     public string TransofrmedTopic { get; set; } = "home_assistant_states";
     public bool ExposeKafkaFlowDashboard { get; set; } = true;
     public bool UseDashboard { get; set; } = false;
