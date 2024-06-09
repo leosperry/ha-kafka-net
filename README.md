@@ -73,6 +73,9 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 * Subscribe to Persistent Notification updates
 * Control devices by Area and Label
 
+## Upcoming
+Version 7 is in the works. It will give you more granular control over kafka for adding your own functionality. Additionally, it will add support for Open Telemetry. See `program.cs` in the Example App for a preview. 
+
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
 

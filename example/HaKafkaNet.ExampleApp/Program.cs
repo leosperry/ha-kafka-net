@@ -9,7 +9,7 @@ builder.Host.UseNLog(); // enables log tracing
 
 var services = builder.Services;
 
-// // for local development of dashboard only
+// for local development of dashboard only
 // services.AddCors(options => {
 //     options.AddPolicy("hknDev", policy =>{
 //         policy.WithOrigins("*");
@@ -20,6 +20,14 @@ var services = builder.Services;
 HaKafkaNetConfig config = new HaKafkaNetConfig();
 builder.Configuration.GetSection("HaKafkaNet").Bind(config);
 services.AddHaKafkaNet(config);
+
+// Version 6 overload
+// services.AddHaKafkaNet(config, (cluster) => {});
+
+// // Version 7 overload
+// services.AddHaKafkaNet(config, (kafka, cluster) => {
+//    // add logging, telemetry, and/or topics options as desired
+//});
 
 // provide an IDistributedCache implementation
 var redisUri = builder.Configuration.GetConnectionString("RedisConStr");
@@ -48,8 +56,8 @@ var app = builder.Build();
 
 app.MapGet("/", () => Results.Redirect("hakafkanet"));
 
-// // for local development of dashboard only
-// app.UseCors("hknDev");
+// for local development of dashboard only
+//app.UseCors("hknDev");
 
 await app.StartHaKafkaNet();
 

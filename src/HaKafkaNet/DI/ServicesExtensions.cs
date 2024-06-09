@@ -18,7 +18,7 @@ namespace HaKafkaNet;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IClusterConfigurationBuilder>? kafabuilder = null)
+    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafabuilder = null)
     {
         HaKafkaNetConfig config = new();
         options(config);
@@ -27,13 +27,12 @@ public static class ServicesExtensions
         return services;
     }
 
-    public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IClusterConfigurationBuilder>? kafabuilder = null)
+    public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafabuilder = null)
     {
         services.AddSingleton(config);
         services.AddKafka(kafka => 
         {
             kafka
-                .UseConsoleLog()
                 .AddCluster(cluster =>
                 {
                     cluster.WithBrokers(config.KafkaBrokerAddresses);
@@ -45,7 +44,7 @@ public static class ServicesExtensions
                         .EnableAdminMessages("kafka-flow.admin")
                         .EnableTelemetry("kafka-flow.admin");
                     
-                    kafabuilder?.Invoke(cluster);
+                    kafabuilder?.Invoke(kafka, cluster);
                 }
             );
         });
