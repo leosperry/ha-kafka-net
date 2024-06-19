@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
@@ -19,6 +20,8 @@ internal class EntityTracker : IDisposable
     readonly IHaStateCache _cache;
     readonly IHaApiProvider _provider;
     readonly ILogger _logger;
+
+    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.entity_tracker");
     
     public EntityTracker(EntityTrackerConfig config, ISystemObserver observer, IAutomationManager automationManager, 
         IHaStateCache cache, IHaApiProvider provider, ILogger<EntityTracker> logger)
@@ -64,6 +67,7 @@ internal class EntityTracker : IDisposable
             {"tracker_runtime", DateTime.Now}
         };
         using(_logger.BeginScope(scope))
+        using(_activitySource.StartActivity("ha_kafka_net.tracker_run"))
         {
             _logger.LogInformation("starting tracker run");
             // check entities' states
@@ -116,4 +120,3 @@ internal class EntityTracker : IDisposable
         _cancelSource.Dispose();
     }
 }
-

@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 

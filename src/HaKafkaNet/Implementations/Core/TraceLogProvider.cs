@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -49,16 +51,26 @@ internal class TraceLogProvider : IAutomationTraceProvider
         scopeTraceAutomationKey = "automationKey",
         scopeTraceAutomationEventType = "automationEventType",
         scopeTraceAutomationEventTime = "automationEventTime",
-        scopeTrackerKey = "tracker_runtime";
+        scopeTrackerKey = "tracker_runtime",
+        automation_fault = "Automation Fault";
 
     // first string: automationKey, second string: composite from event
     ConcurrentDictionary<string, ConcurrentDictionary<string, (TraceEvent evt, ConcurrentQueue<LogInfo> logQueue)>> _activeTraces = new();
+
+    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.automation");
+    UpDownCounter<int> _activeTraceCounter;
+    Counter<int> _traceCounter;
+
 
     public TraceLogProvider(IDistributedCache cache, ISystemObserver observer, ILogger<TraceLogProvider> logger)
     {
         _cache = cache;
         _observer = observer;
         _logger = logger;
+
+        Meter m = new Meter("ha_hakfa_net.trace");
+        _activeTraceCounter = m.CreateUpDownCounter<int>("ha_kafka_net.active_traces_total");
+        _traceCounter = m.CreateCounter<int>("ha_kafka_net.trace_count");
     }
 
     public void AddLog(string renderedMessage, LogEventInfo logEvent, IDictionary<string, object> scopes)
@@ -147,10 +159,9 @@ internal class TraceLogProvider : IAutomationTraceProvider
         }
     }
 
-    public Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction)
+    public async Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction)
     {
-        var data = AddTrace(evt);
-        var scopeData = new Dictionary<string, object>()
+        var scopeData = new Dictionary<string, object?>()
         {
             // required for trace funcionality
             {scopeTraceAutomationKey, meta.GivenKey},
@@ -168,42 +179,66 @@ internal class TraceLogProvider : IAutomationTraceProvider
             scopeData["triggerEntityId"] = evt.StateChange.EntityId;
         }
 
-        using (_logger.BeginScope(scopeData))
+        _traceCounter.Add(1, 
+            new KeyValuePair<string, object?>("given_key", meta.GivenKey),
+            new KeyValuePair<string, object?>("event_type", evt.EventType)
+            );
+
+        _activeTraceCounter.Add(1);
+        try
         {
-            Task task;
-
-            try
+            var data = AddTrace(evt);
+            
+            using (_logger.BeginScope(scopeData))
+            using (var act = _activitySource.StartActivity($"ha_kafka_net.automation_trace"))
             {
-                // this line will throw an exception
-                // if the automation threw an excption
-                task = traceFunction();
-                // if the task is a non-awaited
-                // this line could throw an exception
-                // this will also catch all exceptions from Task.WhenAll()
-                task.Wait();
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError(ex, "Automation Fault");
+                if(act is not null)
+                {
+                    act.AddTag("given_key", meta.GivenKey);
+                    act.AddTag("event_type", evt.EventType);
+                    act.AddTag("ha_context_id", evt.StateChange?.New?.Context?.ID ?? "none");
+                }
+                Task task;
 
-                _observer.OnUnhandledException(meta, ex);
-                evt.Exception = ExecptionInfo.Create(ex);
+                try
+                {
+                    // this line will throw an exception
+                    // if the automation threw an excption
+                    task = traceFunction();
+                    // if the task is not-awaited
+                    // this line could throw an exception
+                    // this will also catch all exceptions from Task.WhenAll()
+                    task.Wait();
+                    await task;
+                }
+                catch (System.Exception ex)
+                {
+                    act?.AddEvent(new ActivityEvent(automation_fault));
+                    _logger.LogError(ex, automation_fault);
+
+                    _observer.OnUnhandledException(meta, ex);
+                    evt.Exception = ExecptionInfo.Create(ex);
+                    //give any last logs a chance to make it in
+                    _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
+                    {
+                        TraceEvent = data.evt,
+                        Logs = data.logQueue
+                    }));
+                    throw;
+                }
                 //give any last logs a chance to make it in
                 _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
                 {
                     TraceEvent = data.evt,
                     Logs = data.logQueue
                 }));
-                throw;
             }
-            //give any last logs a chance to make it in
-            _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
-            {
-                TraceEvent = data.evt,
-                Logs = data.logQueue
-            }));
-            return task;
         }
+        finally
+        {
+            _activeTraceCounter.Add(-1);
+        }
+        
     }
 
     public async Task<IEnumerable<LogInfo>> GetErrorLogs()

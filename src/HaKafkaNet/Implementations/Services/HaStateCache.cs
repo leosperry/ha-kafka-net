@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -21,6 +22,9 @@ internal class HaStateCache : IHaStateCache
             new HsConverter(),
         }
     };
+
+    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.cache");
+
     public HaStateCache(IDistributedCache cache)
     {
         _cache = cache;
@@ -56,12 +60,16 @@ internal class HaStateCache : IHaStateCache
     /// <returns></returns>
     public async Task<T?> GetEntity<T>(string entityId, CancellationToken cancellationToken) where T : class
     {
-        var cached = await _cache.GetAsync(entityId, cancellationToken);
-        if(cached != null)
+        using (var act = _activitySource.StartActivity("ha_kafka_net.get_entity_from_cache"))
         {
-            return JsonSerializer.Deserialize<T>(cached, _options);
+            act?.AddTag("entityId", entityId);
+            var cached = await _cache.GetAsync(entityId, cancellationToken);
+            if(cached != null)
+            {
+                return JsonSerializer.Deserialize<T>(cached, _options);
+            }
+            return null;
         }
-        return null;     
     }
 
     public Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default)

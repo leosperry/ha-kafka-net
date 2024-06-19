@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,6 +39,8 @@ internal class HaApiProvider : IHaApiProvider
         SWITCH = "switch";
     #endregion
 
+    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.ha_api");
+
     public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config, ILogger<HaApiProvider> logger)
     {
         _client = clientFactory.CreateClient();
@@ -61,7 +64,10 @@ internal class HaApiProvider : IHaApiProvider
         };
         using (_logger.BeginScope(scope))
         using (StringContent json = new StringContent(JsonSerializer.Serialize(data, _options)))
+        using(var act = _activitySource.StartActivity("ha_kafka_net.ha_api_post"))
         {
+            act?.AddTag("ha_domain", domain);
+            act?.AddTag("ha_service", service);
             _logger.LogDebug("Calling Home Assistant Service API");
             try
             {
@@ -89,6 +95,8 @@ internal class HaApiProvider : IHaApiProvider
 
     public async Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default)
     {
+        using(_activitySource.StartActivity("ha_kafka_net.ha_api_error_log"))
+
         _logger.LogDebug("Calling Home Assistant error log API");
         var response = await _client.GetAsync("/api/error_log", cancellationToken);
 
@@ -121,8 +129,10 @@ internal class HaApiProvider : IHaApiProvider
         {
             {"HaApi.entity_id" , entity_id},
         };
+        using(var act = _activitySource.StartActivity("ha_kafka_net.ha_api_get"))
         using (_logger.BeginScope(scope))
         {
+            act?.AddTag("entity_id", entity_id);
             _logger.LogDebug("Calling Home Assistant States API");
             var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 

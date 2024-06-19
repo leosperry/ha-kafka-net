@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Text.Json;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -16,6 +18,8 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     {
         SlidingExpiration = TimeSpan.FromDays(30)
     };
+
+    Counter<int> _counter;
     
     public HaStateHandler(
         IDistributedCache cache, IAutomationManager automationMgr,
@@ -30,13 +34,14 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         _logger.LogInformation("state handler initialized at :{startTime}", _startTime);
 
         observer.OnStateHandlerInitialized();
-        
+        Meter m = new Meter("ha_kafka_net.state_handler");
+        _counter = m.CreateCounter<int>("ha_kafka_net.message_received_count");
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
     {
         HaEntityState? cached = await HandleCacheAndPrevious(context, message);
-
+        _counter.Add(1, new KeyValuePair<string, object?>("entity_id", message.EntityId));
         //if no automations need trigger, return
         if (!_autoMgr.HasAutomationsForEntity(message.EntityId))
         {
