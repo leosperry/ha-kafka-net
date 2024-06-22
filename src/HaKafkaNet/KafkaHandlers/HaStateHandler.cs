@@ -34,7 +34,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         _logger.LogInformation("state handler initialized at :{startTime}", _startTime);
 
         observer.OnStateHandlerInitialized();
-        Meter m = new Meter("ha_kafka_net.state_handler");
+        Meter m = new Meter(Telemetry.MeterStateHandler);
         _counter = m.CreateCounter<int>("ha_kafka_net.message_received_count");
     }
 

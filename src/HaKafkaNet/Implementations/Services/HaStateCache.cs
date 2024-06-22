@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
@@ -23,11 +24,17 @@ internal class HaStateCache : IHaStateCache
         }
     };
 
-    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.cache");
+    static ActivitySource _activitySource = new ActivitySource(Telemetry.TraceCacheName);
 
+    Counter<int> _hitCount;
+    Counter<int> _missCount;
+    
     public HaStateCache(IDistributedCache cache)
     {
         _cache = cache;
+        Meter meter = new Meter(Telemetry.MeterCacheName);
+        _hitCount = meter.CreateCounter<int>("ha_kafka_net.cache_hit_count");
+        _missCount = meter.CreateCounter<int>("ha_kafka_net.cache_miss_count");
     }
 
     [Obsolete("please use GetEntity", false)]
@@ -66,8 +73,10 @@ internal class HaStateCache : IHaStateCache
             var cached = await _cache.GetAsync(entityId, cancellationToken);
             if(cached != null)
             {
+                _hitCount.Add(1);
                 return JsonSerializer.Deserialize<T>(cached, _options);
             }
+            _missCount.Add(1);
             return null;
         }
     }

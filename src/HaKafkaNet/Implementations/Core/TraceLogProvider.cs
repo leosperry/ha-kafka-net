@@ -57,7 +57,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
     // first string: automationKey, second string: composite from event
     ConcurrentDictionary<string, ConcurrentDictionary<string, (TraceEvent evt, ConcurrentQueue<LogInfo> logQueue)>> _activeTraces = new();
 
-    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.automation");
+    static ActivitySource _activitySource = new ActivitySource(Telemetry.TraceAutomationName);
     UpDownCounter<int> _activeTraceCounter;
     Counter<int> _traceCounter;
 
@@ -68,7 +68,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
         _observer = observer;
         _logger = logger;
 
-        Meter m = new Meter("ha_hakfa_net.trace");
+        Meter m = new Meter(Telemetry.MeterTracesName);
         _activeTraceCounter = m.CreateUpDownCounter<int>("ha_kafka_net.active_traces_total");
         _traceCounter = m.CreateCounter<int>("ha_kafka_net.trace_count");
     }
@@ -181,7 +181,9 @@ internal class TraceLogProvider : IAutomationTraceProvider
 
         _traceCounter.Add(1, 
             new KeyValuePair<string, object?>("given_key", meta.GivenKey),
-            new KeyValuePair<string, object?>("event_type", evt.EventType)
+            new KeyValuePair<string, object?>("event_type", evt.EventType),
+            new KeyValuePair<string, object?>("trigger_entity_id", evt.StateChange?.New.EntityId ?? "na")
+            
             );
 
         _activeTraceCounter.Add(1);
@@ -196,7 +198,8 @@ internal class TraceLogProvider : IAutomationTraceProvider
                 {
                     act.AddTag("given_key", meta.GivenKey);
                     act.AddTag("event_type", evt.EventType);
-                    act.AddTag("ha_context_id", evt.StateChange?.New?.Context?.ID ?? "none");
+                    act.AddBaggage("ha_context_id", evt.StateChange?.New.Context?.ID ?? "na");
+                    act.AddTag("trigger_entity_id", evt.StateChange?.New.EntityId ?? "na");
                 }
                 Task task;
 
@@ -238,7 +241,6 @@ internal class TraceLogProvider : IAutomationTraceProvider
         {
             _activeTraceCounter.Add(-1);
         }
-        
     }
 
     public async Task<IEnumerable<LogInfo>> GetErrorLogs()

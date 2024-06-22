@@ -39,7 +39,7 @@ internal class HaApiProvider : IHaApiProvider
         SWITCH = "switch";
     #endregion
 
-    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.ha_api");
+    static ActivitySource _activitySource = new ActivitySource(Telemetry.TraceApiName);
 
     public HaApiProvider(IHttpClientFactory clientFactory, HomeAssistantConnectionInfo config, ILogger<HaApiProvider> logger)
     {

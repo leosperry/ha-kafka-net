@@ -72,16 +72,16 @@ internal class AutomationManager : IAutomationManager
             }
             else
             {
-                meta.GivenKey = cleaned + takenKeys[cleaned].ToString();
+                meta.GivenKey = string.Concat(cleaned, takenKeys[cleaned]);
             }
         }
     }
 
     private string CleanName(string name)
     {
-        Regex stripper = new Regex("[^A-Za-z0-9_-]+");
+        Regex stripper = new Regex("[^A-Za-z0-9-]+");
         var stripped = stripper.Replace(name, " ").Trim();
-        return stripped.Replace(' ', '_');
+        return stripped.Replace(' ', '_').ToLower();
     }
 
     public IEnumerable<IAutomationWrapper> GetAll()

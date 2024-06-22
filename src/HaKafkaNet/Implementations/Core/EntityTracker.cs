@@ -21,7 +21,7 @@ internal class EntityTracker : IDisposable
     readonly IHaApiProvider _provider;
     readonly ILogger _logger;
 
-    static ActivitySource _activitySource = new ActivitySource("ha_kafka_net.entity_tracker");
+    static ActivitySource _activitySource = new ActivitySource(Telemetry.TraceTrackerName);
     
     public EntityTracker(EntityTrackerConfig config, ISystemObserver observer, IAutomationManager automationManager, 
         IHaStateCache cache, IHaApiProvider provider, ILogger<EntityTracker> logger)
