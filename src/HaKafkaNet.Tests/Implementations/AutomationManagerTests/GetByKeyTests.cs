@@ -23,7 +23,7 @@ public class GetByKeyTests
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
 
-        var result = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock");
+        var result = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock");
     
         // Then
         Assert.Equal("FakeAuto", result!.GetMetaData().Name);
@@ -49,8 +49,8 @@ public class GetByKeyTests
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
 
-        var result1 = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock");
-        var result2 = sut.GetByKey("test-FakeAuto-crew_spock-crew_evil_spock2");
+        var result1 = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock");
+        var result2 = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock2");
     
         // Then
         Assert.Equal("FakeAuto", result1!.GetMetaData().Name);
@@ -77,7 +77,7 @@ public class GetByKeyTests
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
 
-        var result = sut.GetByKey("Evil_Spock");
+        var result = sut.GetByKey("evil_spock");
     
         // Then
         Assert.Equal("Spock", result!.GetMetaData().Name);
