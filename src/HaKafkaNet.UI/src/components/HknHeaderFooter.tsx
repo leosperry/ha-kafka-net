@@ -12,6 +12,7 @@ function HknHeaderFooter(props: PropsWithChildren) {
   const [data, setData] = useState<SystemInfo>();
   const [timerDisplay, setTimerDisplay] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [tip, setTip] = useState<React.ReactElement>(GetRandomTip());
 
 
   useEffect(() => {
@@ -23,6 +24,7 @@ function HknHeaderFooter(props: PropsWithChildren) {
 
   async function getData(): Promise<boolean> {
     setTimerDisplay("Checking ...");
+    setTip(GetRandomTip());
 
     var sysInfo = await Api.GetSystemInfo();
     setData(sysInfo);
@@ -62,9 +64,23 @@ function HknHeaderFooter(props: PropsWithChildren) {
     event.preventDefault()
   };
 
+  function GetRandomTip():React.ReactElement  {
+    const array:React.ReactElement[] = [
+      <>You can manually trigger automations by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a></>,
+      <>Implement the <a href='https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor' target='_blank'>System Monitor</a> to get insight into potential problems.</>,
+      <>Add "AdditionalEntitiesToTrack" to your automation <a href='https://github.com/leosperry/ha-kafka-net/wiki/Automation-Metadata' target='_blank'>Metadata</a> so the entity tracker can discover non-responsive entities that your automations rely upon.</>,
+      <>Implement <a href='https://github.com/leosperry/ha-kafka-net/wiki/Open-Telemetry-Instrumentation' target='_blank'>Open Telemetry</a> to get more insight into traffic/load on your system.</>,
+      <>For accurate times on your dashboard, when running in docker, make sure to set the time zone of your docker container</>,
+      <>HaKafkaNet ships with several <a href='https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes' target='_blank'>Utility Classes</a> to make developing automations easy.</>,
+      <>Write automations for multi-button <a href='https://github.com/leosperry/ha-kafka-net/wiki/Scene-Controllers'>Scene Controllers</a> with ease.</>
+    ];
+      return array[Math.floor(Math.random() * array.length)];
+  }
+
   return !data ? (<></>) : (<>
     <div className='float-end mt-3'>
-      <Button variant='primary' onClick={() => setShowMenu(!showMenu)} className='float-end'>
+
+      <Button variant='primary' onClick={() => setShowMenu(!showMenu)} className='m-2'>
         <svg height={32} width={32} fill={"white"} fillOpacity={.5} >
           <use href={icons + "#list"} height={32} width={32} />
         </svg>
@@ -87,9 +103,15 @@ function HknHeaderFooter(props: PropsWithChildren) {
           </ListGroup>
           <Card className='mt-5'>
             <CardBody>
-              <Card.Title>Tip:</Card.Title>
+              <Card.Title>Tip:
+                <Button variant='primary' onClick={() => setTip(GetRandomTip())} className='float-end'>
+                <svg height={16} width={16} fill={"white"} fillOpacity={.5} >
+                  <use href={icons + "#arrow-clockwise"} height={16} width={16} />
+                </svg>
+              </Button>
+              </Card.Title>
               <Card.Text>
-                You can manually trigger automations<br /> by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a>
+                {tip}
               </Card.Text>
             </CardBody>
           </Card>

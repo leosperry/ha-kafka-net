@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { Api } from "../services/Api";
 import { AutomationDetailsResponse } from '../models/AutomationDetailResponse';
 import TraceItem from './TraceItem';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Button } from 'react-bootstrap';
+
+import icons from '../assets/icons/bootstrap-icons.svg';
 
 function AutomationDetails() {
   const { key } = useParams();
 
   const [data, setData] = useState<AutomationDetailsResponse>();
+  const [loadTime, setLoadTime] = useState<string>();
   const [_error, setError] = useState<unknown>();
 
   useEffect(() => {
@@ -28,6 +31,7 @@ function AutomationDetails() {
           setError("unknown error: " + error.toString());
         }
       }
+      setLoadTime(new Date().toLocaleString());
     }
   }
 
@@ -42,6 +46,7 @@ function AutomationDetails() {
     {_error && (<h4 className='bg-danger'>{_error.toString()}</h4>)}
     {!data ? (<div>Loading {key}...</div>) : (<>
       <h2>Automation Details</h2>
+
       <div className='row'>
         <div className='col-2 overflow-hidden'>Name:</div><div className='col-10'>{data.name}</div>
         <div className='col-2 overflow-hidden'>Description:</div><div className='col-10'>{data.description}</div>
@@ -55,7 +60,18 @@ function AutomationDetails() {
         <div className='col-2 overflow-hidden'>Is Delayable:</div><div className='col-10'>{data.isDelayable.toString()}</div>
       </div>
       <hr />
+
+      <div className='float-end'>
+      Data as of: {loadTime}&nbsp;
+        <Button variant='primary' onClick={() => getData()} className='ml-2'>
+          <svg height={16} width={16} fill={"white"} fillOpacity={.5} >
+            <use href={icons + "#arrow-clockwise"} height={16} width={16} />
+          </svg>
+        </Button>
+      </div>    
+
       <h3>Trace Data</h3>
+
       {data.traces.length == 0 ? (<h4>No Trace History</h4>) : (<>
         <Accordion defaultActiveKey={[]} alwaysOpen>
           {data.traces.map((t, index) => <TraceItem key={"trace" + index} trace={t} index={index} />)}
