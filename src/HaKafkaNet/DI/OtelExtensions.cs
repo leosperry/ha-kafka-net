@@ -30,8 +30,10 @@ public static class OtelExtensions
 
     public static MeterProviderBuilder AddHaKafkaNetInstrumentation(this MeterProviderBuilder meter)
     {
-        meter.AddMeter(Telemetry.MeterStateHandler);
-        meter.AddMeter(Telemetry.MeterTracesName);
+        meter
+            .AddMeter(Telemetry.MeterStateHandler)
+            .AddMeter(Telemetry.MeterTracesName)
+            .AddMeter(Telemetry.MeterCacheName);
         return meter;
     }
 }
