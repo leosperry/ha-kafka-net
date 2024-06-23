@@ -7,9 +7,8 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 6.1 Released! 
-* Now supporting subscribing to Persistant Notification Updates. See [System Monitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-* Home Assistant API support for Turning on/off and Toggling devices by Area or Label.
+Version 7 Released! 
+* HaKafkaNet now natively supports [Open Telemetry](https://github.com/leosperry/ha-kafka-net/wiki/Open-Telemetry-Instrumentation)! Get detailed insights into how your system is operating.
 ***
 
 It was created with the following goals:
@@ -65,16 +64,6 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
   - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors it will only write an ILogger message indicating the error.
-
-## Features recently added
-* Completely overhauled [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) built with React and Bootstrap
-* [Tracing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
-* New methods and models to support Calendars, HA native automations, and buttons
-* Subscribe to Persistent Notification updates
-* Control devices by Area and Label
-
-## Upcoming
-Version 7 is in the works. It will give you more granular control over kafka for adding your own functionality. Additionally, it will add support for Open Telemetry. See `program.cs` in the Example App for a preview. 
 
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
