@@ -69,14 +69,15 @@ internal class HaStateCache : IHaStateCache
     {
         using (var act = _activitySource.StartActivity("ha_kafka_net.get_entity_from_cache"))
         {
+            KeyValuePair<string, object?> entityTag = new KeyValuePair<string, object?>("entity_id",entityId);
             act?.AddTag("entityId", entityId);
             var cached = await _cache.GetAsync(entityId, cancellationToken);
             if(cached != null)
             {
-                _hitCount.Add(1);
+                _hitCount.Add(1, entityTag);
                 return JsonSerializer.Deserialize<T>(cached, _options);
             }
-            _missCount.Add(1);
+            _missCount.Add(1, entityTag);
             return null;
         }
     }
