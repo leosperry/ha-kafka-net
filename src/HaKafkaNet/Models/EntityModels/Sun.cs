@@ -45,3 +45,16 @@ public record SunAttributes()
     [JsonPropertyName("friendly_name")]
     public required string FriendlyName { get; init; }
 }
+
+/// <summary>
+/// Used by automation builder and ConsolidatedSunAutomation
+/// </summary>
+public enum SunEventType
+{
+    Dawn,
+    Rise,
+    Noon,
+    Set,
+    Dusk,
+    Midnight
+}

@@ -93,16 +93,23 @@ internal class EntityTracker : IDisposable
 
     async IAsyncEnumerable<BadEntityState> FilterIds (IEnumerable<string> entityIds)
     {
-        foreach (var item in entityIds)
+        foreach (var entity in entityIds)
         {
             // check the cache, if it has been updated in the interval, ignore
-            var cached = await _cache.GetEntity(item, _cancelSource.Token);
+            var cached = await _cache.GetEntity(entity, _cancelSource.Token);
             if (cached is null || DateTime.Now - cached.LastUpdated > _maxEntityReportTime)
             {
-                var (response, entityState) = await _provider.GetEntity(item, _cancelSource.Token);
+                var (response, entityState) = await _provider.GetEntity(entity, _cancelSource.Token);
                 if(response.StatusCode != System.Net.HttpStatusCode.OK || entityState is null || entityState.State is null || badStates.Contains(entityState.State))
                 {
-                    yield return new(item, entityState);
+                    yield return new(entity, entityState);
+                }
+                else
+                {
+                    if (cached is null)
+                    {
+                        _logger.LogWarning("{entity_id} is being tracked, but was not in the cache and is available. Check to make sure Kafka integration in HA is configured to send this entity", entity);
+                    }                
                 }
             }
         }

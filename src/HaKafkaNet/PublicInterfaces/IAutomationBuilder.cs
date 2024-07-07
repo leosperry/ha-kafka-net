@@ -16,15 +16,7 @@ public interface IAutomationBuilder
     SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true);
 }
 
-public enum SunEventType
-{
-    Dawn,
-    Rise,
-    Noon,
-    Set,
-    Dusk,
-    Midnight
-}
+
 
 
 
