@@ -7,8 +7,12 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 7 Released! 
-* HaKafkaNet now natively supports [Open Telemetry](https://github.com/leosperry/ha-kafka-net/wiki/Open-Telemetry-Instrumentation)! Get detailed insights into how your system is operating.
+Special note regarding Home Assistant 2024.8:
+
+The latest release brings a couple big kafka improvements. To take full advatage of these new features, some breaking changes are being added to HaKafkaNet.
+
+See : [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
+
 ***
 
 It was created with the following goals:
