@@ -35,7 +35,6 @@ services:
     command: 
     - |
       /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
-      /opt/bitnami/kafka/bin/kafka-topics.sh --topic home_assistant --bootstrap-server kafka:9092 --if-not-exists --config "cleanup.policy=delete" --create
       /opt/bitnami/kafka/bin/kafka-topics.sh --topic home_assistant_states --bootstrap-server kafka:9092 --if-not-exists --config "cleanup.policy=compact" --create
       /opt/bitnami/kafka/bin/kafka-configs.sh --bootstrap-server kafka:9092 --entity-type topics --entity-name home_assistant_states --alter --add-config max.compaction.lag.ms=1800000
 

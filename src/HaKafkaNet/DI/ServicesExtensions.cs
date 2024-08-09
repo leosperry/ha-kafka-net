@@ -37,7 +37,6 @@ public static class ServicesExtensions
                 {
                     cluster.WithBrokers(config.KafkaBrokerAddresses);
 
-                    WireTransformer(cluster, config);
                     WireState(services, cluster, config);
 
                     cluster
@@ -130,7 +129,7 @@ public static class ServicesExtensions
                     .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                     .WithoutStoringOffsets()
                     .AddMiddlewares(middlewares => middlewares
-                        .AddDeserializer<JsonCoreDeserializer>()
+                        .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
                         .AddTypedHandlers(h => h.
                             AddHandler<HaStateHandler>())
                     )
@@ -185,30 +184,6 @@ public static class ServicesExtensions
                         break;
                 }
             }
-        }
-    }
-
-    private static void WireTransformer(IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
-    {
-        if (config.Transformer.Enabled)
-        {
-            cluster
-                .AddConsumer(consumer => consumer
-                    .Topic(config.Transformer.HaRawTopic)
-                    .WithGroupId(config.Transformer.GroupId)
-                    .WithWorkersCount(config.Transformer.WorkerCount)
-                    .WithBufferSize(config.Transformer.BufferSize)
-                    .AddMiddlewares(middlewares => middlewares
-                        .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
-                        .AddTypedHandlers(h => h.
-                            AddHandler<HaTransformerHandler>())
-                    )
-                )
-                .AddProducer("ha-producer", producer => producer
-                    .DefaultTopic(config.TransofrmedTopic)
-                    .AddMiddlewares(middlewares => middlewares
-                        .AddSerializer<JsonCoreSerializer>())
-                );
         }
     }
 }

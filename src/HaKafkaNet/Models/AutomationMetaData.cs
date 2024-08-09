@@ -8,9 +8,6 @@ public record AutomationMetaData
     public string? KeyRequest { get; set; }
     public string GivenKey { get; internal set; } = string.Empty;
     
-    [Obsolete("will be replace with a key in V5", false)]
-    public Guid Id { get; init; } = default;
-    
     public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
     public string? UnderlyingType { get; internal set; }
     public bool IsDelayable { get; internal set; }
