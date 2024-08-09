@@ -5,7 +5,7 @@ namespace HaKafkaNet.Tests;
 public class TestHelpers
 {
     
-    public static HaEntityState GetState(string entityId = "enterprise", string state = "unknown", object atttributes = null!, 
+    public static HaEntityState GetState(string entityId = "enterprise", string state = "yellow alert", object atttributes = null!, 
         DateTime lastUpdated = default )
     {
         var atts = JsonSerializer.SerializeToElement(atttributes != null ? atttributes: new{ prop = "somevalue"});

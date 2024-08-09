@@ -37,8 +37,6 @@ public class HaKafkaNetConfig
     }
 
     public StateHandlerConfig StateHandler { get; set; } = new();
-    public TransformerConfig Transformer { get; set; } = new();
-
     public EntityTrackerConfig EntityTracker { get; set; } = new();
 }
 
@@ -55,16 +53,6 @@ public class StateHandlerConfig
     public string GroupId { get; set; }= "hakafkanet-consumer";
     public int BufferSize { get; set; } = 5;
     public int WorkerCount { get; set; } = 5;
-}
-
-public class TransformerConfig
-{
-    public bool Enabled { get; set; } = true;
-    public string GroupId { get; set; }= "hakafkanet-transformer";
-
-    public int BufferSize { get; set; } = 5;
-    public int WorkerCount { get; set; } = 5;
-    public string HaRawTopic { get; set; } = "home_assistant";
 }
 
 public class EntityTrackerConfig

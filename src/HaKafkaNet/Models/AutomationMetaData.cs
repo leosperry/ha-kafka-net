@@ -7,6 +7,8 @@ public record AutomationMetaData
     public string? Description { get; init;}
     public string? KeyRequest { get; set; }
     public string GivenKey { get; internal set; } = string.Empty;
+
+    public bool TriggerOnBadState { get; set; } = false;
     
     public IEnumerable<string>? AdditionalEntitiesToTrack { get; set; }
     public string? UnderlyingType { get; internal set; }

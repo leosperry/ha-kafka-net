@@ -7,12 +7,29 @@ public static class StateChangeExtensions
     static HaEntityStateChange<T> Transform<T, Tstate, Tatt>(HaEntityStateChange change)
         where T : HaEntityState<Tstate, Tatt>
     {
+        T? old;
+        if(change.Old is null)
+        {
+            old = null; 
+        }
+        else
+        {
+            try
+            {
+                old = (T?)change.Old;
+            }
+            catch
+            {
+                old = null;
+            }
+        }
+        
         return new HaEntityStateChange<T>
         {
             EventTiming = change.EventTiming,
             EntityId = change.EntityId,
             New = (T)change.New,
-            Old = change.Old is null? null : (T?)change.Old
+            Old = old
         };
     }    
 

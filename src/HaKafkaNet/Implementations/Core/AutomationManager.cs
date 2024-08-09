@@ -109,11 +109,13 @@ internal class AutomationManager : IAutomationManager
 
     public Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default)
     {
+        bool checkAgainstMetadata(HaEntityState state, AutomationMetaData meta) => meta.Enabled && (meta.TriggerOnBadState || !state.Bad());
+
         var tasks = 
             from a in GetByTriggerEntityId(stateChange.EntityId)
             where 
                 (a.EventTimings & stateChange.EventTiming) == stateChange.EventTiming
-                && a.GetMetaData().Enabled
+                && checkAgainstMetadata(stateChange.New ,a.GetMetaData())
             select a.Execute(stateChange, cancellationToken);
             
         return Task.WhenAll(tasks.ToArray());
