@@ -214,7 +214,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     task.Wait();
                     await task;
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     act?.AddEvent(new ActivityEvent(automation_fault));
                     _logger.LogError(ex, automation_fault);
