@@ -20,6 +20,18 @@ public static partial class AutomationBuilderExtensions
         return info;
     }
 
+    /// <summary>
+    /// Sets TriggerOnBadState to true (defaults to false)
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    public static T TriggerOnBadState<T>(this T info) where T : AutomationBuildingInfo
+    {
+        info.TriggerOnBadState = true;
+        return info;
+    }
+
     public static T WithTriggers<T>(this T info, params string[] triggerEntityIds) where T: MostAutomationsBuildingInfo
     {
         info.TriggerEntityIds = triggerEntityIds;

@@ -7,6 +7,7 @@ public abstract class AutomationBuildingInfo
     internal string? Description { get; set; }
     internal bool EnabledAtStartup { get; set; }
     internal EventTiming? EventTimings { get; set; }
+    internal bool TriggerOnBadState { get; set; } = false;
 }
 
 public abstract class MostAutomationsBuildingInfo : AutomationBuildingInfo
