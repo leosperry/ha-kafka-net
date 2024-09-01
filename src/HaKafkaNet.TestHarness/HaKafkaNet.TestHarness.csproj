@@ -23,14 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="HaKafkaNet" Version="6.*" /> -->
+    <PackageReference Include="HaKafkaNet" Version="8.1.*" />
   
     <Folder Include="nugetAssets/" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\HaKafkaNet\HaKafkaNet.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.20.70" />
