@@ -12,22 +12,13 @@ public class SystemMonitorExample : ISystemMonitor
         _api = api;
     }
 
-    public Task BadEntityStateDiscovered(IEnumerable<BadEntityState> badStates)
+    public Task BadEntityStateDiscovered(BadEntityState badState)
     {
-        StringBuilder sb = new();
-        sb.AppendLine("bad entity states");
-        foreach (var item in badStates)
-        {
-            if (item.State is null)
-            {
-                sb.AppendLine($"{item.EntityId} could not be found");            
-            }
-            else
-            {
-                sb.AppendLine($"{item.EntityId} has a state of {item.State.State}");
-            }
-        }
-        return _api.PersistentNotification(sb.ToString(), default);
+        string message;
+
+        message = $"{badState.EntityId} has a state of {badState.State?.State ?? "null"}";
+        
+        return _api.PersistentNotification(message, default);
     }
 
     public Task StateHandlerInitialized() => Task.CompletedTask;

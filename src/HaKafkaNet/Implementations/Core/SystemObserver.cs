@@ -8,7 +8,8 @@ internal interface ISystemObserver
     event Action? StateHandlerInitialized;
     void OnStateHandlerInitialized();
     void OnUnhandledException(AutomationMetaData automationMetaData, Exception exception);
-    void OnBadStateDiscovered(IEnumerable<BadEntityState> badStates);
+
+    void OnBadStateDiscovered(BadEntityState badState);
 
     void OnHaNotification(HaNotification notification, CancellationToken ct);
 }
@@ -24,7 +25,7 @@ internal class SystemObserver : ISystemObserver
     public bool IsInitialized { get; private set; }
     public event Action? StateHandlerInitialized;
     internal event Action<AutomationMetaData, Exception>? UnhandledException;
-    internal event Action<IEnumerable<BadEntityState>>? BadEntityState;
+    internal event Action<BadEntityState>? BadEntityState;
     internal event Action<HaNotification, CancellationToken>? Notify;
 
     public SystemObserver(IEnumerable<ISystemMonitor> monitors, ILogger<SystemObserver> logger)
@@ -34,7 +35,7 @@ internal class SystemObserver : ISystemObserver
         {
             StateHandlerInitialized += () =>    _ = WrapTask("State Handler Initialized", ()=> monitor.StateHandlerInitialized());
             UnhandledException += (meta, ex) => _ = WrapTask("Unhandled Exception", ()=> monitor.UnhandledException(meta, ex));
-            BadEntityState += (states) =>       _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(states));
+            BadEntityState += (state) =>        _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(state));
             Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
         }
     }
@@ -76,8 +77,8 @@ internal class SystemObserver : ISystemObserver
     public void OnUnhandledException(AutomationMetaData automationMetaData, Exception exception)
         => UnhandledException?.Invoke(automationMetaData, exception);
 
-    public void OnBadStateDiscovered(IEnumerable<BadEntityState> badStates)
-        => BadEntityState?.Invoke(badStates);
+    public void OnBadStateDiscovered(BadEntityState badState)
+        => BadEntityState?.Invoke(badState);
 
     public void OnHaNotification(HaNotification notification, CancellationToken ct)
         => Notify?.Invoke(notification, ct);

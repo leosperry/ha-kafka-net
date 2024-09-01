@@ -48,12 +48,6 @@ public static class ServicesExtensions
             );
         });
 
-        if (config.EntityTracker.Enabled)
-        {
-            services.AddSingleton(config.EntityTracker);
-            services.AddSingleton<EntityTracker>();
-        }
-
         if (config.HaConnectionInfo.Enabled)
         {
             services.AddHttpClient();
@@ -97,22 +91,17 @@ public static class ServicesExtensions
         var kafkaBus = app.Services.CreateKafkaBus();
         await kafkaBus.StartAsync();
 
-        if (config.EntityTracker.Enabled)
-        {
-            var entityTracker = app.Services.GetRequiredService<EntityTracker>();
-            app.Lifetime.ApplicationStopping.Register(() => entityTracker.Dispose());
-        }
         try
         {
             LogManager.Configuration.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, app.Services.GetRequiredService<HknLogTarget>());
             LogManager.ReconfigExistingLoggers();
         }
-        catch (System.Exception)
+        catch (Exception)
         {
-            System.Console.WriteLine("**************************************");
-            System.Console.WriteLine("** Log tracing could not be enabled **");
-            System.Console.WriteLine("** Configure NLog to enable tracing **");
-            System.Console.WriteLine("**************************************");
+            Console.WriteLine("**************************************");
+            Console.WriteLine("** Log tracing could not be enabled **");
+            Console.WriteLine("** Configure NLog to enable tracing **");
+            Console.WriteLine("**************************************");
         }
     }
 
@@ -122,7 +111,7 @@ public static class ServicesExtensions
         {
             cluster
                 .AddConsumer(consumer => consumer
-                    .Topic(config.TransofrmedTopic)
+                    .Topic(config.KafkaTopic)
                     .WithGroupId(config.StateHandler.GroupId)
                     .WithWorkersCount(config.StateHandler.WorkerCount)
                     .WithBufferSize(config.StateHandler.BufferSize)

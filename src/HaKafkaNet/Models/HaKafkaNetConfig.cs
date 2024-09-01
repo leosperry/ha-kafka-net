@@ -39,7 +39,6 @@ public class HaKafkaNetConfig
     }
 
     public StateHandlerConfig StateHandler { get; set; } = new();
-    public EntityTrackerConfig EntityTracker { get; set; } = new();
 }
 
 public class HomeAssistantConnectionInfo
@@ -57,10 +56,4 @@ public class StateHandlerConfig
     public int WorkerCount { get; set; } = 5;
 }
 
-public class EntityTrackerConfig
-{
-    public bool Enabled { get; set; } = false;
-    public int IntervalMinutes { get; set; } = 60;
-    public int MaxEntityNonresponsiveHours { get; set; } = 12;
-}
 

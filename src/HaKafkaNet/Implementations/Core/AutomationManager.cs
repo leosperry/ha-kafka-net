@@ -18,7 +18,7 @@ internal interface IAutomationManager
 
     IAutomationWrapper? GetByKey(string key);
 
-    IEnumerable<string> GetAllEntitiesToTrack();
+    HashSet<string> GetEntitiesToTrack();
 }
 
 internal class AutomationManager : IAutomationManager
@@ -46,7 +46,7 @@ internal class AutomationManager : IAutomationManager
 
         //get by trigger
         this._automationsByTrigger = (
-            from a in _internalAutomationsByKey.Values
+            from a in allRegistered
             from t in a.TriggerEntityIds() ?? Enumerable.Empty<string>()
             group a by t into autoGroup
             let key = autoGroup.Key
@@ -150,7 +150,7 @@ internal class AutomationManager : IAutomationManager
         return false;
     }
 
-    public IEnumerable<string> GetAllEntitiesToTrack()
+    public HashSet<string> GetEntitiesToTrack()
     {
         var ids = 
             from a in _internalAutomationsByKey.Values
@@ -164,6 +164,6 @@ internal class AutomationManager : IAutomationManager
             from id in autoIds
             select id;
 
-        return ids.Distinct();
+        return ids.Distinct().ToHashSet();
     }
 }

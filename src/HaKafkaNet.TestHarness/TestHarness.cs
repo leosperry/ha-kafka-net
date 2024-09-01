@@ -254,12 +254,12 @@ public class TestHarness
         _observer.OnStateHandlerInitialized();
     }
 
-    public void RaiseBadState(params BadEntityState[] badStates)
+    public void RaiseBadState(BadEntityState badState)
     {
         if (_observer is null)
         {
             throw new Exception("cannot raise event when no monitor is provided");
         }
-        _observer.OnBadStateDiscovered(badStates);
+        _observer.OnBadStateDiscovered(badState);
     }
 }

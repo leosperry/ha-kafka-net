@@ -13,6 +13,10 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     readonly IAutomationManager _autoMgr;
     readonly ILogger<HaStateHandler> _logger;
 
+    readonly ISystemObserver _observer;
+
+    readonly HashSet<string> _trackedEntities;
+
     DateTime _startTime = DateTime.Now;
     DistributedCacheEntryOptions _cacheOptions = new ()
     {
@@ -28,6 +32,8 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         _cache = cache;
         _autoMgr = automationMgr;
         _logger = logger;
+        _observer = observer;
+        _trackedEntities = automationMgr.GetEntitiesToTrack();
 
         _cacheOptions.SlidingExpiration = TimeSpan.FromDays(30);
 
@@ -59,6 +65,11 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         };
 
         _ = Task.Run(() => _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped));
+        
+        if (_trackedEntities.Contains(message.EntityId) && message.Bad())
+        {
+            _observer.OnBadStateDiscovered(new BadEntityState(message.EntityId, message));
+        }
     }
 
 
