@@ -171,7 +171,8 @@ public static partial class AutomationBuilderExtensions
             Name = info.Name ?? $"from builder {info.GetType().Name}",
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
-            AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null
+            AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null,
+            TriggerOnBadState = info.TriggerOnBadState
         };
     }
 }
