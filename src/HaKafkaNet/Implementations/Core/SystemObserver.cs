@@ -12,6 +12,8 @@ internal interface ISystemObserver
     void OnBadStateDiscovered(BadEntityState badState);
 
     void OnHaNotification(HaNotification notification, CancellationToken ct);
+
+    void OnHaStartUpShutdown(StartUpShutDownEvent evt, CancellationToken ct);
 }
 
 /// <summary>
@@ -27,6 +29,7 @@ internal class SystemObserver : ISystemObserver
     internal event Action<AutomationMetaData, Exception>? UnhandledException;
     internal event Action<BadEntityState>? BadEntityState;
     internal event Action<HaNotification, CancellationToken>? Notify;
+    internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
 
     public SystemObserver(IEnumerable<ISystemMonitor> monitors, ILogger<SystemObserver> logger)
     {
@@ -37,6 +40,7 @@ internal class SystemObserver : ISystemObserver
             UnhandledException += (meta, ex) => _ = WrapTask("Unhandled Exception", ()=> monitor.UnhandledException(meta, ex));
             BadEntityState += (state) =>        _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(state));
             Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
+            HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
         }
     }
 
@@ -82,4 +86,7 @@ internal class SystemObserver : ISystemObserver
 
     public void OnHaNotification(HaNotification notification, CancellationToken ct)
         => Notify?.Invoke(notification, ct);
+
+    public void OnHaStartUpShutdown(StartUpShutDownEvent evt, CancellationToken ct)
+        => HaStartUpShutdown?.Invoke(evt, ct);
 }

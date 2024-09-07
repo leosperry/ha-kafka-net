@@ -7,4 +7,5 @@ public interface ISystemMonitor
     Task StateHandlerInitialized();
     Task UnhandledException(AutomationMetaData automationMetaData, Exception exception);
     Task HaNotificationUpdate(HaNotification notification, CancellationToken ct) => Task.CompletedTask;
+    Task HaStartUpShutDown(StartUpShutDownEvent evt, CancellationToken ct) => Task.CompletedTask;
 }

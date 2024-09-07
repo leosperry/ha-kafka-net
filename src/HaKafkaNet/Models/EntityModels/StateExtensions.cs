@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace HaKafkaNet;
@@ -69,7 +70,7 @@ public static class StateExtensions
     /// <typeparam name="Tatt"></typeparam>
     /// <param name="state"></param>
     /// <returns></returns>
-    public static bool Bad<Tstate, Tatt>(this HaEntityState<Tstate, Tatt>? state)
+    public static bool Bad<Tstate, Tatt>([AllowNull]this HaEntityState<Tstate, Tatt>? state)
     {
         return state is null || state.State switch
         {
@@ -92,21 +93,21 @@ public static class StateExtensions
     /// </summary>
     /// <param name="state"></param>
     /// <returns></returns>
-    public static bool StateAndLastUpdatedWithin1Second<_>(this HaEntityState<DateTime?, _> state)
+    public static bool StateAndLastUpdatedWithin1Second<_>([AllowNull]this HaEntityState<DateTime?, _> state)
     {
         var diff = state?.State - state?.LastUpdated;
         return diff is not null && Math.Abs(diff.Value.TotalSeconds) < 1;
     }
 
-    public static bool IsOn<_>(this HaEntityState<OnOff, _> state)
-        => state.State == OnOff.On;
+    public static bool IsOn<_>([AllowNull]this HaEntityState<OnOff, _> state)
+        => state?.State == OnOff.On;
 
-    public static bool IsOff<_>(this HaEntityState<OnOff, _> state)
-        => state.State == OnOff.Off;
+        public static bool IsOff<_>([AllowNull]this HaEntityState<OnOff, _> state)
+        => state?.State == OnOff.Off;
 
-    public static bool IsHome<_>(this HaEntityState<string, _> state) where _ : TrackerModelBase
+    public static bool IsHome<_>([AllowNull]this HaEntityState<string, _> state) where _ : TrackerModelBase
     {
-        return state.State == "home";
+        return state?.State == "home";
     }
 }
 

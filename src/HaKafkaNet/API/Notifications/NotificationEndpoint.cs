@@ -2,14 +2,6 @@
 
 namespace HaKafkaNet;
 
-public class PostNotificationRequest
-{
-    public string? Id { get; set; }
-    public string? Title { get; set; }
-    public string? Message { get; set; }
-    public string? UpdateType { get; set; }
-}
-
 internal class NotificationEndpoint : Endpoint<HaNotification, EmptyResponse>
 {
     readonly ISystemObserver _observer;

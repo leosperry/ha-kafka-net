@@ -8,7 +8,6 @@ interface Props {
     logData: LogInfo;
     index: number;
     traceIndex: number;
-    showAutomationLink?: undefined | boolean;
 }
 
 function LogEntry(props: Props) {
@@ -96,7 +95,7 @@ function LogEntry(props: Props) {
             <Accordion.Body>
                 <div className="row">
                     <div className="col-12">
-                        {props.showAutomationLink && log.scopes && log.scopes["automationKey"] && (<>
+                        {log.scopes && log.scopes["automationKey"] && (<>
                             <h4>Go to <a href={"/hakafkanet/automation/" + log.scopes["automationKey"]}>{log.scopes["automationName"] ?? log.scopes["autommationName"]}</a></h4>
                         </>)}
                     </div>

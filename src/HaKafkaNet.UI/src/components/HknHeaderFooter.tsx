@@ -58,12 +58,6 @@ function HknHeaderFooter(props: PropsWithChildren) {
     event.preventDefault()
   };
 
-  let TrackerLogClick: MouseEventHandler<Element> = event => {
-    setShowMenu(false);
-    navigate('log/tracker');
-    event.preventDefault()
-  };
-
   function GetRandomTip():React.ReactElement  {
     const array:React.ReactElement[] = [
       <>You can manually trigger automations by setting entity state in <a href="http://homeassistant.local:8123/developer-tools/state" target="_blank">Home Assistant</a></>,
@@ -96,7 +90,6 @@ function HknHeaderFooter(props: PropsWithChildren) {
           </p>
           <ListGroup>
             <ListGroup.Item variant="info" href="/hakafkanet/log/error" onClick={ErrorLogClick} action active={false}>Error Log</ListGroup.Item>
-            <ListGroup.Item variant="info" href="/hakafkanet/log/tracker" onClick={TrackerLogClick} action active={false}>Entity Tracker Log</ListGroup.Item>
             <ListGroup.Item variant="info" href="/hakafkanet/log/global" onClick={GlobalLogClick} action active={false}>Global Log</ListGroup.Item>
             <ListGroup.Item variant="info" href="/kafkaflow" target="_blank" action active={false}>KafkaFlow Admin</ListGroup.Item>
             <ListGroup.Item variant="info" href="https://github.com/leosperry/ha-kafka-net/wiki" target='_blank' action active={false}>Documentation</ListGroup.Item>

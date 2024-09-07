@@ -58,6 +58,7 @@ internal class HaApiProvider : IHaApiProvider
     {
         Dictionary<string, object> scope = new()
         {
+            {"HaApi.endpoint", "services"},
             {"HaApi.domain" , domain},
             {"HaApi.service", service},
             {"HaApi.data", data}
@@ -128,6 +129,7 @@ internal class HaApiProvider : IHaApiProvider
         Dictionary<string, object> scope = new()
         {
             {"HaApi.entity_id" , entity_id},
+            {"HaApi.endpoint" , "states"},
         };
         using(var act = _activitySource.StartActivity("ha_kafka_net.ha_api_get"))
         using (_logger.BeginScope(scope))

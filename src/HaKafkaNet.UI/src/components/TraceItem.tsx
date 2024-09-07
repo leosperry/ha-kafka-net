@@ -30,7 +30,12 @@ function TraceItem(props: Props) {
             </Accordion.Header>
             <Accordion.Body>
                 {props.trace.event.stateChange && <>
-                    <div>State Change</div>
+                    <div className="row">
+                        <div className="col-6">Entity: {props.trace.event.stateChange.entityId}</div>
+                        <div className="col-3">Old: {props.trace.event.stateChange.old?.state ?? "null"}</div>
+                        <div className="col-3">New: {props.trace.event.stateChange.new.state}</div>
+                    </div>
+                    
                     <div className="row">
                         <div className="col-12"><textarea className="form-control" disabled={true} rows={5} defaultValue={JSON.stringify(props.trace.event.stateChange, null, 2)} /></div>
                     </div>

@@ -28,15 +28,6 @@ function ErrorLogs() {
                 });
                 setLoadTime(new Date().toLocaleString());
                 break;
-            case "tracker":
-                var logs = await Api.GetLogs(logType);
-                setData(logs);
-                setDisplayInfo({
-                    title: "Entity Tracker Logs",
-                    description: getTrackerDescription()
-                });
-                setLoadTime(new Date().toLocaleString());
-                break;
             case "global":
                 var logs = await Api.GetLogs(logType);
                 setData(logs);
@@ -68,8 +59,6 @@ function ErrorLogs() {
         </ul>
     </div>);
 
-    const getTrackerDescription = () => (<div>All logs from runs of the <a href="https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor#badentitystatediscovered">entity tracker</a> will be shown here.</div>)
-
     return (<>
       <div className='float-end'>
         Data as of: {loadTime}&nbsp;
@@ -90,7 +79,7 @@ function ErrorLogs() {
             </>) : <>
                 <Accordion defaultActiveKey={[]} alwaysOpen>
                     {data.map((log, logIndex) =>
-                        (<LogEntry key={"log" + logIndex + (log.timeStamp ?? new Date()).toString()} logData={log} index={logIndex} traceIndex={1} showAutomationLink={logType != "tracker"} />))}
+                        (<LogEntry key={"log" + logIndex + (log.timeStamp ?? new Date()).toString()} logData={log} index={logIndex} traceIndex={1} />))}
                 </Accordion>
             </>}
         </>)}

@@ -24,7 +24,7 @@ export interface TraceEvent {
     eventTime : string;
     eventType : string;
     automationKey : string;
-    stateChange : object;
+    stateChange : StateChange;
     exception: object;
 }
 
@@ -36,4 +36,19 @@ export interface LogInfo {
     scopes : any;
     properties : any;
     exception : any;
+}
+
+export interface StateChange {
+    entityId: string;
+    old? : EntityState;
+    new : EntityState;
+}
+
+export interface EntityState{
+    state : string;
+    entity_id : string;
+    last_changed : Date;
+    last_updated : Date;
+    context: object;
+    attributes : object
 }
