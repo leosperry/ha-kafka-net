@@ -63,3 +63,23 @@ automation:
           title: "{{trigger.notification.title}}"
           message: "{{trigger.notification.message}}"
     mode: queued
+
+  - id: KaKafkaNet_NotifyStartup
+    alias: HaKafkaNet - Notify on startup
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+        - service: rest_command.send_startup_shutdown
+          data:
+            event: start
+    
+  - id: KaKafkaNet_NotifyShutdown
+    alias: HaKafkaNet - Notify on shutdown
+    trigger:
+      - platform: homeassistant
+        event: shutdown
+    action:
+        - service: rest_command.send_startup_shutdown
+          data:
+            event: shutdown
