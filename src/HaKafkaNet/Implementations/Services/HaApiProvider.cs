@@ -209,6 +209,24 @@ internal class HaApiProvider : IHaApiProvider
     public Task<HttpResponseMessage> NotifyGroupOrDevice(string groupName, string message, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, groupName, new { message }, cancellationToken);
 
+    public Task<HttpResponseMessage> MediaPlayerSetVolume(string entity_id, float volume_level, CancellationToken cancellationToken = default)
+    {
+        if (volume_level < 0 || volume_level > 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(volume_level), "volume must be between 0 and 1");
+        }
+        return CallService("media_player", "volume_set", new{ entity_id, volume_level});
+    }
+
+    public Task<HttpResponseMessage> MediaPlayerMute(string entity_id, bool mute, CancellationToken cancellationToken = default)
+    {
+        return CallService("media_player", "volume_mute", new {
+            entity_id,
+            is_volume_muted = mute
+        });
+    }
+
+
     public Task<HttpResponseMessage> NotifyAlexaMedia(string message, string[] targets, CancellationToken cancellationToken = default)
         => CallService(NOTIFY, "alexa_media", new { message, target = targets }, cancellationToken);
 

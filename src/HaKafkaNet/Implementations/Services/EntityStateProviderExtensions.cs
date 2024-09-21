@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HaKafkaNet.Models.EntityModels;
 
 namespace HaKafkaNet;
 
@@ -59,7 +60,14 @@ public static class EntityStateProviderExtensions
     public static Task<HaEntityState<int?, ZoneModel>?> GetZoneEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<int?, ZoneModel>>(entityId, cancellationToken);
 
-    public static Task<HaEntityState<OnOff, CalendarModel>?> GetCalendar(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken) =>
+    public static Task<HaEntityState<OnOff, CalendarModel>?> GetCalendar(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         provider.GetEntity<HaEntityState<OnOff, CalendarModel>>(entityId, cancellationToken);
+    
+    public static Task<HaEntityState<MediaPlayerState, JsonElement>?> GetMediaPlayer(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<MediaPlayerState, JsonElement>>(entityId, cancellationToken);
+        
+    public static Task<HaEntityState<MediaPlayerState, Tatt>?> GetMediaPlayer<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
+        provider.GetEntity<HaEntityState<MediaPlayerState, Tatt>>(entityId, cancellationToken);
+        
 
 }

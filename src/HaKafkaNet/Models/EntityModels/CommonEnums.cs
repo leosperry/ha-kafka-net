@@ -14,3 +14,14 @@ public enum BatteryState
     Charging, Discharging, Not_Charging, Unknown, Unavailable
 }
 
+/// <summary>
+/// For use with media players
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter<Repeat>))]
+public enum Repeat
+{
+    Off,
+    All,
+    One
+}
+

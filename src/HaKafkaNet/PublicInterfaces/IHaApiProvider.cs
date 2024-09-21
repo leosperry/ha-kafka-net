@@ -95,6 +95,16 @@ public interface IHaApiProvider
     Task<HttpResponseMessage> LightTurnOff(IEnumerable<string> entity_ids, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Sets the volume of a media player
+    /// </summary>
+    /// <param name="entity_id">id of the media player</param>
+    /// <param name="volume_level">must be a value between 0 and 1 Example: 0.15 is 15%</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<HttpResponseMessage> MediaPlayerSetVolume(string entity_id, float volume_level, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> MediaPlayerMute(string entity_id, bool mute, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Sends a notification to a "Notify Group" as documented here:
     /// https://www.home-assistant.io/integrations/group/#notify-groups
     /// Can also send a message to a device
@@ -140,7 +150,7 @@ public interface IHaApiProvider
     /// <returns></returns>
     Task<HttpResponseMessage> Speak(string speechEntity, string mediaPlayerEntity, string message, bool cache = true, object? options = null, CancellationToken cancellationToken = default);
     
-    Task<HttpResponseMessage> SpeakPiper(string mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> SpeakPiper(string mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = default, CancellationToken cancellationToken = default);
     Task<HttpResponseMessage> SpeakPiper(IEnumerable<string> mediaPlayerEntity, string message, bool cache = true, PiperSettings? options = null, CancellationToken cancellationToken = default);
 
     /// <summary>
