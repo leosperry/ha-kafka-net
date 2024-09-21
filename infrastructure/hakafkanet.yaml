@@ -1,36 +1,49 @@
+###########################################################################################################
+###########################################################################################################
 # to use this file, add the following snippet uncommented to your configuration.yaml file in Home Assistant
+# which allows Home Assistant to load the components in this file
 
 # homeassistant:
 #   packages: !include_dir_named packages
 
-# this allows Home Assistant to load the components in this file
-# then copy this file to a folder called "packages" which should reside in the same directory as configuration.yaml
+# then copy this file in its entirety  
+# to a folder called "packages" which should reside in the same directory as configuration.yaml
 
+# Note: there are several places below whicch should be modified to match your environment
+
+###########################################################################################################
+###########################################################################################################
+
+# Configure the kafka integration
 apache_kafka:
   ip_address: 192.168.1.3 # <--- modify this line
   port: 9094
   topic: home_assistant
   filter:
     include_domains: # modify filters to your preference. See https://www.home-assistant.io/integrations/apache_kafka/ for details
+        # common device types
         - light
-        - input_button
-        - input_number
-        - input_datetime
-        - input_boolean
-        - binary_sensor
-        - sensor
-        - event
-        - sun
         - switch
-        - schedule
-        - automation
+        - sensor
+        - binary_sensor
+        - event
+        # required for all sun based automations
+        - sun
+        # common helper entities
+        - input_button
+        - input_boolean
 
+###########################################################################################################
 # above is required
 
 # below is optional
-# this enables notifications to flow from Home Assistant to HaKafkaNet
+###########################################################################################################
+
+
+# REST commands to send information to  HaKafkaNet
 
 rest_command:
+# send HA notification updates to HaKafkaNet
   send_notification:
     url: http://192.168.1.3:8082/api/notification # <--- modify this line. This should point to your HaKafkaNet instance
     method: POST
@@ -39,10 +52,21 @@ rest_command:
       user-agent: 'Mozilla/5.0 {{ useragent }}'
     payload: '{"updatetype":"{{ update_type }}","id":"{{ id }}","title":"{{ title }}","message":"{{ message }}"}'
     content_type:  'application/json; charset=utf-8'
+# send HA startup and shutdown events to HaKafkaNet
+  send_startup_shutdown:
+    url: http://172.17.1.3:8082/api/notifystartupshutdown # <--- modify this line. This should point to your HaKafkaNet instance
+    method: POST
+    headers:
+      accept: "application/json, text/html"
+      user-agent: 'Mozilla/5.0 {{ useragent }}'
+    payload: '{"event":"{{ event }}"}'
+    content_type:  'application/json; charset=utf-8'    
     
-# this will create a non editable automation in home assistant
-# which uses the above rest command 
+# this will create a non editable automations in home assistant
+# which use the above rest commands
+# Use the ISystemMonitor interface in HaKafkaNet
 automation:
+
     id: HaKafkaNet_SendNotifications
     alias: HaKafkaNet - Send Notification updates
     description: Send all notifications to HaKafkaNet
