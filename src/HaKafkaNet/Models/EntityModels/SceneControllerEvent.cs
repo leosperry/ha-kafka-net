@@ -25,5 +25,11 @@ public static class EventModelExtensions
 
 public enum KeyPress
 {
-    KeyHeldDown, KeyPressed, KeyPressed2x, KeyPressed3x, KeyPressed4x, KeyPressed5x, KeyReleased
+    KeyHeldDown, 
+    KeyPressed, 
+    KeyPressed2x, 
+    KeyPressed3x, 
+    KeyPressed4x, 
+    KeyPressed5x, 
+    KeyReleased
 }
