@@ -43,14 +43,12 @@ public class HaKafkaNetConfig
 
 public class HomeAssistantConnectionInfo
 {
-    public bool Enabled { get; set; } = true;
     public string BaseUri { get; set; } = "http://localhost:8123";
     public string AccessToken { get; set; } = "<ACCESS TOKEN>";
 }
 
 public class StateHandlerConfig
 {
-    public bool Enabled { get; set; } = true;
     public string GroupId { get; set; }= "hakafkanet-consumer";
     public int BufferSize { get; set; } = 5;
     public int WorkerCount { get; set; } = 5;

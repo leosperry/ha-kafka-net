@@ -6,15 +6,27 @@ internal interface ISystemObserver
 {
     bool IsInitialized{get;}
     event Action? StateHandlerInitialized;
+
+    void InitializeMonitors(IEnumerable<ISystemMonitor> monitors);
+
     void OnStateHandlerInitialized();
     void OnUnhandledException(AutomationMetaData automationMetaData, Exception exception);
 
     void OnBadStateDiscovered(BadEntityState badState);
 
+    /// <summary>
+    /// Will be called when a Home Assistant service is called and the response is not in the 200/300 range or if the call throws an exception.
+    /// </summary>
+    /// <param name="args"></param>
+    /// <param name="ct"></param>
+    void OnHaServiceBadResponse(HaServiceResponseArgs args, CancellationToken ct);
+
     void OnHaNotification(HaNotification notification, CancellationToken ct);
 
     void OnHaStartUpShutdown(StartUpShutDownEvent evt, CancellationToken ct);
 }
+
+public record HaServiceResponseArgs(string Domain, string Service, object Data, HttpResponseMessage? Response, Exception? Exception);
 
 /// <summary>
 /// Kafka handlers should be initialized by kafka flow and not other classes via DI.
@@ -30,18 +42,12 @@ internal class SystemObserver : ISystemObserver
     internal event Action<BadEntityState>? BadEntityState;
     internal event Action<HaNotification, CancellationToken>? Notify;
     internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
+    internal event Action<HaServiceResponseArgs, CancellationToken>? HaApiResponse;
 
-    public SystemObserver(IEnumerable<ISystemMonitor> monitors, ILogger<SystemObserver> logger)
+    public SystemObserver(ILogger<SystemObserver> logger)
     {
         _logger = logger;
-        foreach (var monitor in monitors)
-        {
-            StateHandlerInitialized += () =>    _ = WrapTask("State Handler Initialized", ()=> monitor.StateHandlerInitialized());
-            UnhandledException += (meta, ex) => _ = WrapTask("Unhandled Exception", ()=> monitor.UnhandledException(meta, ex));
-            BadEntityState += (state) =>        _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(state));
-            Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
-            HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
-        }
+
     }
 
     private async Task WrapTask(string taskType, Func<Task> funcToErrorHandle)
@@ -89,4 +95,20 @@ internal class SystemObserver : ISystemObserver
 
     public void OnHaStartUpShutdown(StartUpShutDownEvent evt, CancellationToken ct)
         => HaStartUpShutdown?.Invoke(evt, ct);
+
+    public void OnHaServiceBadResponse(HaServiceResponseArgs args, CancellationToken ct)
+        => HaApiResponse?.Invoke(args, ct);
+
+    public void InitializeMonitors(IEnumerable<ISystemMonitor> monitors)
+    {
+        foreach (var monitor in monitors)
+        {
+            StateHandlerInitialized += () =>    _ = WrapTask("State Handler Initialized", ()=> monitor.StateHandlerInitialized());
+            UnhandledException += (meta, ex) => _ = WrapTask("Unhandled Exception", ()=> monitor.UnhandledException(meta, ex));
+            BadEntityState += (state) =>        _ = WrapTask("Bad Entity State", ()=> monitor.BadEntityStateDiscovered(state));
+            Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
+            HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
+            HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
+        }    
+    }
 }
