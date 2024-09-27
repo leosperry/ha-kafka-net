@@ -7,11 +7,10 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Special note regarding Home Assistant 2024.8:
+Version 9 Released!
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.0.1) brings several improvements including native media player support.
 
-The latest release brings a couple big kafka improvements. To take full advatage of these new features, some breaking changes are being added to HaKafkaNet.
-
-See : [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
+Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
 ***
 
@@ -37,7 +36,7 @@ registrar.RegisterMultiple(
 ## Resources
 * [Documentation](https://github.com/leosperry/ha-kafka-net/wiki)
 * [Nuget package](https://www.nuget.org/packages/HaKafkaNet/)
-* Join the new [Discord Server](https://discord.gg/RaGu72RbCt)
+* Join the [Discord Server](https://discord.gg/RaGu72RbCt)
 
 ## Why ha-kafka-net ? 
 * [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
@@ -46,7 +45,8 @@ registrar.RegisterMultiple(
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-  * [Tracing with log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
+  * [Tracing with log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
+  * [Open Telemetry Instrumentation](https://github.com/leosperry/ha-kafka-net/wiki/Open-Telemetry-Instrumentation)
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
@@ -62,10 +62,11 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 ## How it works
 * State changes are sent from Home Assistant to a Kafka topic
 * HaKafkaNet reads all state changes
-* States for every entitiy allowing for faster retrieval later. It also allows us to have some knowledge about which events were not handled between restarts and which ones were. The framework will tell your automation about such timings to allow you to handle messages appropriately.
+* States for every entitiy are cached allowing for faster retrieval later.
+  - It also allows us to have some knowledge about which events were not handled between restarts and which ones were. The framework will tell your automation about such timings to allow you to handle messages appropriately.
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
-  - It is up to the consumer to handle any errors. The framework prioritizes handling new messages speedily over tracking the state of individual automations. If your automation errors, an ILogger message will be written indicating the error.
+  - All of your automations will be called asynchronously and in parlellel. 
 
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.
