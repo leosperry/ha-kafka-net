@@ -7,6 +7,7 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
+using NLog.Extensions.Logging;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -102,6 +103,12 @@ builder.Logging.AddOpenTelemetry(logging => {
 });
 
 var app = builder.Build();
+
+// if you want to use appsettings.json for your nlog configuration
+// call this line AFTER you call builder.Build()
+// call this line BEFORE calling app.StartHaKafkaNet()
+NLog.LogManager.Configuration = new NLogLoggingConfiguration(builder.Configuration.GetSection("NLog"));
+// this ensures that LogManager.Configuration is not null when HaKafkaNet wires up log tracing.
 
 app.MapGet("/", () => Results.Redirect("hakafkanet"));
 
