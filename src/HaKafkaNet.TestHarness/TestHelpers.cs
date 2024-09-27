@@ -19,18 +19,6 @@ public class TestHelpers
         };
     }
 
-    [Obsolete("please use GetEntity", false)]
-    public static HaEntityState<T> GetState<T>(string entityId = "enterprise", string state = "unknown", T atttributes = default(T)!, DateTime lastUpdated = default)
-    {
-        return new HaEntityState<T>()
-        {
-            EntityId = entityId,
-            State = state,
-            Attributes = atttributes,
-            LastUpdated = lastUpdated
-        };
-    }
-
     public static HaEntityState<Tstate, Tatt> GetEntity<Tstate, Tatt>(string entityId, Tstate  state, Tatt atttributes = default(Tatt)!, DateTime lastUpdated = default)
     {
         return new()

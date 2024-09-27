@@ -129,7 +129,8 @@ public class TestHarness
         }
         else
         {
-            _observer = new SystemObserver([monitor], _observerLogger.Object);
+            _observer = new SystemObserver(_observerLogger.Object);
+            _observer.InitializeMonitors([monitor]);
         }
 
         _registrar = new AutomationRegistrar(
@@ -141,26 +142,6 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             registries ?? Enumerable.Empty<IAutomationRegistry>(),
             _registrar);
-    }
-
-    [Obsolete("", false)]
-    public void SetServiceGenericDefaults<T>(string state) where T : new()
-    {
-        SetServiceGenericDefaults<T>(state, new());
-    }
-
-    [Obsolete("SetServicesGenericDefaults", false)]
-    public void SetServiceGenericDefaults<T>(string state, T atttributes)
-    {
-        ApiProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string entityId, CancellationToken _) => (new HttpResponseMessage(HttpStatusCode.OK), TestHelpers.GetState<T>(entityId, state, atttributes)));
-
-        Func<string, CancellationToken, HaEntityState<T>> valueFunction = (string entityId, CancellationToken _) => TestHelpers.GetState<T>(entityId, state, atttributes);
-
-        EntityProvider.Setup(ep => ep.GetEntityState<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(valueFunction);
-        Cache.Setup(ep => ep.Get<T>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(valueFunction);
     }
 
     public void SetServicesGenericDefaults<Tstate, Tatt>(Tstate state, Tatt attributes)
