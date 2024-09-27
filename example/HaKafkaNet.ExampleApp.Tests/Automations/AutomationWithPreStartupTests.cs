@@ -21,7 +21,7 @@ public class SimpleAutomationTests
         await sut.Execute(stateChange, default);
 
         // assert
-        mockApi.Verify(a => a.PersistentNotification(It.IsAny<string>(), default), Times.Once);
+        mockApi.Verify(a => a.CallService(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), default), Times.Once);
     }
 
     private HaEntityStateChange getFakeStateChange()
