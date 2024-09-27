@@ -3,6 +3,10 @@ using System.Text;
 
 namespace HaKafkaNet.ExampleApp;
 
+/// <summary>
+/// Documentation:  
+/// https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor
+/// </summary>
 public class SystemMonitorExample : ISystemMonitor
 {
     readonly IHaApiProvider _api;
@@ -63,4 +67,38 @@ public class SystemMonitorExample : ISystemMonitor
             () => _sendBadStateEvents = false, 
             ()  => _sendBadStateEvents = true , 
             three_min, _logger);
-    }}
+    }
+
+    public async Task HaApiResponse(HaServiceResponseArgs args, CancellationToken ct)
+    {
+        if (args.Exception is not null)
+        {
+            // the call to the api threw an exception
+            _logger.LogCritical(args.Exception, "critical failure calling HA service");
+        }
+        else if (args.Response is not null)
+        {
+            // the call did not throw an exception, but does not indicate success
+            _logger.LogError("HA service response:{response_code}, reason:{reason}, data:{data}", args.Response.StatusCode, args.Response.ReasonPhrase, args.Data);
+        }
+        else
+        {
+            _logger.LogError("should not happen");
+        }
+
+        string title = "HA Service call failed.";
+        string message = $"{args.Domain}.{args.Service} was sent {args.Data}";
+
+        if(!(args.Domain == "notify" && args.Service == "persistent_notification"))
+        {
+            // dont send persistent if failure was on persistent
+            await _api.PersistentNotificationDetail(message, title);
+        }
+
+        if (!(args.Domain == "notify" && args.Service == "mobile_app_my_phone"))
+        {
+            // dont send to phone if failure was to sending to phone
+            await _api.NotifyGroupOrDevice("mobile_app_my_phone", message, title);
+        }
+    }
+}
