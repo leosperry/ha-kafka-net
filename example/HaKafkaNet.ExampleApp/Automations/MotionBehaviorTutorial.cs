@@ -27,7 +27,7 @@ public class MotionBehaviorTutorial : IAutomation, IAutomationMeta
             await _services.Api.TurnOn(_light);
         else
             await _services.Api.NotifyGroupOrDevice(
-                "device_tracker.my_phone", $"Motion was detected by {_motion}", cancellationToken);
+                "device_tracker.my_phone", $"Motion was detected by {_motion}", cancellationToken: cancellationToken);
     }
 
     public AutomationMetaData GetMetaData() =>

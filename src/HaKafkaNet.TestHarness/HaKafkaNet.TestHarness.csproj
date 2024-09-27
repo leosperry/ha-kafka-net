@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>HaKafkaNet</RootNamespace>
     <PackageId>HaKafkaNet.TestHarness</PackageId>
-    <Version>9.0.0-beta</Version>
+    <Version>9.0.1</Version>
     <Authors>Leonard Sperry</Authors>
     <Product>HaKafkaNet.TestHarness</Product>
     <Description>A library containing test helpers for HaKafkaNet.</Description>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HaKafkaNet" Version="8.1.*" />
+    <PackageReference Include="HaKafkaNet" Version="9.*" />
   
     <Folder Include="nugetAssets/" />
   </ItemGroup>
