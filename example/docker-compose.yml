@@ -1,0 +1,14 @@
+services:
+
+  hakafkanet-example-app:
+    build: 
+      dockerfile: HaKafkaNet.ExampleApp/Dockerfile
+      context: .
+    container_name: hakafkanet-example-app
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_ENVIRONMENT=Production
+    ports:
+      - 8082:8080
+
