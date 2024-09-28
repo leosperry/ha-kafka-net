@@ -2,12 +2,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 COPY *.sln ./
-COPY MyHome/MyHome.csproj ./MyHome/MyHome.csproj
-COPY MyHome/appsettings.Production.json ./MyHome/appsettings.json
+COPY HaKafkaNet.ExampleApp/HaKafkaNet.ExampleApp.csproj ./HaKafkaNet.ExampleApp/HaKafkaNet.ExampleApp.csproj
+COPY HaKafkaNet.ExampleApp/appsettings.Production.json ./HaKafkaNet.ExampleApp/appsettings.json
 # Use the next line if setting up HaKafkaNet as a sub-module to your repo
 # COPY ha-kafka-net/src/HaKafkaNet/*.csproj ./ha-kafka-net/src/HaKafkaNet/
 
-RUN dotnet restore MyHome/MyHome.csproj
+RUN dotnet restore HaKafkaNet.ExampleApp/HaKafkaNet.ExampleApp.csproj
 
 # Copy everything else and build
 COPY . ./
