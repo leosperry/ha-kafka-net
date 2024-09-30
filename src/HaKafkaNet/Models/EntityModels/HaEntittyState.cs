@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace HaKafkaNet;
 
-public record HaEntityState<Tstate, Tattributes>
+public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes>
 {    
     [JsonPropertyName("entity_id")]
     public required string EntityId { get; init; }
@@ -82,7 +82,7 @@ public record HaEntityState<Tstate, Tattributes>
     static bool IsNullable(Type type) => Nullable.GetUnderlyingType(type) != null;
 }
 
-public record HaEntityState : HaEntityState<string, JsonElement>
+public record HaEntityState : HaEntityState<string, JsonElement>, IHaEntity
 {
     /// <summary>
     /// Used internally for startup EventTiming.PreStartupSameAsLastCached
@@ -91,22 +91,8 @@ public record HaEntityState : HaEntityState<string, JsonElement>
     /// Will be null if fetched from IHaApi
     /// </summary>
     public HaEntityState? Previous{ get; internal set; }
-
-    [Obsolete("please use Attributes extension method", true)]
-    public HaEntityState<T> Convert<T>()
-    {
-        return new HaEntityState<T>()
-        {
-            EntityId = this.EntityId,
-            State = this.State,
-            Attributes = JsonSerializer.Deserialize<T>(this.Attributes) ?? throw new HaKafkaNetException("could not convert attributes"),
-            Context = this.Context,
-        };
-    }
 }
 
-[Obsolete("please use HaEntityState<string, Tatt>", false)]
-public record HaEntityState<T> : HaEntityState<string, T> { }
 
 public record HaEventContext
 {

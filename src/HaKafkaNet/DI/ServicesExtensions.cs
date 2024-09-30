@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
 using FastEndpoints;
+using HaKafkaNet.Implementations.Core;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
@@ -84,14 +85,7 @@ public static class ServicesExtensions
             app.UseKafkaFlowDashboard();
         }
 
-        //wire up monitors to observer
-        var observer = app.Services.GetRequiredService<ISystemObserver>();
-        var monitors = app.Services.GetRequiredService<IEnumerable<ISystemMonitor>>();
-        observer.InitializeMonitors(monitors);
-        
-        var kafkaBus = app.Services.CreateKafkaBus();
-        await kafkaBus.StartAsync();
-
+        //wire up logging before any user code executes
         try
         {
             LogManager.Configuration.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, app.Services.GetRequiredService<HknLogTarget>());
@@ -104,6 +98,17 @@ public static class ServicesExtensions
             Console.WriteLine("** Configure NLog to enable tracing **");
             Console.WriteLine("**************************************");
         }
+
+        //wire up monitors to observer
+        var observer = app.Services.GetRequiredService<ISystemObserver>();
+
+        // first user code is constructors of monitor
+        var monitors = app.Services.GetRequiredService<IEnumerable<ISystemMonitor>>();
+        observer.InitializeMonitors(monitors);
+        
+        // kafka handler requires automation manager and in turn user automations
+        var kafkaBus = app.Services.CreateKafkaBus();
+        await kafkaBus.StartAsync();
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
@@ -131,6 +136,9 @@ public static class ServicesExtensions
         services.AddSingleton<ISystemObserver, SystemObserver>();
         services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
         services.AddSingleton<IInternalRegistrar, AutomationRegistrar>();
+
+        services.AddSingleton<IUpdatingEntityProvider, UpdatingEntityProvider>();
+
         services.AddSingleton<IAutomationTraceProvider, TraceLogProvider>();
         services.AddSingleton<HknLogTarget>();
 
@@ -145,6 +153,7 @@ public static class ServicesExtensions
 
         foreach (var type in eligibleTypes)
         {
+            // handle interfaced classes
             switch (type)
             {
                 case var _ when typeof(IAutomation).IsAssignableFrom(type):

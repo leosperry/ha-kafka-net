@@ -37,28 +37,6 @@ internal class HaStateCache : IHaStateCache
         _missCount = meter.CreateCounter<int>("ha_kafka_net.cache_miss_count");
     }
 
-    [Obsolete("please use GetEntity", false)]
-    public async Task<HaEntityState?> Get(string id, CancellationToken cancellationToken = default)
-    {
-        var cached = await _cache.GetAsync(id);
-        if(cached != null)
-        {
-            return JsonSerializer.Deserialize<HaEntityState>(cached, _options)!;
-        }
-        return null;
-    }
-
-    [Obsolete("please use GetEntity", false)]
-    public async Task<HaEntityState<T>?> Get<T>(string id, CancellationToken cancellationToken = default) 
-    {
-        var cached = await _cache.GetAsync(id);
-        if(cached != null)
-        {
-            return JsonSerializer.Deserialize<HaEntityState<T>>(cached, _options)!;
-        }
-        return null;
-    }
-
     /// <summary>
     /// main method for getting entities
     /// </summary>
@@ -82,11 +60,11 @@ internal class HaStateCache : IHaStateCache
         }
     }
 
-    public Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default)
-        => GetEntity<HaEntityState>(entityId, cancellationToken);
+    public async Task<IHaEntity?> GetEntity(string entityId, CancellationToken cancellationToken = default)
+        => await GetEntity<HaEntityState>(entityId, cancellationToken);
 
-    public Task<HaEntityState<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
+    public async Task<IHaEntity<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
     {
-        return GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
+        return await GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
     }
 }

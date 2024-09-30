@@ -71,7 +71,7 @@ public static class StateExtensions
     /// <param name="state"></param>
     /// <returns></returns>
     
-    public static bool Bad<Tstate, Tatt>([NotNullWhen(false)][AllowNull]this HaEntityState<Tstate, Tatt>? state)
+    public static bool Bad<Tstate, Tatt>([NotNullWhen(false)][AllowNull]this IHaEntity<Tstate, Tatt>? state)
     {
         return state is null || state.State switch
         {
@@ -94,19 +94,19 @@ public static class StateExtensions
     /// </summary>
     /// <param name="state"></param>
     /// <returns></returns>
-    public static bool StateAndLastUpdatedWithin1Second<_>([AllowNull]this HaEntityState<DateTime?, _> state)
+    public static bool StateAndLastUpdatedWithin1Second<_>([AllowNull]this IHaEntity<DateTime?, _> state)
     {
         var diff = state?.State - state?.LastUpdated;
         return diff is not null && Math.Abs(diff.Value.TotalSeconds) < 1;
     }
 
-    public static bool IsOn<_>([AllowNull]this HaEntityState<OnOff, _> state)
+    public static bool IsOn<_>([AllowNull][NotNullWhen(true)]this IHaEntity<OnOff, _> state)
         => state?.State == OnOff.On;
 
-        public static bool IsOff<_>([AllowNull]this HaEntityState<OnOff, _> state)
+        public static bool IsOff<_>([AllowNull][NotNullWhen(true)]this IHaEntity<OnOff, _> state)
         => state?.State == OnOff.Off;
 
-    public static bool IsHome<_>([AllowNull]this HaEntityState<string, _> state) where _ : TrackerModelBase
+    public static bool IsHome<_>([AllowNull]this IHaEntity<string, _> state) where _ : TrackerModelBase
     {
         return state?.State == "home";
     }

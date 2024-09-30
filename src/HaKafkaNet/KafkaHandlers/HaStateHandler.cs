@@ -39,15 +39,28 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
         _logger.LogInformation("state handler initialized at :{startTime}", _startTime);
 
-        observer.OnStateHandlerInitialized();
         Meter m = new Meter(Telemetry.MeterStateHandler);
         _counter = m.CreateCounter<int>("ha_kafka_net.message_received_count");
+        
+        observer.OnStateHandlerInitialized();
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
     {
-        HaEntityState? cached = await HandleCacheAndPrevious(context, message);
-        _counter.Add(1, new KeyValuePair<string, object?>("entity_id", message.EntityId));
+        HaEntityState? cached = default;
+        
+        await Task.WhenAll(
+            Task.Run(async () => cached = await HandleCacheAndPrevious(context, message)),
+            Task.Run(() => _observer.OnEntityStateUpdate(message)),
+            Task.Run(() => {
+                _counter.Add(1, new KeyValuePair<string, object?>("entity_id", message.EntityId));
+                if (_trackedEntities.Contains(message.EntityId) && message.Bad())
+                {
+                    _observer.OnBadStateDiscovered(new BadEntityState(message.EntityId, message));
+                }
+            })
+        );
+
         //if no automations need trigger, return
         if (!_autoMgr.HasAutomationsForEntity(message.EntityId))
         {
@@ -65,13 +78,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         };
 
         _ = Task.Run(() => _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped));
-        
-        if (_trackedEntities.Contains(message.EntityId) && message.Bad())
-        {
-            _observer.OnBadStateDiscovered(new BadEntityState(message.EntityId, message));
-        }
     }
-
 
     private async Task<HaEntityState?> HandleCacheAndPrevious(IMessageContext context, HaEntityState message)
     {

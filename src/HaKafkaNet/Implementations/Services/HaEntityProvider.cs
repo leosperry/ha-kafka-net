@@ -15,19 +15,7 @@ internal class HaEntityProvider : IHaEntityProvider
         this._logger = logger;
     }
 
-    [Obsolete("", false)]
-    public Task<HaEntityState?> GetEntityState(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return GetEntity(entity_id, cancellationToken);
-    }
-
-    [Obsolete("please use GetEntity", false)]
-    public Task<HaEntityState<T>?> GetEntityState<T>(string entity_id, CancellationToken cancellationToken = default)
-    {
-        return GetEntity<HaEntityState<T>>(entity_id, cancellationToken);
-    }
-
-    public async Task<HaEntityState?> GetEntity(string entityId, CancellationToken cancellationToken = default)
+    public async Task<IHaEntity?> GetEntity(string entityId, CancellationToken cancellationToken = default)
     {
         using (_logger.BeginScope("fetching entity {entity_id}", entityId))
         {
@@ -74,8 +62,8 @@ internal class HaEntityProvider : IHaEntityProvider
         }    
     }
 
-    public Task<HaEntityState<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
+    public async Task<IHaEntity<Tstate, Tatt>?> GetEntity<Tstate, Tatt>(string entityId, CancellationToken cancellationToken)
     {
-        return GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
+        return await GetEntity<HaEntityState<Tstate, Tatt>>(entityId, cancellationToken);
     }
 }

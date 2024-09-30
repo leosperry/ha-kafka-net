@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Concurrent;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
@@ -24,6 +26,9 @@ internal interface ISystemObserver
     void OnHaNotification(HaNotification notification, CancellationToken ct);
 
     void OnHaStartUpShutdown(StartUpShutDownEvent evt, CancellationToken ct);
+
+    void OnEntityStateUpdate(HaEntityState state);
+    void RegisterThreadSafeEntityUpdater(string entityId, UpdateEntity updater);
 }
 
 public record HaServiceResponseArgs(string Domain, string Service, object Data, HttpResponseMessage? Response, Exception? Exception);
@@ -111,4 +116,22 @@ internal class SystemObserver : ISystemObserver
             HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
         }    
     }
+
+    public void OnEntityStateUpdate(HaEntityState state)
+    {
+        if (updaters.TryGetValue(state.EntityId, out var updateMethod))
+        {
+            updateMethod(state);
+        }   
+    }
+
+    ConcurrentDictionary<string, UpdateEntity> updaters = new();
+
+    public void RegisterThreadSafeEntityUpdater(string entityId, UpdateEntity updater)
+    {
+        updaters.GetOrAdd(entityId, updater);
+    }
 }
+
+    internal delegate void UpdateEntity(HaEntityState state);
+

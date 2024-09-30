@@ -18,18 +18,6 @@ public class TestHelpers
             LastUpdated = lastUpdated
         };
     }
-
-    [Obsolete("please use GetState<string, Tatt>()", false)]
-    public static HaEntityState<T> GetState<T>(string entityId = "enterprise", string state = "unknown", T atttributes = default(T)!, DateTime lastUpdated = default)
-    {
-        return new HaEntityState<T>()
-        {
-            EntityId = entityId,
-            State = state,
-            Attributes = atttributes,
-            LastUpdated = lastUpdated
-        };
-    }    
     
     public static HaEntityState<Tstate, Tatt> GetState<Tstate, Tatt>(string entityId, Tstate state, Tatt? atttributes = default, DateTime lastUpdated = default)
     {
@@ -77,22 +65,6 @@ public class TestHelpers
             Attributes = GetSunAttributes(elevation, rising, azimuth, 
                 nextDawn,nextDusk,nextNoon, nextMidnight,nextRising,nextSetting),
             State = state
-        };
-    }
-
-    [Obsolete("pleasee use GetSun")]
-    public static HaEntityState<SunAttributes> GetSunState(SunState state = SunState.Above_Horizon,
-        float elevation = default, bool rising = default, float azimuth = default, 
-        DateTime nextDawn = default,DateTime nextDusk = default,
-        DateTime nextNoon = default, DateTime nextMidnight = default,
-        DateTime nextRising = default, DateTime nextSetting = default)
-    {
-        return new HaEntityState<SunAttributes>()
-        {
-            EntityId = "sun.sun",
-            Attributes = GetSunAttributes(elevation, rising, azimuth, 
-                nextDawn,nextDusk,nextNoon, nextMidnight,nextRising,nextSetting),
-            State = state == SunState.Above_Horizon ? "above_horizon" : "below_horizon"
         };
     }
 

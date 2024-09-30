@@ -29,8 +29,8 @@ public class LightOffOnNoMotion : ConditionalAutomationBase
             from l in _lightIds
             select _services.EntityProvider.GetOnOffEntity(l, cancellationToken);  // any should be on
 
-        Task<HaEntityState<OnOff, JsonElement>?[]> motionResults;
-        Task<HaEntityState<OnOff, JsonElement>?[]> lightResults;
+        Task<IHaEntity<OnOff, JsonElement>?[]> motionResults;
+        Task<IHaEntity<OnOff, JsonElement>?[]> lightResults;
 
         return Task.WhenAll(
             motionResults = Task.WhenAll(motionStates),
