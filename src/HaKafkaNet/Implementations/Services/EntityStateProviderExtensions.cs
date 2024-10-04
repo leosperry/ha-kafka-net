@@ -18,32 +18,32 @@ public static class EntityStateProviderExtensions
     public static async Task<IHaEntity<int?, Tatt>?> GetIntegerEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<int?, Tatt>>(entityId, cancellationToken);
     
-    public static IHaEntity<int, JsonElement> GetIntegerEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<int, JsonElement>(entityId);
-    public static IHaEntity<int, Tatt> GetIntegerEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<int, Tatt>(entityId);
+    public static IHaEntity<int?, JsonElement> GetIntegerEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<int?, JsonElement>(entityId);
+    public static IHaEntity<int?, Tatt> GetIntegerEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<int?, Tatt>(entityId);
 
     public static async Task<IHaEntity<float?, JsonElement>?> GetFloatEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<float?, JsonElement>>(entityId, cancellationToken);
     public static async Task<IHaEntity<float?, Tatt>?> GetFloatEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<float?, Tatt>>(entityId, cancellationToken);
 
-    public static IHaEntity<float, JsonElement> GetFloatEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<float, JsonElement>(entityId);
-    public static IHaEntity<float, Tatt> GetFloatEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<float, Tatt>(entityId);
+    public static IHaEntity<float?, JsonElement> GetFloatEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<float?, JsonElement>(entityId);
+    public static IHaEntity<float?, Tatt> GetFloatEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<float?, Tatt>(entityId);
         
     public static async Task<IHaEntity<double?, JsonElement>?> GetDoubleEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<double?, JsonElement>>(entityId, cancellationToken);
     public static Task<HaEntityState<double?, Tatt>?> GetDoubleEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         provider.GetEntity<HaEntityState<double?, Tatt>>(entityId, cancellationToken);
 
-    public static IHaEntity<double, JsonElement> GetDoubleEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<double, JsonElement>(entityId);
-    public static IHaEntity<double, Tatt> GetDoubleEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<double, Tatt>(entityId);
+    public static IHaEntity<double?, JsonElement> GetDoubleEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<double?, JsonElement>(entityId);
+    public static IHaEntity<double?, Tatt> GetDoubleEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<double?, Tatt>(entityId);
         
     public static async Task<IHaEntity<DateTime?, JsonElement>?> GetDateTimeEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<DateTime?, JsonElement>>(entityId, cancellationToken);
     public static async Task<IHaEntity<DateTime?, Tatt>?> GetDateTimeEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<DateTime?, Tatt>>(entityId, cancellationToken);
 
-    public static IHaEntity<DateTime, JsonElement> GetDateTimeEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime, JsonElement>(entityId);
-    public static IHaEntity<DateTime, Tatt> GetDateTimeEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime, Tatt>(entityId);
+    public static IHaEntity<DateTime?, JsonElement> GetDateTimeEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime?, JsonElement>(entityId);
+    public static IHaEntity<DateTime?, Tatt> GetDateTimeEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime?, Tatt>(entityId);
     
     public static async Task<IHaEntity<OnOff, JsonElement>?> GetOnOffEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<OnOff, JsonElement>>(entityId, cancellationToken);
@@ -72,7 +72,7 @@ public static class EntityStateProviderExtensions
         await provider.GetEntity<HaEntityState<OnOff, ColorLightModel>>(entityId, cancellationToken);
 
     public static IHaEntity<OnOff, LightModel> GetLightEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<OnOff, LightModel>(entityId);
-    public static IHaEntity<OnOff, ColorLightModel> GetColorLightEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<OnOff, ColorLightModel>(entityId);
+    public static IHaEntity<OnOff, ColorLightModel> GetColorLightEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<OnOff, ColorLightModel>(entityId);
 
     public static async Task<IHaEntity<string, PersonModel>?> GetPersonEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) =>
         await provider.GetEntity<HaEntityState<string, PersonModel>>(entityId, cancellationToken);
