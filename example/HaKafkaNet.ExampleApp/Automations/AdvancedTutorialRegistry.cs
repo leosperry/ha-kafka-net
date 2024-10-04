@@ -52,7 +52,7 @@ public class AdvancedTutorialRegistry : IAutomationRegistry
                 await _services.Api.NotifyGroupOrDevice("mobile_app_my_phone", message, cancellationToken: ct);
             }
         }
-        catch (TaskCanceledException)
+        catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
         {
             // don't do anything
             // the door was closed or

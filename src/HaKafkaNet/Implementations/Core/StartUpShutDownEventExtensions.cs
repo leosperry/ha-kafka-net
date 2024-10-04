@@ -92,7 +92,7 @@ public static class StartUpShutDownEventExtensions
         {
             await Task.Delay(timeout, token);
         }
-        catch (TaskCanceledException)
+        catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
         {
             logger?.LogDebug("startup timeout canceled");
             return;
@@ -108,7 +108,7 @@ public static class StartUpShutDownEventExtensions
         {
             await Task.Delay(timeout, token);
         }
-        catch (TaskCanceledException)
+        catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
         {
             logger?.LogDebug("startup timeout canceled");
             return;

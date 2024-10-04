@@ -154,7 +154,7 @@ internal class HaApiProvider : IHaApiProvider
                 var content = await response.Content.ReadAsStringAsync();
                 return (response, JsonSerializer.Deserialize<T>(response.Content.ReadAsStream(), _options)!);
             }
-            catch (TaskCanceledException ex)
+            catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
             {
                 _logger.LogDebug(ex, "Task wass canceled while calling Home Assistant API");
                 throw;
