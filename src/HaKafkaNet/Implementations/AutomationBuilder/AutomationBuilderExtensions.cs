@@ -110,7 +110,8 @@ public static partial class AutomationBuilderExtensions
     {
         var auto = new SchedulableAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
+            Get_GetNextScheduled(info),
+            //info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError)
@@ -118,6 +119,31 @@ public static partial class AutomationBuilderExtensions
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
         return auto;
+    }
+
+    private static GetNextEventFromEntityState Get_GetNextScheduled(SchedulableAutomationBuildingInfo info)
+    {
+        if (info.GetNextScheduled is not null && (info.WhileCondition is not null || info.ForTime is not null))
+        {
+            throw new AutomationBuilderException("cannot specify both GetNextScheduled callback and (WhileCondition or ForTime)");
+        }
+        if (info.GetNextScheduled is not null)
+        {
+            return info.GetNextScheduled;
+        }
+
+        if (info.WhileCondition is null || info.ForTime is null)
+        {
+            throw new AutomationBuilderException("ForCondition specified, but ForTime is not");
+        }
+
+        return new GetNextEventFromEntityState((sc, ct) => {
+            if (info.WhileCondition(sc))
+            {
+                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.ForTime.Value));
+            }
+            return Task.FromResult<DateTime?>(null);
+        });
     }
 
     public static SunAutomation Build(this SunAutommationBuildingInfo info)

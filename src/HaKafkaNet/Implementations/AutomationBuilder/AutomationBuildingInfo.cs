@@ -66,6 +66,8 @@ public class SchedulableAutomationBuildingInfo : DelayableAutomationBuildingInfo
 
     internal Func<CancellationToken, Task>? Execution { get; set; }
     internal GetNextEventFromEntityState? GetNextScheduled { get; set; }
+    internal Func<HaEntityStateChange, bool>? WhileCondition { get; set; }
+    internal TimeSpan? ForTime { get; set; }
 }
 
 public class SunAutommationBuildingInfo : AutomationBuildingInfo

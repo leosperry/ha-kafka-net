@@ -1,4 +1,7 @@
-﻿namespace HaKafkaNet;
+﻿using Confluent.Kafka;
+using Microsoft.AspNetCore.Identity.Data;
+
+namespace HaKafkaNet;
 
 public partial class AutomationBuilderExtensions
 {
@@ -120,6 +123,22 @@ public partial class AutomationBuilderExtensions
     public static SchedulableAutomationBuildingInfo GetNextScheduled(this SchedulableAutomationBuildingInfo info, GetNextEventFromEntityState getNextFromState)
     {
         info.GetNextScheduled = getNextFromState;
+        return info;
+    }
+
+    public static SchedulableAutomationBuildingInfo While(this SchedulableAutomationBuildingInfo info, Func<HaEntityStateChange ,bool> condition)
+    {
+        info.WhileCondition = condition;
+        return info;
+    }
+
+    public static SchedulableAutomationBuildingInfo For(this SchedulableAutomationBuildingInfo info, TimeSpan forTime)
+    {
+        if (forTime < TimeSpan.Zero)
+        {
+            throw new ArgumentException("must be greater than zero", nameof(forTime));
+        }
+        info.ForTime = forTime;
         return info;
     }
 
