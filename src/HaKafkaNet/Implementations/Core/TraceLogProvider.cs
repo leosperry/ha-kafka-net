@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using System.Xml;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -183,7 +184,6 @@ internal class TraceLogProvider : IAutomationTraceProvider
             new KeyValuePair<string, object?>("given_key", meta.GivenKey),
             new KeyValuePair<string, object?>("event_type", evt.EventType),
             new KeyValuePair<string, object?>("trigger_entity_id", evt.StateChange?.New.EntityId ?? "na")
-            
             );
 
         _activeTraceCounter.Add(1);
@@ -213,6 +213,10 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     // this will also catch all exceptions from Task.WhenAll()
                     task.Wait();
                     await task;
+                }
+                catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
+                {
+                    _logger.LogDebug(ex, "Task canceled during automation run");
                 }
                 catch (Exception ex)
                 {
