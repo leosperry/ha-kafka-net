@@ -7,8 +7,8 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 9 Released!
-This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.0.1) brings several improvements including native media player support.
+Version 9.1 Released!
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.1.0) brings several improvements including auto [updating entities](https://github.com/leosperry/ha-kafka-net/wiki/Updating-Entity-Provider).
 
 Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
