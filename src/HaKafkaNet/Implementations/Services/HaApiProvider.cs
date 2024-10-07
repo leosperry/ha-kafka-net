@@ -141,13 +141,17 @@ internal class HaApiProvider : IHaApiProvider
         using (_logger.BeginScope(scope))
         {
             act?.AddTag("entity_id", entity_id);
-            _logger.LogDebug("Calling Home Assistant States API");
+            _logger.LogTrace("Calling Home Assistant States API");
             var response = await _client.GetAsync($"/api/states/{entity_id}", cancellationToken);
 
             int status = (int)response.StatusCode;
-            if (status < 200 || status >= 400)
+            if (status >= 400)
             {
-                _logger.LogWarning("Home Assistant API returned {status}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+                _logger.LogWarning("Home Assistant API returned {status_code}:{reason} \n{content}", response.StatusCode, response.ReasonPhrase, await response.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                _logger.LogInformation("Home Assistant api response {status_code}", response.StatusCode);
             }
             try
             {

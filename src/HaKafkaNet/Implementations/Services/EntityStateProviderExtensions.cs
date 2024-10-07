@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using HaKafkaNet.Models.EntityModels;
 
 namespace HaKafkaNet;
 

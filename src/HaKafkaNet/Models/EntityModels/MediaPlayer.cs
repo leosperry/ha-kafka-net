@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace HaKafkaNet.Models.EntityModels;
+namespace HaKafkaNet;
 
 // https://www.home-assistant.io/integrations/media_player/
 [JsonConverter(typeof(JsonStringEnumConverter<MediaPlayerState>))]

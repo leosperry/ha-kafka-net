@@ -128,6 +128,10 @@ public static class ApiExtensions
 
     public static Task<HttpResponseMessage> PersistentNotification(this IHaApiProvider api, string message, CancellationToken cancellationToken = default)
         => api.CallService(NOTIFY, "persistent_notification", new { message }, cancellationToken);
+    
+    public static Task<HttpResponseMessage> PersistentNotification(this IHaApiProvider api, string title, string message, CancellationToken cancellationToken = default)
+        => api.CallService(NOTIFY, "persistent_notification", new { message, title }, cancellationToken);
+    
 
     public static Task<HttpResponseMessage> PersistentNotificationDetail(this IHaApiProvider api, string message, string? title = null, string? notification_id = null, CancellationToken cancellationToken = default)
         => api.CallService(NOTIFY, "persistent_notification", new { message, title, data = new { notification_id} }, cancellationToken);

@@ -141,7 +141,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
                 }
                 else
                 {
-                    this._logger.LogInformation("ContinuesToBeTrue returned {continueResult}", t.Result);
+                    this._logger.LogTrace("ContinuesToBeTrue returned {continueResult}", t.Result);
                 }
                 return t.Result;
             }, cancellationToken);

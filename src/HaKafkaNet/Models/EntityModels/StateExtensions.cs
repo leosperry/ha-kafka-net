@@ -70,7 +70,6 @@ public static class StateExtensions
     /// <typeparam name="Tatt"></typeparam>
     /// <param name="state"></param>
     /// <returns></returns>
-    
     public static bool Bad<Tstate, Tatt>([NotNullWhen(false)][AllowNull]this IHaEntity<Tstate, Tatt>? state)
     {
         return state is null || state.State switch

@@ -5,7 +5,7 @@
   </ItemGroup> -->
 
   <ItemGroup>
-    <PackageReference Include="HaKafkaNet" Version="9.0.1" />
+    <PackageReference Include="HaKafkaNet" Version="9.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="OpenTelemetry" Version="1.9.0" />
