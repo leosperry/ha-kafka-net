@@ -30,6 +30,7 @@ public class SunComponentTests
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
 
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
+        autoMgr.Initialize(new List<InitializationError>());
 
         // When
         await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached));
@@ -60,6 +61,7 @@ public class SunComponentTests
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
 
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
+        autoMgr.Initialize(new List<InitializationError>());
 
         // When
         await autoMgr.TriggerAutomations(getSunChange(EventTiming.PreStartupNotCached, -1000));

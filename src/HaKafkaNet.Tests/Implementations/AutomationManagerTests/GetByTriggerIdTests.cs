@@ -63,6 +63,7 @@ public class GetByTriggerIdTests
 
         var sut = new AutomationManager(
             registries, registrar.Object);
+        sut.Initialize(new List<InitializationError>());
         // When
         var result = sut.GetByTriggerEntityId(triggerId);
 
@@ -95,6 +96,7 @@ public class GetByTriggerIdTests
             .Returns([auto1.Object, auto3.Object, auto2.Object]);
 
         var sut = new AutomationManager(registries, registrar.Object);
+        sut.Initialize(new List<InitializationError>());
         // 
         var enterpriseResult = sut.GetByTriggerEntityId(enterprise);
         var excelsiorResult = sut.GetByTriggerEntityId(excelsior);

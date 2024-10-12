@@ -151,6 +151,7 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
+        collector.Initialize(new List<InitializationError>());
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
@@ -245,6 +246,7 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
+        collector.Initialize(new List<InitializationError>());
 
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
@@ -386,6 +388,7 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
+        collector.Initialize(new List<InitializationError>());
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -420,6 +423,7 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
+        collector.Initialize(new List<InitializationError>());
 
         HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
         // When
@@ -555,6 +559,7 @@ public class HaStateHandlerComponentTests
 
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
+        collector.Initialize(new List<InitializationError>());
 
         Mock<IMessageContext> fakeContext = new();
         Mock<IConsumerContext> consumerContext = new();

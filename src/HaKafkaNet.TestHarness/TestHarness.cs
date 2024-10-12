@@ -77,6 +77,7 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             Enumerable.Empty<IAutomationRegistry>(),
             _registrar);
+        _autoMgr.Initialize(new List<InitializationError>());
     }
 
     public void Initialize(IConditionalAutomation automation)
@@ -94,6 +95,7 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             Enumerable.Empty<IAutomationRegistry>(),
             _registrar);
+        _autoMgr.Initialize(new List<InitializationError>());
     }
 
     public void Initialize(IAutomationRegistry registry)
@@ -112,6 +114,7 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             [registry],
             _registrar);
+        _autoMgr.Initialize(new List<InitializationError>());
     }
 
     public void Initialize(
@@ -142,6 +145,7 @@ public class TestHarness
         _autoMgr = new AutomationManager(
             registries ?? Enumerable.Empty<IAutomationRegistry>(),
             _registrar);
+        _autoMgr.Initialize(new List<InitializationError>());
     }
 
     public void SetServicesGenericDefaults<Tstate, Tatt>(Tstate state, Tatt attributes)

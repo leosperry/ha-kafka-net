@@ -54,7 +54,7 @@ public class ExampleDurableAutomation : ISchedulableAutomation
     public Task Execute(CancellationToken ct)
     {
         // add your execution logic here
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public DateTime? GetNextScheduled()

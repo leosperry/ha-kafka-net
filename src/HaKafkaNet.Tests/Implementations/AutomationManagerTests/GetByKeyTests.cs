@@ -22,6 +22,7 @@ public class GetByKeyTests
         
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
+        sut.Initialize(new List<InitializationError>());
 
         var result = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock");
     
@@ -48,6 +49,7 @@ public class GetByKeyTests
         
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
+        sut.Initialize(new List<InitializationError>());
 
         var result1 = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock");
         var result2 = sut.GetByKey("test-fakeauto-crew_spock-crew_evil_spock2");
@@ -76,6 +78,7 @@ public class GetByKeyTests
         
         // When
         var sut = new AutomationManager(registries, registrar.Object); 
+        sut.Initialize(new List<InitializationError>());
 
         var result = sut.GetByKey("evil_spock");
     
