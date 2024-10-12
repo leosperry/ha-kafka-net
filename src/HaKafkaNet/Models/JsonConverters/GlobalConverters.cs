@@ -18,6 +18,7 @@ public class GlobalConverters
             new XyConverter(),
             new HsConverter(),
             new HaDateTimeConverter()
-        }
+        },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 }
