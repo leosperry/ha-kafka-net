@@ -9,4 +9,5 @@ public interface ISystemMonitor
     Task HaNotificationUpdate(HaNotification notification, CancellationToken ct) => Task.CompletedTask;
     Task HaStartUpShutDown(StartUpShutDownEvent evt, CancellationToken ct) => Task.CompletedTask;
     Task HaApiResponse(HaServiceResponseArgs args, CancellationToken ct) => Task.CompletedTask;
+    Task InitializationFailure(InitializationError[] errors) =>  Task.Run(() => ServicesExtensions.TrySendNotification(errors));
 }

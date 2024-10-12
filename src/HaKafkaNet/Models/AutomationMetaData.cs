@@ -17,4 +17,7 @@ public record AutomationMetaData
     public DateTime? LastTriggered { get; internal set; }
     public DateTime? LastExecuted { get; internal set; }
     public DateTime? NextScheduled { get; internal set; }
+
+    internal bool UserMetaError { get; set; } = false;
+    internal bool UserTriggerError {get; set; } = false;
 }

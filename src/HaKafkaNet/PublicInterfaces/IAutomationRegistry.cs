@@ -1,5 +1,8 @@
 ﻿namespace HaKafkaNet;
 
+/// <summary>
+/// This is the registry users create implementations of
+/// </summary>
 public interface IAutomationRegistry
 {
     void Register(IRegistrar reg);

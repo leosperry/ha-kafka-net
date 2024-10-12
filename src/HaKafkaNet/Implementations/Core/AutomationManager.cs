@@ -5,6 +5,7 @@ namespace HaKafkaNet;
 internal interface IAutomationManager
 {
     IEnumerable<IAutomationWrapper> GetAll();
+    IEnumerable<IAutomationRegistry>? Registries { get; }
     bool HasAutomationsForEntity(string entityId);
     Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default);
     
@@ -19,42 +20,59 @@ internal interface IAutomationManager
     IAutomationWrapper? GetByKey(string key);
 
     HashSet<string> GetEntitiesToTrack();
+    void Initialize(List<InitializationError> errors);
 }
 
 internal class AutomationManager : IAutomationManager
 {
+    public IEnumerable<IAutomationRegistry>? Registries { get; private set; }
+
     private readonly IInternalRegistrar _registrar;
 
-    private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey;
-    private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger;
+    private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey = new();
+    private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger = new();
 
     public AutomationManager(
         IEnumerable<IAutomationRegistry>? registries,
         IInternalRegistrar registrar)
     {
         _registrar = registrar;
+        this.Registries = registries?.ToArray();
+    }
 
-        foreach (var reg in registries ?? Enumerable.Empty<IAutomationRegistry>())
+    public void Initialize(List<InitializationError> errors)
+    {
+        foreach (var reg in Registries ?? Enumerable.Empty<IAutomationRegistry>())
         {
-            reg.Register(_registrar);
+            try
+            {
+                // user code
+                reg.Register(_registrar);
+            }
+            catch (System.Exception ex)
+            {
+                errors.Add(new($"Error initializing {reg.GetType().Name}", ex));
+            }
         }
 
         var allRegistered = _registrar.Registered.ToArray();
-        SetKeys(allRegistered);
+        SetKeys(allRegistered, errors);
 
         _internalAutomationsByKey = allRegistered.ToDictionary(a => a.GetMetaData().GivenKey);
 
         //get by trigger
         this._automationsByTrigger = (
             from a in allRegistered
-            from t in a.TriggerEntityIds() ?? Enumerable.Empty<string>()
+            let triggers = a.TriggerEntityIds() ?? Enumerable.Empty<string>()
+            where triggers.Any()
+            from t in triggers
             group a by t into autoGroup
             let key = autoGroup.Key
             let collection = autoGroup.ToList()
             select (key, collection)).ToDictionary();
     }
 
-    private void SetKeys(IAutomationWrapper[] allRegistered)
+    private void SetKeys(IAutomationWrapper[] allRegistered, List<InitializationError> errors)
     {
         Dictionary<string, int> takenKeys = new();
         foreach (var auto in allRegistered)
@@ -74,6 +92,10 @@ internal class AutomationManager : IAutomationManager
             {
                 meta.GivenKey = string.Concat(cleaned, takenKeys[cleaned]);
             }
+
+            // todo: expose exceptions caught in the wrapper
+            if (meta.UserMetaError) errors.Add( new($"error in user metadata", null, auto.WrappedAutomation)); 
+            if (meta.UserTriggerError) errors.Add( new($"error in fetching triggers", null, auto.WrappedAutomation));
         }
     }
 

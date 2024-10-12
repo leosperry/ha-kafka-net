@@ -1,5 +1,10 @@
 ﻿namespace HaKafkaNet;
 
+public interface IInitializeOnStartup
+{
+    Task Initialize();
+}
+
 public interface IAutomationBase
 {
     /// <summary>
@@ -13,7 +18,7 @@ public interface IAutomationBase
     /// the ContinuesToBeTrue method will be called
     /// </summary>
     /// <returns>entity id's which your automation should be notified about</returns>
-    IEnumerable<string> TriggerEntityIds();    
+    IEnumerable<string> TriggerEntityIds();
 }
 
 public interface IAutomation : IAutomationBase

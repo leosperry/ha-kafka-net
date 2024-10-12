@@ -8,6 +8,7 @@ internal class AutomationWrapper : IAutomationWrapper
     readonly IAutomation _auto;
     readonly IAutomationTraceProvider _trace;
     EventTiming _eventTimings;
+
     AutomationMetaData _meta;
     IEnumerable<string> _triggers;
    
@@ -22,19 +23,54 @@ internal class AutomationWrapper : IAutomationWrapper
     {
         _auto = automation;
         _trace = traceProvider;
-        var underlyingType = automation is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : automation.GetType();
         
-        _triggers = automation.TriggerEntityIds();
-        _eventTimings = automation.EventTimings;
-
-        if (automation is IAutomationMeta metaAuto)
+        bool hasTriggerError = false;
+        try
         {
-            _meta = metaAuto.GetMetaData();
-            _meta.UnderlyingType = underlyingType.Name;
+            _triggers = automation.TriggerEntityIds();
+        }
+        catch (System.Exception)
+        {
+            hasTriggerError = true;
+            _triggers = Enumerable.Empty<string>();
+        }
+
+        _meta = GetMeta(source);
+        _meta.UserTriggerError = hasTriggerError;
+
+        
+        _eventTimings = automation.EventTimings;        
+    }
+
+
+    AutomationMetaData GetMeta(string source)
+    {
+        AutomationMetaData meta;
+        var underlyingType = _auto is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : _auto.GetType();
+
+        if (_auto is IAutomationMeta metaAuto) // all prebuilt automations and user implemented
+        {
+            try
+            {
+                // user implemented, could throw an exception
+                meta = metaAuto.GetMetaData();
+            }
+            catch
+            {
+                meta = new AutomationMetaData()
+                {
+                    Name = "unknown",
+                    Description = $"GetMetaData threw excption from automation created via {source}",
+                    Enabled = true,
+                    KeyRequest = GenerateKey(source, underlyingType.Name),
+                    UserMetaError = true
+                };
+            }
+            meta.UnderlyingType = underlyingType.Name;
         }
         else
         {
-            _meta = new AutomationMetaData()
+            meta = new AutomationMetaData()
             {
                 Name = underlyingType.Name,
                 Description = underlyingType.FullName,
@@ -44,13 +80,20 @@ internal class AutomationWrapper : IAutomationWrapper
             };
         }
 
-        if (string.IsNullOrEmpty(_meta.KeyRequest))
+        if (string.IsNullOrEmpty(meta.KeyRequest))
         {
-            _meta.KeyRequest = _meta.Name;
+            meta.KeyRequest = meta.Name;
         }
 
-        _meta.Source = source;
+        meta.Source = source;
+
+        return meta;
         
+    }
+
+    public AutomationMetaData GetMetaData()
+    {
+        return _meta;
     }
 
     /// <summary>
@@ -78,11 +121,6 @@ internal class AutomationWrapper : IAutomationWrapper
         var triggers = _triggers.Any() ? _triggers.Aggregate((s1,s2) => $"{s1}-{s2}") : string.Empty;
         return $"{source}-{name}-{triggers}";
     }    
-
-    public AutomationMetaData GetMetaData()
-    {
-        return _meta;
-    }
 
     public IEnumerable<string> TriggerEntityIds() => _triggers;
 }

@@ -29,6 +29,12 @@ internal interface ISystemObserver
 
     void OnEntityStateUpdate(HaEntityState state);
     void RegisterThreadSafeEntityUpdater(string entityId, UpdateEntity updater);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns>true if at least one monitor is wired. Otherwise false</returns>
+    bool OnInitializationFailure(List<InitializationError> errors);
 }
 
 public record HaServiceResponseArgs(string Domain, string Service, object Data, HttpResponseMessage? Response, Exception? Exception);
@@ -48,6 +54,7 @@ internal class SystemObserver : ISystemObserver
     internal event Action<HaNotification, CancellationToken>? Notify;
     internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
     internal event Action<HaServiceResponseArgs, CancellationToken>? HaApiResponse;
+    internal event Action<InitializationError[]>? InitializatinFailure;
 
     public SystemObserver(ILogger<SystemObserver> logger)
     {
@@ -71,7 +78,7 @@ internal class SystemObserver : ISystemObserver
                 await t;
                 t.Wait();
             }
-            catch (TaskCanceledException cancelEx)
+            catch (Exception cancelEx) when (cancelEx is TaskCanceledException || cancelEx is OperationCanceledException)
             {
                 _logger.LogInformation(cancelEx, "Task Canceled in System Observer");
             }
@@ -104,6 +111,24 @@ internal class SystemObserver : ISystemObserver
     public void OnHaServiceBadResponse(HaServiceResponseArgs args, CancellationToken ct)
         => HaApiResponse?.Invoke(args, ct);
 
+    public bool OnInitializationFailure(List<InitializationError> errors)
+    {
+        if (InitializatinFailure is not null)
+        {
+            try
+            {
+                InitializatinFailure?.Invoke(errors.ToArray());
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                errors.Add(new("Error Executing user implemented OnInitializationFailure", ex, this));
+                return false;
+            }
+        }
+        return false;
+    }
+
     public void InitializeMonitors(IEnumerable<ISystemMonitor> monitors)
     {
         foreach (var monitor in monitors)
@@ -114,8 +139,10 @@ internal class SystemObserver : ISystemObserver
             Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
             HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
             HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
+            InitializatinFailure += (errors) => _ = monitor.InitializationFailure(errors); // don't wrap this one, we want exceptions to bubble up
         }    
     }
+
 
     public void OnEntityStateUpdate(HaEntityState state)
     {
