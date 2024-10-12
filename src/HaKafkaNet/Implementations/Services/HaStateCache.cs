@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using HaKafkaNet.Models.JsonConverters;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace HaKafkaNet;
@@ -10,19 +12,7 @@ internal class HaStateCache : IHaStateCache
 {   
     IDistributedCache _cache;
 
-    static JsonSerializerOptions _options = new JsonSerializerOptions()
-    {
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        Converters = 
-        {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
-            new RgbConverter(),
-            new RgbwConverter(),
-            new RgbwwConverter(),
-            new XyConverter(),
-            new HsConverter(),
-        }
-    };
+    static JsonSerializerOptions _options = GlobalConverters.StandardJsonOptions;
 
     static ActivitySource _activitySource = new ActivitySource(Telemetry.TraceCacheName);
 

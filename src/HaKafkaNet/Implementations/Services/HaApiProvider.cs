@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using HaKafkaNet.Models.JsonConverters;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Trace;
 
@@ -14,20 +15,7 @@ internal class HaApiProvider : IHaApiProvider
     readonly HomeAssistantConnectionInfo _apiConfig;
     readonly ISystemObserver _observer;
     readonly ILogger<HaApiProvider> _logger;
-    readonly JsonSerializerOptions _options = new JsonSerializerOptions()
-    {
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters =
-        {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
-            new RgbConverter(),
-            new RgbwConverter(),
-            new RgbwwConverter(),
-            new XyConverter(),
-            new HsConverter(),
-        }
-    };
+    readonly JsonSerializerOptions _options = GlobalConverters.StandardJsonOptions;
 
     #region Constants
     const string

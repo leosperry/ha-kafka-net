@@ -44,6 +44,14 @@ public static class EntityStateProviderExtensions
     public static IHaEntity<DateTime?, JsonElement> GetDateTimeEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime?, JsonElement>(entityId);
     public static IHaEntity<DateTime?, Tatt> GetDateTimeEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<DateTime?, Tatt>(entityId);
     
+    public static async Task<IHaEntity<TimeSpan?, JsonElement>?> GetTimeSpanEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        await provider.GetEntity<HaEntityState<TimeSpan?, JsonElement>>(entityId, cancellationToken);
+    public static async Task<IHaEntity<TimeSpan?, Tatt>?> GetTimeSpanEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
+        await provider.GetEntity<HaEntityState<TimeSpan?, Tatt>>(entityId, cancellationToken);
+
+    public static IHaEntity<TimeSpan?, JsonElement> GetTimeSpanEntity(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<TimeSpan?, JsonElement>(entityId);
+    public static IHaEntity<TimeSpan?, Tatt> GetTimeSpanEntity<Tatt>(this IUpdatingEntityProvider provider, string entityId) => provider.GetEntity<TimeSpan?, Tatt>(entityId);
+
     public static async Task<IHaEntity<OnOff, JsonElement>?> GetOnOffEntity(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 
         await provider.GetEntity<HaEntityState<OnOff, JsonElement>>(entityId, cancellationToken);
     public static async Task<IHaEntity<OnOff, Tatt>?> GetOnOffEntity<Tatt>(this IEntityStateProvider provider, string entityId, CancellationToken cancellationToken = default) => 

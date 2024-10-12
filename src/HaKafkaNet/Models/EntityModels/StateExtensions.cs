@@ -1,24 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using HaKafkaNet.Models.JsonConverters;
 
 namespace HaKafkaNet;
 
 public static class StateExtensions
 {
-    static JsonSerializerOptions _options = new JsonSerializerOptions()
-    {
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        Converters = 
-        {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
-            new RgbConverter(),
-            new RgbwConverter(),
-            new RgbwwConverter(),
-            new XyConverter(),
-            new HsConverter(),
-        }
-    };
+    static JsonSerializerOptions _options = GlobalConverters.StandardJsonOptions;
 
     public static T? GetState<T>(this HaEntityState state)
     {
