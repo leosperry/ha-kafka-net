@@ -7,8 +7,8 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 9.1 Released!
-This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.1.0) brings several improvements including auto [updating entities](https://github.com/leosperry/ha-kafka-net/wiki/Updating-Entity-Provider).
+Version 9.2 Released!
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.2.0) brings several improvements to [Startup Routines](https://github.com/leosperry/ha-kafka-net/wiki/Startup-Routines).
 
 Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
@@ -54,6 +54,11 @@ registrar.RegisterMultiple(
 * [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax for quickly creating automations.
 * Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
 * MIT license
+
+## What others have said:
+> All in all, I'm really happy HaKafkaNet is a thing! It's a really ergonomic way of writing automations that make sense.
+
+>   I converted the automations for 3 rooms from Home Assistant automations to C#, and those works good! So I'm really satisfied with the project.
 
 ### Dashboard
 ![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_5.PNG)
