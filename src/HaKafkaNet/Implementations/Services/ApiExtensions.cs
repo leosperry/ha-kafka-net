@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace HaKafkaNet;
 public static class ApiExtensions
@@ -14,6 +15,7 @@ public static class ApiExtensions
         LOCK = "lock",
         MEDIA_PLAYER = "media_player",
         SET_VALUE = "set_value",
+        SET_DATETIME = "set_datetime",
         SWITCH = "switch";
     #endregion
 
@@ -29,6 +31,15 @@ public static class ApiExtensions
 
     public static Task<HttpResponseMessage> InputNumberSet(this IHaApiProvider api, string entity_id, float value, CancellationToken cancellationToken = default)
         => api.CallService("input_number", SET_VALUE, new { entity_id, value }, cancellationToken);
+    
+    public static Task<HttpResponseMessage> InputDateTimeSetTime(this IHaApiProvider api, string entity_id, TimeSpan value, CancellationToken cancellationToken = default)
+        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, time = value.ToString(@"hh\:mm\:ss")}, cancellationToken);
+    public static Task<HttpResponseMessage> InputDateTimeSetDate(this IHaApiProvider api, string entity_id, DateOnly value, CancellationToken cancellationToken = default)
+        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, date = value.ToString("yyyy-MM-dd")}, cancellationToken);
+    public static Task<HttpResponseMessage> InputDateTimeSetDate(this IHaApiProvider api, string entity_id, DateTime value, CancellationToken cancellationToken = default)
+        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, date = value.Date.ToString("yyyy-MM-dd")}, cancellationToken);
+    public static Task<HttpResponseMessage> InputDateTimeSetDateTime(this IHaApiProvider api, string entity_id, DateTime value, CancellationToken cancellationToken = default)
+        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, datetime = value.ToString("yyyy-MM-dd HH:mm:ss")}, cancellationToken);
 
     public static Task<HttpResponseMessage> InputTextSet(this IHaApiProvider api, string entity_id, string value, CancellationToken cancellationToken = default)
         => api.CallService("input_text", SET_VALUE, new { entity_id, value }, cancellationToken);
