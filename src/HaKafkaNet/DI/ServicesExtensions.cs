@@ -128,19 +128,18 @@ public static class ServicesExtensions
                 )
             );
 
-        services.AddSingleton<IHaServices, HaServices>();
-        services.AddSingleton<IHaStateCache, HaStateCache>();
-        services.AddSingleton<IHaEntityProvider, HaEntityProvider>();
-        services.AddSingleton<IAutomationManager, AutomationManager>();
-        services.AddSingleton<IAutomationFactory, AutomationFactory>();
-        services.AddSingleton<ISystemObserver, SystemObserver>();
-        services.AddSingleton<IAutomationBuilder, AutomationBuilder>();
-        services.AddSingleton<IInternalRegistrar, AutomationRegistrar>();
-
-        services.AddSingleton<IUpdatingEntityProvider, UpdatingEntityProvider>();
-
-        services.AddSingleton<IAutomationTraceProvider, TraceLogProvider>();
-        services.AddSingleton<HknLogTarget>();
+        services.AddSingleton<IHaServices, HaServices>()
+            .AddSingleton<IStartupHelpers, StartupHelpers>()
+            .AddSingleton<IHaStateCache, HaStateCache>()
+            .AddSingleton<IHaEntityProvider, HaEntityProvider>()
+            .AddSingleton<IAutomationManager, AutomationManager>()
+            .AddSingleton<IAutomationFactory, AutomationFactory>()
+            .AddSingleton<ISystemObserver, SystemObserver>()
+            .AddSingleton<IAutomationBuilder, AutomationBuilder>()
+            .AddSingleton<IInternalRegistrar, AutomationRegistrar>()
+            .AddSingleton<IUpdatingEntityProvider, UpdatingEntityProvider>()
+            .AddSingleton<IAutomationTraceProvider, TraceLogProvider>()
+            .AddSingleton<HknLogTarget>();
 
         var eligibleTypes = 
             (from a in AppDomain.CurrentDomain.GetAssemblies()

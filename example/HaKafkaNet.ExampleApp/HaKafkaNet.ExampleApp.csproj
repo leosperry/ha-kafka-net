@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <!-- <ProjectReference Include="..\..\src\HaKafkaNet\HaKafkaNet.csproj" /> -->
+    <ProjectReference Include="..\..\src\HaKafkaNet\HaKafkaNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HaKafkaNet" Version="9.2.0" />
+    <!-- <PackageReference Include="HaKafkaNet" Version="9.2.0" /> -->
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="OpenTelemetry" Version="1.9.0" />
