@@ -7,6 +7,9 @@ public static class ApiExtensions
     #region Constants
     const string
         HOME_ASSISTANT = "homeassistant",
+        INPUT_DATETIME = "input_datetime",
+        INPUT_NUMBER = "input_number",
+        INPUT_SELECT = "input_select",
         NOTIFY = "notify",
         TURN_ON = "turn_on",
         TURN_OFF = "turn_off",
@@ -23,23 +26,39 @@ public static class ApiExtensions
     public static Task<HttpResponseMessage> ButtonPress(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
         => api.CallService("button", "press", new { entity_id }, cancellationToken);
 
+// Input Helpers
     public static Task<HttpResponseMessage> InputButtonPress(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
         => api.CallService("input_button", "press", new { entity_id }, cancellationToken);
 
     public static Task<HttpResponseMessage> InputNumberSet(this IHaApiProvider api, string entity_id, int value, CancellationToken cancellationToken = default)
-        => api.CallService("input_number", SET_VALUE, new { entity_id, value }, cancellationToken);
-
+        => api.CallService(INPUT_NUMBER, SET_VALUE, new { entity_id, value }, cancellationToken);
     public static Task<HttpResponseMessage> InputNumberSet(this IHaApiProvider api, string entity_id, float value, CancellationToken cancellationToken = default)
-        => api.CallService("input_number", SET_VALUE, new { entity_id, value }, cancellationToken);
-    
+        => api.CallService(INPUT_NUMBER, SET_VALUE, new { entity_id, value }, cancellationToken);    
+
     public static Task<HttpResponseMessage> InputDateTimeSetTime(this IHaApiProvider api, string entity_id, TimeSpan value, CancellationToken cancellationToken = default)
-        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, time = value.ToString(@"hh\:mm\:ss")}, cancellationToken);
+        => api.CallService(INPUT_DATETIME, SET_DATETIME, new {entity_id, time = value.ToString(@"hh\:mm\:ss")}, cancellationToken);
     public static Task<HttpResponseMessage> InputDateTimeSetDate(this IHaApiProvider api, string entity_id, DateOnly value, CancellationToken cancellationToken = default)
-        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, date = value.ToString("yyyy-MM-dd")}, cancellationToken);
+        => api.CallService(INPUT_DATETIME, SET_DATETIME, new {entity_id, date = value.ToString("yyyy-MM-dd")}, cancellationToken);
     public static Task<HttpResponseMessage> InputDateTimeSetDate(this IHaApiProvider api, string entity_id, DateTime value, CancellationToken cancellationToken = default)
-        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, date = value.Date.ToString("yyyy-MM-dd")}, cancellationToken);
+        => api.CallService(INPUT_DATETIME, SET_DATETIME, new {entity_id, date = value.Date.ToString("yyyy-MM-dd")}, cancellationToken);
     public static Task<HttpResponseMessage> InputDateTimeSetDateTime(this IHaApiProvider api, string entity_id, DateTime value, CancellationToken cancellationToken = default)
-        => api.CallService("input_datetime", SET_DATETIME, new {entity_id, datetime = value.ToString("yyyy-MM-dd HH:mm:ss")}, cancellationToken);
+        => api.CallService(INPUT_DATETIME, SET_DATETIME, new {entity_id, datetime = value.ToString("yyyy-MM-dd HH:mm:ss")}, cancellationToken);
+
+    public static Task<HttpResponseMessage> InputSelect_Select<T>(this IHaApiProvider api, string entity_id, T value, CancellationToken cancellationToken = default)
+        where T : System.Enum
+        => api.CallService(INPUT_SELECT, "select_option", new{entity_id,option = value.ToString()}, cancellationToken);
+    public static Task<HttpResponseMessage> InputSelect_Select(this IHaApiProvider api, string entity_id, string value, CancellationToken cancellationToken = default)
+        => api.CallService(INPUT_SELECT, "select_option", new{entity_id,option = value.ToString()}, cancellationToken);
+    public static Task<HttpResponseMessage> InputSelect_SelectFirst(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
+        => api.CallService(INPUT_SELECT, "select_first", new{entity_id}, cancellationToken);
+    public static Task<HttpResponseMessage> InputSelect_SelectLast(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
+        => api.CallService(INPUT_SELECT, "select_last", new{entity_id}, cancellationToken);
+    public static Task<HttpResponseMessage> InputSelect_SelectNext(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
+        => api.CallService(INPUT_SELECT, "select_next", new{entity_id}, cancellationToken);
+    public static Task<HttpResponseMessage> InputSelect_SelectPrevious(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
+        => api.CallService(INPUT_SELECT, "select_previous", new{entity_id}, cancellationToken);
+
+
 
     public static Task<HttpResponseMessage> InputTextSet(this IHaApiProvider api, string entity_id, string value, CancellationToken cancellationToken = default)
         => api.CallService("input_text", SET_VALUE, new { entity_id, value }, cancellationToken);
@@ -85,6 +104,18 @@ public static class ApiExtensions
         => api.CallService(LOCK, "open", new { entity_id }, cancellationToken);
     public static Task<HttpResponseMessage> NotifyGroupOrDevice(this IHaApiProvider api, string groupName, string message, string? title = null, CancellationToken cancellationToken = default)
         => api.CallService(NOTIFY, groupName, new { message, title }, cancellationToken);
+
+    /// <summary>
+    /// https://companion.home-assistant.io/docs/notifications/notification-commands
+    /// </summary>
+    /// <param name="api"></param>
+    /// <param name="device"></param>
+    /// <param name="message"></param>
+    /// <param name="data"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<HttpResponseMessage> NotifyCommand(this IHaApiProvider api, string device, AndroidCommand message, dynamic data, CancellationToken cancellationToken = default)
+        => api.CallService(NOTIFY, device, new{ message, data}, cancellationToken);
 
     public static Task<HttpResponseMessage> MediaPlayerMute(this IHaApiProvider api, string entity_id, bool mute, CancellationToken cancellationToken = default)
         => api.CallService(MEDIA_PLAYER, "volume_mute", new {
@@ -166,7 +197,7 @@ public static class ApiExtensions
         => api.CallService("tts", "speak", new
             {
                 entity_id = "tts.piper", 
-                media_player_entity_id = mediaPlayerEntity, 
+                media_player_entity_id = mediaPlayerEntity,
                 cache, message, 
                 options
             }, cancellationToken);
