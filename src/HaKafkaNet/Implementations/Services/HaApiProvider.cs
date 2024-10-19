@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using FastEndpoints;
 using HaKafkaNet.Models.JsonConverters;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace;
 
 namespace HaKafkaNet;
 
@@ -164,4 +163,37 @@ internal class HaApiProvider : IHaApiProvider
             return (response, default(T?));
         }
     }
+
+    public async Task<(HttpResponseMessage?, bool)> CheckApi()
+    {
+        bool result = true;
+        HttpResponseMessage? response = null;
+        try
+        {
+            response = await _client.GetAsync("/api/");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                result = false;
+            }
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Calling Home Assistant API threw an exception");
+            result = false;
+        }
+        return (response, result);
+    }
+
+    public async Task<(HttpResponseMessage response, IHaEntity<Tstate, Tatt>? returnedState)> SetState<Tstate, Tatt>(string entityId, Tstate state, Tatt attributes)
+    {
+        
+        var response = await _client.PostAsJsonAsync<SetStateRequest<Tstate,Tatt>>($"/api/states/{entityId}", new(state, attributes), _options);
+
+        var returnedState = JsonSerializer.Deserialize<HaEntityState<Tstate, Tatt>>(response.Content.ReadAsStream(), _options);
+
+        return (response, returnedState);
+    }
+
+    private record SetStateRequest<Tstate,Tatt>(Tstate state, Tatt attributes);
 }
