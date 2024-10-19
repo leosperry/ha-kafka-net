@@ -1,7 +1,6 @@
 ﻿
 namespace HaKafkaNet;
 
-
 [ExcludeFromDiscovery]
 internal class AutomationWrapper : IAutomationWrapper
 {
@@ -42,12 +41,17 @@ internal class AutomationWrapper : IAutomationWrapper
         _eventTimings = automation.EventTimings;        
     }
 
-
     AutomationMetaData GetMeta(string source)
     {
         AutomationMetaData meta;
-        var underlyingType = _auto is DelayablelAutomationWrapper ca ? ca.WrappedConditional.GetType() : _auto.GetType();
 
+        var underlyingType = _auto switch
+        {
+            DelayablelAutomationWrapper delayable => delayable.WrappedConditional.GetType(),
+            TypedAutomationWrapper typed => typed.WrappedType,
+            _ => _auto.GetType()
+        };
+        
         if (_auto is IAutomationMeta metaAuto) // all prebuilt automations and user implemented
         {
             try

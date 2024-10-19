@@ -116,7 +116,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             < 0 => EventTiming.PreStartupPreLastCached,
             > 0 => EventTiming.PreStartupPostLastCached,
             var x when current.Context?.ID == cached.Context?.ID => EventTiming.PreStartupSameAsLastCached,
-            _ => EventTiming.PreStartupSameTimeLastCached 
+            _ => EventTiming.PreStartupSameTimeLastCached // extreme edge case
         };
     }
 }

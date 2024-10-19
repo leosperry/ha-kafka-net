@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿using Confluent.Kafka.Admin;
+
+namespace HaKafkaNet;
 
 public record AutomationMetaData
 {
@@ -20,4 +22,16 @@ public record AutomationMetaData
 
     internal bool UserMetaError { get; set; } = false;
     internal bool UserTriggerError {get; set; } = false;
+
+    internal static AutomationMetaData Create(object automation)
+    {
+        return new AutomationMetaData()
+        {
+            Name = automation.GetType().Name,
+            Description = automation.GetType().Name,
+            Enabled = true,
+            UnderlyingType = automation.GetType().Name
+        };
+    }
 }
+

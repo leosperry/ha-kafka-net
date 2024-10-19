@@ -32,13 +32,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
         }
         else
         {
-            _meta = new AutomationMetaData()
-            {
-                Name = _automation.GetType().Name,
-                Description = _automation.GetType().Name,
-                Enabled = true,
-                UnderlyingType = _automation.GetType().Name
-            };
+            _meta = AutomationMetaData.Create(this);
         }
         _meta.IsDelayable = true;
 

@@ -17,25 +17,17 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-    public SimpleAutomationWithServicesBuildingInfo CreateSimpleWithServices(bool enabledAtStartup = true)
+    public TypedAutomationBuildingInfo<Tstate, Tatt> CreateSimpleTyped<Tstate, Tatt>(bool enabledAtStartup = true)
     {
-        return new(_services)
+        return new TypedAutomationBuildingInfo<Tstate, Tatt>()
         {
             EnabledAtStartup = enabledAtStartup
         };
     }
-
+    
     public ConditionalAutomationBuildingInfo CreateConditional(bool enabledAtStartup = true)
     {
         return new()
-        {
-            EnabledAtStartup = enabledAtStartup
-        };
-    }
-
-    public ConditionalAutomationWithServicesBuildingInfo CreateConditionalWithServices(bool enabledAtStartup = true)
-    {
-        return new(_services)
         {
             EnabledAtStartup = enabledAtStartup
         };
@@ -49,15 +41,6 @@ internal class AutomationBuilder : IAutomationBuilder
             IsReschedulable = reschdulable
         };
     }
-
-    // public SchedulableAutomationWithServicesBuildingInfo CreateSchedulableWithServices(bool reschdulable = false, bool enabledAtStartup = true)
-    // {
-    //     return new(_services)
-    //     {
-    //         EnabledAtStartup = enabledAtStartup,
-    //         IsReschedulable = reschdulable
-    //     };
-    // }
 
     public  SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
     {

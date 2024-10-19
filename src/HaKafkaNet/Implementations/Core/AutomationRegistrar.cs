@@ -23,60 +23,42 @@ internal class AutomationRegistrar : IInternalRegistrar
         _trace = traceProvider;
         _logger = logger;
 
-        RegisterMultiple(automations);
-        RegisterMultiple(conditionalAutomations);
-        RegisterMultiple(schedulableAutomations);
+        Register(automations.ToArray());
+        RegisterDelayed(conditionalAutomations.ToArray());
+        RegisterDelayed(schedulableAutomations.ToArray());
     }
 
-    public void Register(IAutomation automation)
+    public void Register(params IAutomation[] automations)
     {
-        AddSimple(automation);
+        foreach (var item in automations)
+        {
+            AddSimple(item);
+        }
     }
 
-    public void Register(IDelayableAutomation automation)
+    public void RegisterDelayed(params IDelayableAutomation[] automations)
     {
-        AddDelayable(automation);
+        foreach (var item in automations)
+        {
+            AddDelayable(item);
+        }
     }
 
-    public void Register<T>(T automation, DelayEvaluator<T> delayEvaluator) where T : IDelayableAutomation
+    public void RegisterTyped<Tstate, Tatt>(params IAutomation<Tstate, Tatt>[] automations)
+    {
+        foreach (var item in automations)
+        {
+            var wrapped = new TypedAutomationWrapper<Tstate, Tatt>(item);
+            AddSimple(wrapped);
+        }
+    }
+
+    public void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator) where T : IDelayableAutomation
     {
         AddDelayableWithEvaluator(automation, delayEvaluator);
     }
 
-    public void RegisterMultiple(IEnumerable<IAutomation> automations)
-    {
-        foreach (var item in automations)
-        {
-            AddSimple(item);
-        }
-    }
-
-    public void RegisterMultiple(IEnumerable<IDelayableAutomation> automations)
-    {
-        foreach (var item in automations)
-        {
-            AddDelayable(item);
-        }    
-    }
-
-
-    public void RegisterMultiple(params IAutomation[] automations)
-    {
-        foreach (var item in automations)
-        {
-            AddSimple(item);
-        }
-    }
-
-    public void RegisterMultiple(params IDelayableAutomation[] automations)
-    {
-        foreach (var item in automations)
-        {
-            AddDelayable(item);
-        }    
-    }
-
-    public void RegisterMultiple<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator) 
+    public void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator) 
         where T : IDelayableAutomation
     {
         foreach (var item in automations)

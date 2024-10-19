@@ -55,15 +55,14 @@ public static partial class AutomationBuilderExtensions
     {
         info.Execution = execution;
         return info;
-    } 
+    }
 
-    [Obsolete("", false)]
-    public static SimpleAutomationWithServicesBuildingInfo WithExecution(this SimpleAutomationWithServicesBuildingInfo info, Func<IHaServices, HaEntityStateChange, CancellationToken, Task> execution)
+    public static TypedAutomationBuildingInfo<Tstate, Tatt> WithExecution<Tstate, Tatt>(this TypedAutomationBuildingInfo<Tstate, Tatt> info,
+        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>> , CancellationToken, Task> execution)
     {
-        info.ExecutionWithServcies = execution;
+        info.Execution = execution;
         return info;
-    }    
-
+    }
 
     public static IAutomation Build(this SimpleAutomationBuildingInfo info)
     {
@@ -71,16 +70,13 @@ public static partial class AutomationBuilderExtensions
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.EventTimings ?? EventTiming.PostStartup).WithMeta(GetMeta(info));
-
     }
-    
-    [Obsolete("", false)]
-    public static IAutomation Build(this SimpleAutomationWithServicesBuildingInfo info)
+
+    public static IAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedAutomationBuildingInfo<Tstate, Tatt> info)
     {
-        return new SimpleAutomationWithServices(
-            info._services,
+        return new TypedAutomation<Tstate, Tatt>(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.ExecutionWithServcies ?? throw new AutomationBuilderException("execution must be specified"),
+            info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.EventTimings ?? EventTiming.PostStartup).WithMeta(GetMeta(info));
     }
 
@@ -91,18 +87,6 @@ public static partial class AutomationBuilderExtensions
             info.ContinuesToBeTrue ?? throw new AutomationBuilderException("when clause must be specified"),
             info.For ?? TimeSpan.Zero,
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"))
-            .WithMeta(GetMeta(info));
-    }
-    
-    [Obsolete("", false)]
-    public static IConditionalAutomation Build(this ConditionalAutomationWithServicesBuildingInfo info)
-    {
-        return new ConditionalAutomationWithServices(
-            info._services,
-            info.TriggerEntityIds ?? Enumerable.Empty<string>(),
-            info.ContinuesToBeTrueWithServices ?? throw new AutomationBuilderException("when clause must be specified"),
-            info.For ?? TimeSpan.Zero,
-            info.ExecutionWithServices ?? throw new AutomationBuilderException("execution must be specified"))
             .WithMeta(GetMeta(info));
     }
 

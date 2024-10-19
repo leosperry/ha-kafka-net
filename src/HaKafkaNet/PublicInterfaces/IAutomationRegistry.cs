@@ -11,19 +11,34 @@ public interface IAutomationRegistry
 public interface IRegistrar
 {
     
-    void Register(IAutomation automation);
-    void Register(IDelayableAutomation automation);
-    void Register<T>(T automation, DelayEvaluator<T> delayEvaluator)
+    void Register(params IAutomation[] automation);
+
+    void RegisterDelayed(params IDelayableAutomation[] automations);
+
+    void RegisterTyped<Tstate, Tatt>(params IAutomation<Tstate, Tatt>[] automations);
+
+    void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
+        where T : IDelayableAutomation;
+    void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
 
-    void RegisterMultiple(IEnumerable<IAutomation> automations);
-    void RegisterMultiple(IEnumerable<IDelayableAutomation> automations);
 
-    void RegisterMultiple(params IAutomation[] automations);
-    void RegisterMultiple(params IDelayableAutomation[] automations);
+    [Obsolete("Please use RegisterDelayed", false)]
+    void Register(IDelayableAutomation automation) => RegisterDelayed(automation);
+
+    [Obsolete("Please use Register", false)]
+    void RegisterMultiple(IEnumerable<IAutomation> automations) => Register(automations.ToArray());
+
+    [Obsolete("Please use RegisterDelayed", false)]
+    void RegisterMultiple(IEnumerable<IDelayableAutomation> automations) => RegisterDelayed(automations.ToArray());
+
+    [Obsolete("Please use Register", false)]
+    void RegisterMultiple(params IAutomation[] automations) => Register(automations);
+
+    [Obsolete("Please use RegisterDelayed", false)]
+    void RegisterMultiple(params IDelayableAutomation[] automations) => RegisterDelayed(automations);
     
-    void RegisterMultiple<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
-        where T : IDelayableAutomation;
+
 }
 
 internal interface IInternalRegistrar : IRegistrar

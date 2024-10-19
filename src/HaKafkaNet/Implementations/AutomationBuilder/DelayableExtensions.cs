@@ -39,22 +39,6 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
-    public static ConditionalAutomationWithServicesBuildingInfo When(
-        this ConditionalAutomationWithServicesBuildingInfo info,
-        Func<IHaServices, HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue)
-    {
-        info.ContinuesToBeTrueWithServices = continuesToBeTrue;
-        return info;
-    }
-
-    public static ConditionalAutomationWithServicesBuildingInfo When(
-        this ConditionalAutomationWithServicesBuildingInfo info,
-        Func<HaEntityStateChange, bool> continuesToBeTrue)
-    {
-        info.ContinuesToBeTrueWithServices = (_, sc, _) => Task.FromResult( continuesToBeTrue(sc));
-        return info;
-    }
-
     public static ConditionalAutomationBuildingInfo When(
         this ConditionalAutomationBuildingInfo info,
         Func<HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue)
@@ -98,13 +82,6 @@ public partial class AutomationBuilderExtensions
     public static ConditionalAutomationBuildingInfo Then(this ConditionalAutomationBuildingInfo info, Func<CancellationToken, Task> executor)
     {
         info.Execution = executor;
-        return info;
-    }
-
-    public static ConditionalAutomationWithServicesBuildingInfo Then(this ConditionalAutomationWithServicesBuildingInfo info, 
-    Func<IHaServices, CancellationToken ,Task> executor)
-    {
-        info.ExecutionWithServices = executor;
         return info;
     }
 

@@ -21,15 +21,9 @@ public class SimpleAutomationBuildingInfo : MostAutomationsBuildingInfo
     internal Func<HaEntityStateChange, CancellationToken, Task>? Execution { get; set; }
 }
 
-public class SimpleAutomationWithServicesBuildingInfo : MostAutomationsBuildingInfo
+public class TypedAutomationBuildingInfo<Tstate, Tatt> : MostAutomationsBuildingInfo
 {
-    internal readonly IHaServices _services;
-
-    internal SimpleAutomationWithServicesBuildingInfo(IHaServices services)
-    {
-        _services = services;
-    }
-    internal Func<IHaServices, HaEntityStateChange, CancellationToken, Task>? ExecutionWithServcies { get; set; }
+    internal Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task>? Execution { get; set; }
 }
 
 public abstract class DelayableAutomationBuildingInfo : MostAutomationsBuildingInfo
@@ -47,17 +41,6 @@ public abstract class ConditionalAutomationBuildingInfoBase : DelayableAutomatio
 public class ConditionalAutomationBuildingInfo : ConditionalAutomationBuildingInfoBase
 {
     internal Func<CancellationToken, Task>? Execution { get; set; }
-}
-
-public class ConditionalAutomationWithServicesBuildingInfo : ConditionalAutomationBuildingInfoBase
-{
-    internal readonly IHaServices _services;
-    internal ConditionalAutomationWithServicesBuildingInfo(IHaServices services)
-    {
-        _services = services!;
-    }
-    internal Func<IHaServices ,HaEntityStateChange, CancellationToken, Task<bool>>? ContinuesToBeTrueWithServices { get; set; }
-    internal Func<IHaServices, CancellationToken, Task>? ExecutionWithServices { get; set; }
 }
 
 public class SchedulableAutomationBuildingInfo : DelayableAutomationBuildingInfo

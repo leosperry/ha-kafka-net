@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using NLog;
 
 
+
+
 namespace HaKafkaNet;
 
 public static class ServicesExtensions
@@ -149,9 +151,30 @@ public static class ServicesExtensions
                 !t.IsAbstract &&
                 !t.GetCustomAttributes(typeof(ExcludeFromDiscoveryAttribute)).Any()
             select t).ToArray();
-
+        
         foreach (var type in eligibleTypes)
         {
+            var stronglyTypedAutomationDefinitions = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAutomation<,>)).ToArray();
+            if (stronglyTypedAutomationDefinitions.Length > 0)
+            { 
+                if (stronglyTypedAutomationDefinitions.Length > 1)
+                {
+                    errors.Add(new("Strongly typeed automations can only implement one version of IAutomation<Tstate,Tatt>", null, type));
+                    continue;
+                }
+                services.AddSingleton(type);
+
+                var stronglyTypeDef = stronglyTypedAutomationDefinitions.First();
+                var genericArgs = stronglyTypeDef.GetGenericArguments();
+                
+                var afterTyped = _getServiceDescriptor.MakeGenericMethod([type, genericArgs[0], genericArgs[1]]);
+                
+                var descriptor = (ServiceDescriptor)afterTyped.Invoke(null, null)!;
+                
+                services.TryAddEnumerable(descriptor);
+                continue;
+            }
+
             // handle interfaced classes
             switch (type)
             {
@@ -182,12 +205,24 @@ public static class ServicesExtensions
         }
     }
 
+    static readonly MethodInfo _getServiceDescriptor = typeof(ServicesExtensions).GetMethod(nameof(GetServiceDescriptor), BindingFlags.Static | BindingFlags.NonPublic)!;
+
+    static ServiceDescriptor GetServiceDescriptor<Tauto ,Tstate, Tatt>()
+        where Tauto : IAutomation<Tstate, Tatt>
+    {
+        return ServiceDescriptor.Singleton<IAutomation, TypedAutomationWrapper<Tstate, Tatt>>(sp => {
+            var instance = sp.GetRequiredService<Tauto>();
+            return new TypedAutomationWrapper<Tstate, Tatt>(instance);
+        });
+    }
+
+
+    static List<InitializationError> errors = new();
+
     private static void InitializeUserCode(
         IServiceProvider services,
         HaKafkaNetConfig config)
     {
-        List<InitializationError> errors = new();
-
         // check hard requirements first
         CheckValidHaConfig(config.HaConnectionInfo, errors);
         CheckCacheRequirement(services, errors);

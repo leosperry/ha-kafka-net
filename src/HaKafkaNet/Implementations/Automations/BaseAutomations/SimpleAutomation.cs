@@ -2,7 +2,7 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta
+public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta, ISetAutomationMeta
 {
     private readonly IEnumerable<string> _triggerEntities;
     private readonly EventTiming _eventTimings;
@@ -35,7 +35,7 @@ public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta
         return _triggerEntities;
     }
 
-    internal void SetMeta(AutomationMetaData meta)
+    public void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
     }

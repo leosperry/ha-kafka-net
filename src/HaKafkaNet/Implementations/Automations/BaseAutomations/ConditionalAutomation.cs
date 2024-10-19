@@ -2,7 +2,7 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public abstract class ConditionalAutomationBase : DelayableAutomationBase, IConditionalAutomation, IAutomationMeta
+public abstract class ConditionalAutomationBase : DelayableAutomationBase, IConditionalAutomation, IAutomationMeta, ISetAutomationMeta
 {
     readonly TimeSpan _for;
     AutomationMetaData? _meta;
@@ -25,7 +25,7 @@ public abstract class ConditionalAutomationBase : DelayableAutomationBase, ICond
         };
     }
 
-    internal void SetMeta(AutomationMetaData meta)
+    public void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
     }

@@ -21,7 +21,5 @@ public record HaEntityStateChange<T>
     public required T New { get ; set; }
 }
 
-public record HaEntityStateChange : HaEntityStateChange<HaEntityState>
-{
+public record HaEntityStateChange : HaEntityStateChange<HaEntityState>;
 
-}

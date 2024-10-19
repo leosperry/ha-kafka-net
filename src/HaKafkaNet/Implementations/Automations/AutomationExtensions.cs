@@ -1,9 +1,9 @@
 ﻿namespace HaKafkaNet;
 
-public static class SimpleAutomationExtensions
+public static class AutomationExtensions
 {
     public static T WithMeta<T>(this T auto, string name, string? description = null, bool enabledAtStartup = true, Guid? id = null) 
-        where T: SimpleAutomationBase
+        where T: ISetAutomationMeta
     {
         AutomationMetaData meta = new AutomationMetaData()
         {
@@ -16,7 +16,7 @@ public static class SimpleAutomationExtensions
     }
     
     public static T WithMeta<T>(this T auto, AutomationMetaData meta) 
-        where T: SimpleAutomationBase
+        where T: ISetAutomationMeta
     {
         auto.SetMeta(meta);
         return auto;
@@ -24,48 +24,3 @@ public static class SimpleAutomationExtensions
     
 }
 
-public static class ContitionalAutomationExtensions
-{
-    public static T WithMeta<T>(this T auto, string name, string? description = null, bool enabledAtStartup = true, Guid? id = null) 
-        where T : ConditionalAutomationBase
-    {
-        AutomationMetaData meta = new AutomationMetaData()
-        {
-            Name = name,
-            Description = description,
-            Enabled = enabledAtStartup,
-        };
-        auto.SetMeta(meta);
-        return auto;
-    }
-
-    public static T WithMeta<T>(this T auto, AutomationMetaData meta) 
-        where T: ConditionalAutomationBase
-    {
-        auto.SetMeta(meta);
-        return auto;
-    }
-}
-
-public static class SchedulableExtensions
-{
-    public static T WithMeta<T>(this T auto, AutomationMetaData meta)
-        where T: SchedulableAutomationBase
-    {
-        auto.SetMeta(meta);
-        return auto;
-    }
-
-    public static T WithMeta<T>(this T auto, string name, string? description = null, bool enabledAtStartup = true, Guid? id = null) 
-        where T : SchedulableAutomationBase
-    {
-        AutomationMetaData meta = new AutomationMetaData()
-        {
-            Name = name,
-            Description = description,
-            Enabled = enabledAtStartup,
-        };
-        auto.SetMeta(meta);
-        return auto;
-    }
-}

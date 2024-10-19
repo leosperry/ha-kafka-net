@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿using System.Text.Json;
+
+namespace HaKafkaNet;
 
 public interface IInitializeOnStartup
 {
@@ -21,7 +23,21 @@ public interface IAutomationBase
     IEnumerable<string> TriggerEntityIds();
 }
 
-public interface IAutomation : IAutomationBase
+public interface IAutomation<in Tchange, Tentity, Tstate, Tatt> 
+    where Tchange : HaEntityStateChange<Tentity>
+    where Tentity : HaEntityState<Tstate, Tatt>
+{
+    Task Execute(Tchange stateChange, CancellationToken ct);
+}
+
+public interface IAutomation<Tstate, Tatt> : IAutomationBase, IAutomation<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, HaEntityState<Tstate, Tatt> ,Tstate, Tatt>
+{
+
+}
+
+public interface IAutomation<Tstate> : IAutomation<Tstate, JsonElement>;
+
+public interface IAutomation : IAutomationBase, IAutomation<HaEntityStateChange, HaEntityState, string, JsonElement>
 {
     /// <summary>
     /// The interface used by the Automation manager to execute automations
@@ -29,7 +45,7 @@ public interface IAutomation : IAutomationBase
     /// <param name="stateChange">Information about the state change including the previous state if it was cached</param>
     /// <param name="cancellationToken">A token that will be marked canceled during shutdown of the worker</param>
     /// <returns></returns>
-    Task Execute(HaEntityStateChange stateChange, CancellationToken ct);
+    //Task Execute(HaEntityStateChange stateChange, CancellationToken ct);
 }
 
 /// <summary>
@@ -98,4 +114,9 @@ public interface ISchedulableAutomation : IDelayableAutomation
 public interface IAutomationMeta
 {
     AutomationMetaData GetMetaData();
+}
+
+public interface ISetAutomationMeta
+{
+    void SetMeta(AutomationMetaData meta);
 }

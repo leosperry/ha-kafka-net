@@ -1,6 +1,6 @@
 ﻿namespace HaKafkaNet;
 
-public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta
+public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta, ISetAutomationMeta
 {    
     private AutomationMetaData? _meta;
     private DateTime? _nextExecution;
@@ -53,7 +53,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
         }
     }
 
-    internal void SetMeta(AutomationMetaData meta)
+    public void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
     }
