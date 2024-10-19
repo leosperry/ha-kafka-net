@@ -50,8 +50,8 @@ public class GetAllTests
         // When
 
         sut.Register(auto.Object);
-        sut.Register(conditional.Object);
-        sut.Register(schedulable.Object);
+        sut.RegisterDelayed(conditional.Object);
+        sut.RegisterDelayed(schedulable.Object);
         var result = sut.RegisteredAutomations;
     
         // Then

@@ -36,6 +36,9 @@ public interface IRegistrar
     void RegisterMultiple(params IAutomation[] automations) => Register(automations);
 
     [Obsolete("Please use RegisterDelayed", false)]
+    void Register(params IDelayableAutomation[] automation) => RegisterDelayed(automation);
+
+    [Obsolete("Please use RegisterDelayed", false)]
     void RegisterMultiple(params IDelayableAutomation[] automations) => RegisterDelayed(automations);
     
 
