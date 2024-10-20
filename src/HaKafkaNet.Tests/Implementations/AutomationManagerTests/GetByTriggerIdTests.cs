@@ -15,7 +15,7 @@ public class GetByTriggerIdTests
 
         
         Mock<IAutomationRegistry> registry = new();
-        Mock<IAutomationWrapper> registeredAuto = new();
+        Mock<IAutomationWrapper<object>> registeredAuto = new();
         registeredAuto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData()
         {
             Name = "auto"
@@ -40,7 +40,7 @@ public class GetByTriggerIdTests
     public void WhenAllTriggerIdMatch_ReturnsAll()
     {
         string triggerId = "NCC-1701";
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name = "auto"});
 
@@ -51,7 +51,7 @@ public class GetByTriggerIdTests
         
         Mock<IAutomationRegistry> registry = new();
 
-        Mock<IAutomationWrapper> registeredAuto = new();
+        Mock<IAutomationWrapper<object>> registeredAuto = new();
         registeredAuto.Setup(a => a.TriggerEntityIds()).Returns([triggerId]);
         registeredAuto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         
@@ -76,15 +76,15 @@ public class GetByTriggerIdTests
     {
         string enterprise = "NCC-1701";
         string excelsior = "NCC-2000";
-        Mock<IAutomationWrapper> auto1 = new();
+        Mock<IAutomationWrapper<object>> auto1 = new();
         auto1.Setup(a => a.TriggerEntityIds()).Returns([enterprise]);
         auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         
-        Mock<IAutomationWrapper> auto2 = new();
+        Mock<IAutomationWrapper<object>> auto2 = new();
         auto2.Setup(a => a.TriggerEntityIds()).Returns([enterprise, excelsior]);
         auto2.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         
-        Mock<IAutomationWrapper> auto3 = new();
+        Mock<IAutomationWrapper<object>> auto3 = new();
         auto3.Setup(a => a.TriggerEntityIds()).Returns([excelsior]);
         auto3.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="a"});
         

@@ -27,7 +27,7 @@ public class SunComponentTests
         AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
-        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
+        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper<object>>(autoWrapper, 1));
 
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
         autoMgr.Initialize(new List<InitializationError>());
@@ -58,7 +58,7 @@ public class SunComponentTests
         AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
-        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
+        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper<object>>(autoWrapper, 1));
 
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
         autoMgr.Initialize(new List<InitializationError>());
@@ -90,7 +90,7 @@ public class SunComponentTests
         AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
 
         Mock<IInternalRegistrar> registrar = new();
-        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
+        registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper<object>>(autoWrapper, 1));
 
         AutomationManager autoMgr = new AutomationManager(null, registrar.Object);
 

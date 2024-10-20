@@ -139,7 +139,7 @@ public class HaStateHandlerComponentTests
 
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        Mock<IAutomationWrapper> auto1 = new ();
+        Mock<IAutomationWrapper<object>> auto1 = new ();
         auto1.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -189,7 +189,7 @@ public class HaStateHandlerComponentTests
 
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
-        Mock<IAutomationWrapper> auto1 = new Mock<IAutomationWrapper>();
+        Mock<IAutomationWrapper<object>> auto1 = new Mock<IAutomationWrapper<object>>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
         auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
 
@@ -227,7 +227,7 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomationWrapper> auto = new Mock<IAutomationWrapper>();
+        Mock<IAutomationWrapper<object>> auto = new Mock<IAutomationWrapper<object>>();
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -264,7 +264,7 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         var autoWithMeta = auto.As<IAutomationMeta>();
         autoWithMeta.Setup(a => a.GetMetaData())
             .Returns(new AutomationMetaData()
@@ -304,7 +304,7 @@ public class HaStateHandlerComponentTests
         // Given
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
         Mock<IMessageContext> fakeContext = new();
@@ -335,7 +335,7 @@ public class HaStateHandlerComponentTests
     {
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PreStartupNotCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -370,7 +370,7 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1))));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -405,7 +405,7 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(-1))));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -441,7 +441,7 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
             getBytes<HaEntityState>(TestHelpers.GetState(lastUpdated: DateTime.Now.AddHours(-1))));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -474,7 +474,7 @@ public class HaStateHandlerComponentTests
     {
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -510,7 +510,7 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
 
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -547,7 +547,7 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(default(byte[]?));
 
-        Mock<IAutomationWrapper> auto = new();
+        Mock<IAutomationWrapper<object>> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){
