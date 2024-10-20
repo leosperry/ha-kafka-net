@@ -11,7 +11,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     internal List<AutomationWrapper> RegisteredAutomations { get; private set; } = new();
 
-    public IEnumerable<IAutomationWrapper> Registered => RegisteredAutomations.Select(a => a);
+    public IEnumerable<IAutomationWrapper<object>> Registered => RegisteredAutomations.Select(a => a);
 
     public AutomationRegistrar(
         IEnumerable<IAutomation> automations,

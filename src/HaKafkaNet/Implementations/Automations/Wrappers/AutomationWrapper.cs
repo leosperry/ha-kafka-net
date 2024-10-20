@@ -2,7 +2,7 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-internal class AutomationWrapper : IAutomationWrapper
+internal class AutomationWrapper : IAutomationWrapper<IAutomation>
 {
     readonly IAutomation _auto;
     readonly IAutomationTraceProvider _trace;
@@ -47,7 +47,7 @@ internal class AutomationWrapper : IAutomationWrapper
 
         var underlyingType = _auto switch
         {
-            DelayablelAutomationWrapper delayable => delayable.WrappedConditional.GetType(),
+            DelayablelAutomationWrapper delayable => delayable.WrappedAutomation.GetType(),
             TypedAutomationWrapper typed => typed.WrappedType,
             _ => _auto.GetType()
         };

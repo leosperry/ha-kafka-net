@@ -4,7 +4,7 @@ namespace HaKafkaNet;
 
 internal interface IAutomationManager
 {
-    IEnumerable<IAutomationWrapper> GetAll();
+    IEnumerable<IAutomationWrapper<object>> GetAll();
     IEnumerable<IAutomationRegistry>? Registries { get; }
     bool HasAutomationsForEntity(string entityId);
     Task TriggerAutomations(HaEntityStateChange stateChange, CancellationToken cancellationToken = default);
@@ -17,7 +17,7 @@ internal interface IAutomationManager
     /// <returns>true if found and updated, otherwise false</returns>
     bool EnableAutomation(string key, bool enable);
 
-    IAutomationWrapper? GetByKey(string key);
+    IAutomationWrapper<object>? GetByKey(string key);
 
     HashSet<string> GetEntitiesToTrack();
     void Initialize(List<InitializationError> errors);
@@ -29,8 +29,8 @@ internal class AutomationManager : IAutomationManager
 
     private readonly IInternalRegistrar _registrar;
 
-    private  Dictionary<string, IAutomationWrapper> _internalAutomationsByKey = new();
-    private Dictionary<string, List<IAutomationWrapper>> _automationsByTrigger = new();
+    private  Dictionary<string, IAutomationWrapper<object>> _internalAutomationsByKey = new();
+    private Dictionary<string, List<IAutomationWrapper<object>>> _automationsByTrigger = new();
 
     public AutomationManager(
         IEnumerable<IAutomationRegistry>? registries,
@@ -72,7 +72,7 @@ internal class AutomationManager : IAutomationManager
             select (key, collection)).ToDictionary();
     }
 
-    private void SetKeys(IAutomationWrapper[] allRegistered, List<InitializationError> errors)
+    private void SetKeys(IAutomationWrapper<object>[] allRegistered, List<InitializationError> errors)
     {
         Dictionary<string, int> takenKeys = new();
         foreach (var auto in allRegistered)
@@ -106,12 +106,12 @@ internal class AutomationManager : IAutomationManager
         return stripped.Replace(' ', '_').ToLower();
     }
 
-    public IEnumerable<IAutomationWrapper> GetAll()
+    public IEnumerable<IAutomationWrapper<object>> GetAll()
     {
         return _internalAutomationsByKey.Values;
     }
 
-    public IAutomationWrapper? GetByKey(string key)
+    public IAutomationWrapper<object>? GetByKey(string key)
     {
         if (_internalAutomationsByKey.TryGetValue(key, out var wrapper))
         {
@@ -120,7 +120,7 @@ internal class AutomationManager : IAutomationManager
         return null;
     }
 
-    public IEnumerable<IAutomationWrapper> GetByTriggerEntityId(string entityId)
+    public IEnumerable<IAutomationWrapper<object>> GetByTriggerEntityId(string entityId)
     {
         if (_automationsByTrigger.TryGetValue(entityId, out var automations))
         {

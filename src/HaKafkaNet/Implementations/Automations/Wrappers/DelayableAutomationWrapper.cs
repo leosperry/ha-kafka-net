@@ -3,12 +3,12 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta 
+internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutomation>
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
     AutomationMetaData _meta;
     private readonly IDelayableAutomation _automation;
-    internal IDelayableAutomation WrappedConditional { get => _automation; }
+    public IDelayableAutomation WrappedAutomation { get => _automation; }
 
     readonly IAutomationTraceProvider _trace;
     private readonly ILogger _logger;
@@ -32,7 +32,7 @@ internal class DelayablelAutomationWrapper : IAutomation, IAutomationMeta
         }
         else
         {
-            _meta = AutomationMetaData.Create(this);
+            _meta = AutomationMetaData.Create(this.WrappedAutomation);
         }
         _meta.IsDelayable = true;
 

@@ -52,9 +52,11 @@ public interface IAutomation : IAutomationBase, IAutomation<HaEntityStateChange,
 /// used internally
 /// consider moving to another file
 /// </summary>
-internal interface IAutomationWrapper : IAutomation, IAutomationMeta 
+internal interface IAutomationWrapper<out T> : IAutomation, IInitializeOnStartup, IAutomationMeta where T : notnull
 {
-    IAutomation WrappedAutomation {get;}
+    T WrappedAutomation { get; }
+    Task IInitializeOnStartup.Initialize() => (WrappedAutomation as IInitializeOnStartup)?.Initialize() ?? Task.CompletedTask;
+    AutomationMetaData IAutomationMeta.GetMetaData() => (WrappedAutomation as IAutomationMeta)?.GetMetaData() ?? AutomationMetaData.Create(this.WrappedAutomation);
 }
 
 public interface IDelayableAutomation : IAutomationBase

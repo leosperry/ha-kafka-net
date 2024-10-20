@@ -46,7 +46,7 @@ public interface IRegistrar
 
 internal interface IInternalRegistrar : IRegistrar
 {
-    IEnumerable<IAutomationWrapper> Registered { get; }
+    IEnumerable<IAutomationWrapper<object>> Registered { get; }
 }
 
 public delegate TimeSpan DelayEvaluator<in T>(T automation) where T : IDelayableAutomation;

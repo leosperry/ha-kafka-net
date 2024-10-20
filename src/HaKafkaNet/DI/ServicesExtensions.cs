@@ -505,18 +505,15 @@ public static class ServicesExtensions
         List<Task> tasks = new();
         foreach (var auto in automationManager.GetAll())
         {
-            if(auto.WrappedAutomation is IInitializeOnStartup init)
-            {
-                tasks.Add(Task.Run(() => init.Initialize())
-                    .ContinueWith(t =>
+            tasks.Add(Task.Run(() => auto.Initialize())
+                .ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
                     {
-                        if (t.IsFaulted)
-                        {
-                            var meta = auto.GetMetaData();
-                            errors.Add(new($"Error initializing {meta.Name} of type {meta.UnderlyingType}", t.Exception, auto.WrappedAutomation));
-                        }
-                    }));
-            }
+                        var meta = auto.GetMetaData();
+                        errors.Add(new($"Error initializing {meta.Name} of type {meta.UnderlyingType}", t.Exception, auto.WrappedAutomation));
+                    }
+                }));
         }
 
         try
