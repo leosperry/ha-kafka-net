@@ -25,6 +25,11 @@ public interface IAutomation<in Tchange, Tentity, Tstate, Tatt> : IAutomationBas
     Task Execute(Tchange stateChange, CancellationToken ct);
 }
 
+public interface IFallbackExecution
+{
+    Task FallbackExecute(Exception ex, HaEntityStateChange stateChange, CancellationToken ct);
+}
+
 public interface IAutomation<Tstate, Tatt> 
     : IAutomationBase, IAutomation<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, HaEntityState<Tstate, Tatt> ,Tstate, Tatt>;
 

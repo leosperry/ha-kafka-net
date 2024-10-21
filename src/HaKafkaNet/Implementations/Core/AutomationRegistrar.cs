@@ -8,6 +8,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 {
     readonly IAutomationTraceProvider _trace;
     readonly ILogger<AutomationWrapper> _logger;
+    private readonly ISystemObserver _observer;
 
     internal List<AutomationWrapper> RegisteredAutomations { get; private set; } = new();
 
@@ -15,17 +16,15 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     public AutomationRegistrar(
         IEnumerable<IAutomation> automations,
-        IEnumerable<IConditionalAutomation> conditionalAutomations,
-        IEnumerable<ISchedulableAutomation> schedulableAutomations,
         IAutomationTraceProvider traceProvider,
-        ILogger<AutomationWrapper> logger)
+        ISystemObserver observer,
+        ILogger<AutomationWrapper> logger
+        )
     {
         _trace = traceProvider;
         _logger = logger;
-
+        this._observer = observer;
         Register(automations.ToArray());
-        RegisterDelayed(conditionalAutomations.ToArray());
-        RegisterDelayed(schedulableAutomations.ToArray());
     }
 
     public void Register(params IAutomation[] automations)
@@ -49,8 +48,18 @@ internal class AutomationRegistrar : IInternalRegistrar
     {
         foreach (var item in automations)
         {
-            var wrapped = new TypedAutomationWrapper<Tauto, Tstate, Tatt>(item);
+            var wrapped = new TypedAutomationWrapper<Tauto, Tstate, Tatt>(item, _observer);
             AddSimple(wrapped);
+        }
+    }
+
+    public void RegisterDelayedTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
+        where Tauto : IDelayableAutomation<Tstate, Tatt>
+    {
+        foreach (var item in automations)
+        {
+            var wrapped = new TypedDelayedAutomationWrapper<Tauto, Tstate, Tatt>(item, _observer);
+            AddDelayable(wrapped);
         }
     }
 

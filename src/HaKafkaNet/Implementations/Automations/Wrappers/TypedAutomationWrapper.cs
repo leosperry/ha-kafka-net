@@ -12,10 +12,12 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
     internal readonly IAutomation<Tstate, Tatt> _automation;
-    
-    public TypedAutomationWrapper(Tauto automation)
+    private readonly ISystemObserver _observer;
+
+    public TypedAutomationWrapper(Tauto automation, ISystemObserver observer)
     {
         this._automation = automation;
+        this._observer = observer;
     }
 
     public override Type WrappedType => _automation.GetType();
@@ -24,7 +26,21 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken ct)
     {
-        var typed = stateChange.ToTyped<Tstate, Tatt>();
+        HaEntityStateChange<HaEntityState<Tstate,Tatt>> typed;
+        try
+        {
+            typed = stateChange.ToTyped<Tstate, Tatt>();
+        }
+        catch (System.Exception ex)
+        {
+            _observer.OnAutomationTypeConversionFailure(ex, this.WrappedAutomation, stateChange, ct);
+            if (this.WrappedAutomation is IFallbackExecution fallback)
+            {
+                await fallback.FallbackExecute(ex, stateChange, ct);
+            }
+            return;
+        }
+        
         await _automation.Execute(typed, ct);
     }
 

@@ -9,17 +9,13 @@ public class GetAllTests
     {
         // Given
         var autos = Enumerable.Empty<IAutomation>();
-        var conditionals = Enumerable.Empty<IConditionalAutomation>();
-        var registries = Enumerable.Empty<IAutomationRegistry>();
-
-        IEnumerable<ISchedulableAutomation> schedulables = Enumerable.Empty<ISchedulableAutomation>();
-
         
         Mock<ILogger<AutomationWrapper>> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
+        Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, trace.Object, logger.Object);
+            autos, trace.Object, observer.Object, logger.Object);
         // When
 
         var result = sut.RegisteredAutomations;
@@ -36,26 +32,24 @@ public class GetAllTests
         IEnumerable<IAutomation> autos = [auto.Object];
         
         Mock<IConditionalAutomation> conditional = new();
-        IEnumerable<IConditionalAutomation> conditionals = [conditional.Object];
 
         Mock<ISchedulableAutomation> schedulable = new();
-        IEnumerable<ISchedulableAutomation> schedulables = [schedulable.Object];
         
         Mock<ILogger<AutomationWrapper>> logger = new();
                 Mock<IAutomationTraceProvider> trace = new();
-
+        
+        Mock<ISystemObserver> observer = new();
 
         var sut = new AutomationRegistrar(
-            autos, conditionals, schedulables, trace.Object, logger.Object);
+            autos, trace.Object, observer.Object, logger.Object);
+        
         // When
-
         sut.Register(auto.Object);
         sut.RegisterDelayed(conditional.Object);
         sut.RegisterDelayed(schedulable.Object);
         var result = sut.RegisteredAutomations;
     
         // Then
-
-        Assert.Equal(6, result.Count());
+        Assert.Equal(4, result.Count());
     }
 }
