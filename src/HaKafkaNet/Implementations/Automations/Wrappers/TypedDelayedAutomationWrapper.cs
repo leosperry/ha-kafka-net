@@ -8,20 +8,36 @@ public abstract class TypedDelayedAutomationWrapper : IAutomationWrapperBase
 }
 
 [ExcludeFromDiscovery]
-public class TypedDelayedAutomationWrapper<Tauto, Tstate, Tatt> : TypedDelayedAutomationWrapper, IDelayableAutomation where Tauto: IDelayableAutomation<Tstate, Tatt>
+internal class TypedDelayedAutomationWrapper<Tauto, Tstate, Tatt> : TypedDelayedAutomationWrapper, IDelayableAutomation where Tauto: IDelayableAutomation<Tstate, Tatt>
 {
     IDelayableAutomation<Tstate, Tatt> _automation;
-    public TypedDelayedAutomationWrapper(Tauto automation)
+    private readonly ISystemObserver _observer;
+
+    public TypedDelayedAutomationWrapper(Tauto automation, ISystemObserver observer)
     {
         _automation = automation;
+        _observer = observer;
     }
 
     public override IAutomationBase WrappedAutomation => _automation;
 
     public async Task<bool> ContinuesToBeTrue(HaEntityStateChange stateChange, CancellationToken ct)
     {
-        var typedChange = stateChange.ToTyped<Tstate, Tatt>();
-        return await _automation.ContinuesToBeTrue(typedChange, ct);
+        HaEntityStateChange<HaEntityState<Tstate,Tatt>> typed;
+        try
+        {
+            typed = stateChange.ToTyped<Tstate, Tatt>();
+        }
+        catch (Exception ex)
+        {
+            _observer.OnAutomationTypeConversionFailure(ex, this._automation, stateChange, ct);
+            if (this._automation is IFallbackExecution fallback)
+            {
+                await fallback.FallbackExecute(ex, stateChange, ct);
+            }
+            return false;
+        }
+        return await _automation.ContinuesToBeTrue(typed, ct);
     }
 
     public async Task Execute(CancellationToken ct)

@@ -35,6 +35,8 @@ internal interface ISystemObserver
     /// <param name="errors"></param>
     /// <returns>true if at least one monitor is wired. Otherwise false</returns>
     bool OnInitializationFailure(List<InitializationError> errors);
+
+    void OnAutomationTypeConversionFailure(Exception ex, IAutomationBase automation, HaEntityStateChange stateChange, CancellationToken ct);
 }
 
 public record HaServiceResponseArgs(string Domain, string Service, object Data, HttpResponseMessage? Response, Exception? Exception);
@@ -55,6 +57,7 @@ internal class SystemObserver : ISystemObserver
     internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
     internal event Action<HaServiceResponseArgs, CancellationToken>? HaApiResponse;
     internal event Action<InitializationError[]>? InitializatinFailure;
+    internal event Action<IAutomationBase, HaEntityStateChange, CancellationToken>? AutomationTypeConversionFailure;
 
     public SystemObserver(ILogger<SystemObserver> logger)
     {
@@ -111,6 +114,23 @@ internal class SystemObserver : ISystemObserver
     public void OnHaServiceBadResponse(HaServiceResponseArgs args, CancellationToken ct)
         => HaApiResponse?.Invoke(args, ct);
 
+    public void OnAutomationTypeConversionFailure(Exception ex, IAutomationBase automation, HaEntityStateChange stateChange, CancellationToken ct)
+    {
+        if (AutomationTypeConversionFailure is not null)
+        {
+            try
+            {
+                AutomationTypeConversionFailure?.Invoke(automation, stateChange, ct);
+                return;
+            }
+            catch (System.Exception caught)
+            {
+                _logger.LogError(caught, "Error handling Type Conversion Failure");
+            }
+        }
+        _logger.LogError("Automation Type Conversion Failure in {automation}. Data: {state_change}", automation.GetType().Name, stateChange);
+    }
+
     public bool OnInitializationFailure(List<InitializationError> errors)
     {
         if (InitializatinFailure is not null)
@@ -140,6 +160,7 @@ internal class SystemObserver : ISystemObserver
             HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
             HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
             InitializatinFailure += (errors) => _ = monitor.InitializationFailure(errors); // don't wrap this one, we want exceptions to bubble up
+            AutomationTypeConversionFailure += (auto, sc, ct) => _ = WrapTask("Automation Type Conversion Failure", () => monitor.AutomationTypeConversionFailure(auto, sc, ct));
         }    
     }
 
@@ -160,5 +181,5 @@ internal class SystemObserver : ISystemObserver
     }
 }
 
-    internal delegate void UpdateEntity(HaEntityState state);
+internal delegate void UpdateEntity(HaEntityState state);
 

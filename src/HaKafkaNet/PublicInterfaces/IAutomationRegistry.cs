@@ -17,6 +17,9 @@ public interface IRegistrar
 
     void RegisterTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
         where Tauto: IAutomation<Tstate, Tatt>;
+    
+    void RegisterDelayedTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
+        where Tauto : IDelayableAutomation<Tstate, Tatt>;
 
     void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
