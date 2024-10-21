@@ -15,7 +15,8 @@ public interface IRegistrar
 
     void RegisterDelayed(params IDelayableAutomation[] automations);
 
-    void RegisterTyped<Tstate, Tatt>(params IAutomation<Tstate, Tatt>[] automations);
+    void RegisterTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
+        where Tauto: IAutomation<Tstate, Tatt>;
 
     void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
@@ -46,7 +47,7 @@ public interface IRegistrar
 
 internal interface IInternalRegistrar : IRegistrar
 {
-    IEnumerable<IAutomationWrapper<object>> Registered { get; }
+    IEnumerable<IAutomationWrapper> Registered { get; }
 }
 
 public delegate TimeSpan DelayEvaluator<in T>(T automation) where T : IDelayableAutomation;

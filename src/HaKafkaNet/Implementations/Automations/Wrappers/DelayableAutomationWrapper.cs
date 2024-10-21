@@ -2,13 +2,19 @@
 
 namespace HaKafkaNet;
 
+internal abstract class DelayablelAutomationWrapper
+{
+    protected internal abstract void StopIfRunning(StopReason reason);
+}
+
+
 [ExcludeFromDiscovery]
-internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutomation>
+internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAutomationWrapper where T : IDelayableAutomation 
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
     AutomationMetaData _meta;
-    private readonly IDelayableAutomation _automation;
-    public IDelayableAutomation WrappedAutomation { get => _automation; }
+    private readonly T _automation;
+    public IAutomationBase WrappedAutomation { get => _automation; }
 
     readonly IAutomationTraceProvider _trace;
     private readonly ILogger _logger;
@@ -19,7 +25,7 @@ internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutoma
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(IDelayableAutomation automation, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
+    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
     {
         this._automation = automation;
         this._trace = traceProvider;
@@ -36,7 +42,7 @@ internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutoma
         }
         _meta.IsDelayable = true;
 
-        if (automation is ISchedulableAutomation schedulableAutomation)
+        if (automation is ISchedulableAutomationBase || (automation is TypedDelayedAutomationWrapper typed && typed.WrappedAutomation is ISchedulableAutomationBase))
         {
             _getDelay = () => _timeForScheduled switch
             {
@@ -44,9 +50,13 @@ internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutoma
                 var time => time.Value - DateTime.Now
             };
         }
-        else if (automation is IConditionalAutomation conditional)
+        else if (automation is IConditionalAutomationBase conditional)
         {
             _getDelay = () => conditional.For;
+        }
+        else if(automation is TypedDelayedAutomationWrapper typed2 && typed2.WrappedAutomation is IConditionalAutomationBase conditional2)
+        {
+            _getDelay = () => conditional2.For;
         }
         else 
         {
@@ -234,7 +244,7 @@ internal class DelayablelAutomationWrapper : IAutomationWrapper<IDelayableAutoma
         }
     }
 
-    internal void StopIfRunning(StopReason reason)
+    protected internal override void StopIfRunning(StopReason reason)
     {
         if (_cts is not null)
         {

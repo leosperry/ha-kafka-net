@@ -11,7 +11,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     internal List<AutomationWrapper> RegisteredAutomations { get; private set; } = new();
 
-    public IEnumerable<IAutomationWrapper<object>> Registered => RegisteredAutomations.Select(a => a);
+    public IEnumerable<IAutomationWrapper> Registered => RegisteredAutomations.Select(a => a);
 
     public AutomationRegistrar(
         IEnumerable<IAutomation> automations,
@@ -44,11 +44,12 @@ internal class AutomationRegistrar : IInternalRegistrar
         }
     }
 
-    public void RegisterTyped<Tstate, Tatt>(params IAutomation<Tstate, Tatt>[] automations)
+    public void RegisterTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
+        where Tauto: IAutomation<Tstate, Tatt>
     {
         foreach (var item in automations)
         {
-            var wrapped = new TypedAutomationWrapper<Tstate, Tatt>(item);
+            var wrapped = new TypedAutomationWrapper<Tauto, Tstate, Tatt>(item);
             AddSimple(wrapped);
         }
     }
@@ -73,9 +74,9 @@ internal class AutomationRegistrar : IInternalRegistrar
         RegisteredAutomations.Add(aWrapped);    
     }
 
-    private void AddDelayable(IDelayableAutomation automation)
+    private void AddDelayable<T>(T automation) where T: IDelayableAutomation
     {
-        var dWrapped = new DelayablelAutomationWrapper(automation, _trace, _logger);
+        var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger);
         var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
         RegisteredAutomations.Add(aWrapped);
     }
@@ -83,7 +84,7 @@ internal class AutomationRegistrar : IInternalRegistrar
     private void AddDelayableWithEvaluator<T>(T automation, DelayEvaluator<T> evaluator)
         where T : IDelayableAutomation
     {
-        var dWrapped = new DelayablelAutomationWrapper(automation, _trace, _logger, () => evaluator(automation));
+        var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger, () => evaluator(automation));
         var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
     }
 

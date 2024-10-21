@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using FastEndpoints;
 using HaKafkaNet.Implementations.Core;
@@ -16,9 +17,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using NLog;
-
-
-
 
 namespace HaKafkaNet;
 
@@ -143,6 +141,11 @@ public static class ServicesExtensions
             .AddSingleton<IAutomationTraceProvider, TraceLogProvider>()
             .AddSingleton<HknLogTarget>();
 
+        services
+            .AddTransient(typeof(DelayablelAutomationWrapper<>))
+            .AddTransient(typeof(TypedDelayedAutomationWrapper<,,>))
+            .AddTransient(typeof(TypedAutomationWrapper<,,>));
+
         var eligibleTypes = 
             (from a in AppDomain.CurrentDomain.GetAssemblies()
             from t in a.GetTypes()
@@ -154,42 +157,26 @@ public static class ServicesExtensions
         
         foreach (var type in eligibleTypes)
         {
-            var stronglyTypedAutomationDefinitions = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAutomation<,>)).ToArray();
-            if (stronglyTypedAutomationDefinitions.Length > 0)
-            { 
-                if (stronglyTypedAutomationDefinitions.Length > 1)
-                {
-                    errors.Add(new("Strongly typeed automations can only implement one version of IAutomation<Tstate,Tatt>", null, type));
-                    continue;
-                }
-                services.AddSingleton(type);
-
-                var stronglyTypeDef = stronglyTypedAutomationDefinitions.First();
-                var genericArgs = stronglyTypeDef.GetGenericArguments();
-                
-                var afterTyped = _getServiceDescriptor.MakeGenericMethod([type, genericArgs[0], genericArgs[1]]);
-                
-                var descriptor = (ServiceDescriptor)afterTyped.Invoke(null, null)!;
-                
-                services.TryAddEnumerable(descriptor);
+            if (typeof(IAutomationBase).IsAssignableFrom(type) && HandleIAutomationBase(services, type))
+            {
                 continue;
             }
 
             // handle interfaced classes
             switch (type)
             {
-                case var _ when typeof(IAutomation).IsAssignableFrom(type):
-                    ServiceDescriptor auto = new(typeof(IAutomation), type, ServiceLifetime.Singleton);
-                    services.TryAddEnumerable(auto);
-                    break;
-                case var _ when typeof(IConditionalAutomation).IsAssignableFrom(type):
-                    ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
-                    services.TryAddEnumerable(conditional);
-                    break;
-                case var _ when typeof(ISchedulableAutomation).IsAssignableFrom(type):
-                    ServiceDescriptor schedulable = new(typeof(ISchedulableAutomation), type, ServiceLifetime.Singleton);
-                    services.TryAddEnumerable(schedulable);
-                    break;
+                // case var _ when typeof(IAutomation).IsAssignableFrom(type):
+                //     ServiceDescriptor auto = new(typeof(IAutomation), type, ServiceLifetime.Singleton);
+                //     services.TryAddEnumerable(auto);
+                //     break;
+                // case var _ when typeof(IConditionalAutomation).IsAssignableFrom(type):
+                //     ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
+                //     services.TryAddEnumerable(conditional);
+                //     break;
+                // case var _ when typeof(ISchedulableAutomation).IsAssignableFrom(type):
+                //     ServiceDescriptor schedulable = new(typeof(ISchedulableAutomation), type, ServiceLifetime.Singleton);
+                //     services.TryAddEnumerable(schedulable);
+                //     break;
                 case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
                     ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Singleton);
                     services.TryAddEnumerable(registry);
@@ -205,17 +192,104 @@ public static class ServicesExtensions
         }
     }
 
-    static readonly MethodInfo _getServiceDescriptor = typeof(ServicesExtensions).GetMethod(nameof(GetServiceDescriptor), BindingFlags.Static | BindingFlags.NonPublic)!;
 
-    static ServiceDescriptor GetServiceDescriptor<Tauto ,Tstate, Tatt>()
-        where Tauto : IAutomation<Tstate, Tatt>
+    private static bool HandleIAutomationBase(IServiceCollection services, Type type)
     {
-        return ServiceDescriptor.Singleton<IAutomation, TypedAutomationWrapper<Tstate, Tatt>>(sp => {
-            var instance = sp.GetRequiredService<Tauto>();
-            return new TypedAutomationWrapper<Tstate, Tatt>(instance);
-        });
+        var supportedInterfaceTypes = new HashSet<Type>()
+        {
+            typeof(IAutomation),
+            typeof(IAutomation<,>),
+            typeof(IDelayableAutomation),
+            typeof(IDelayableAutomation<,>),
+        };
+
+        var typeIneterfaces = type.GetInterfaces();
+        var stronglyTypedAutomationDefinitions = typeIneterfaces.Where(i => 
+            supportedInterfaceTypes.Contains(i) ||  (i.IsGenericType && supportedInterfaceTypes.Contains(i.GetGenericTypeDefinition()))
+                ).ToArray();
+        
+        if (stronglyTypedAutomationDefinitions.Length == 0)
+        {
+            return false;
+        }
+
+        if (stronglyTypedAutomationDefinitions.Length > 1)
+        {
+            errors.Add(new("Custom automations may only implement one type of automation",null, type));
+            return false;
+        }
+
+        var targetInterface = stronglyTypedAutomationDefinitions[0];
+
+        ServiceDescriptor? descriptor;
+        if (targetInterface.IsGenericType)
+        {
+            descriptor = GetGenericServiceDescriptor(targetInterface, type, services);
+        }
+        else
+        {
+            descriptor = GetNonGenericServiceDescriptor(targetInterface, type, services);
+        }
+
+        if(descriptor is not null)
+        {
+            services.TryAddEnumerable(descriptor);
+            return true;
+        }
+
+        return false;
     }
 
+    private static ServiceDescriptor? GetGenericServiceDescriptor(Type targetInterface, Type concrete, IServiceCollection services)
+    {
+        var genericArgs = targetInterface.GetGenericArguments();
+
+        Type? iautomationType;
+        switch(targetInterface.GetGenericTypeDefinition())
+        {
+            case var x when x == typeof(IAutomation<>):
+                iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], typeof(JsonElement)]);
+                break;
+            case var x when x == typeof(IAutomation<,>):
+                iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
+                break;
+            case var x when x == typeof(IDelayableAutomation<,>):
+                var typedWRapperType2 = typeof(TypedDelayedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
+                iautomationType = typeof(DelayablelAutomationWrapper<>).MakeGenericType([typedWRapperType2]);
+                break;
+            default:
+                errors.Add(new("could not find appropriate wrapper", null, concrete ));
+                return null;
+        }
+
+        services.AddSingleton(concrete);
+
+        var descriptor = new ServiceDescriptor(typeof(IAutomation), iautomationType, ServiceLifetime.Singleton);        
+        return descriptor;
+    }
+
+    private static ServiceDescriptor? GetNonGenericServiceDescriptor(Type @interface, Type concrete, IServiceCollection services)
+    {
+        if(@interface == typeof(IAutomation))
+        {
+            return ServiceDescriptor.Singleton(typeof(IAutomation), concrete);
+        }
+
+        // make sure it is durable
+        if (@interface == typeof(IDelayableAutomation))
+        {
+            // first register the type for retrieval later
+            services.AddSingleton(concrete);
+
+            var wrapperTyped = typeof(DelayablelAutomationWrapper<>).MakeGenericType([concrete]);
+            var descriptor = new ServiceDescriptor(typeof(IAutomation), wrapperTyped, ServiceLifetime.Singleton);
+            return descriptor;
+        }
+
+        // in theory, we shouldn't get here
+        errors.Add(new("could not determine appropriate wrapper type", null, concrete));
+        return null;
+    }
 
     static List<InitializationError> errors = new();
 
