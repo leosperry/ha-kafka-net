@@ -8,19 +8,19 @@ abstract class TypedAutomationWrapper
 }
 
 [ExcludeFromDiscovery]
-internal class TypedAutomationWrapper<Tstate, Tatt> : TypedAutomationWrapper, IAutomationWrapper<IAutomation<Tstate, Tatt>>
+internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrapper, IAutomationWrapper where Tauto: IAutomation<Tstate, Tatt> 
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
     internal readonly IAutomation<Tstate, Tatt> _automation;
     
-    public TypedAutomationWrapper(IAutomation<Tstate, Tatt> automation)
+    public TypedAutomationWrapper(Tauto automation)
     {
         this._automation = automation;
     }
 
     public override Type WrappedType => _automation.GetType();
 
-    public IAutomation<Tstate, Tatt> WrappedAutomation { get => _automation;}
+    public IAutomationBase WrappedAutomation { get => _automation;}
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken ct)
     {
