@@ -3,7 +3,7 @@
 public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta, ISetAutomationMeta
 {    
     private AutomationMetaData? _meta;
-    private DateTime? _nextExecution;
+    protected DateTime? _nextExecution;
     private SemaphoreSlim _lock = new(1);
 
     public bool IsReschedulable { get; set;}
@@ -74,7 +74,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
 [ExcludeFromDiscovery]
 public class SchedulableAutomation : SchedulableAutomationBase
 {
-    GetNextEventFromEntityState _getNext;
+    private readonly GetNextEventFromEntityState _getNext;
     private readonly Func<CancellationToken, Task> _execution;
 
     public SchedulableAutomation(
@@ -110,34 +110,83 @@ public class SchedulableAutomation : SchedulableAutomationBase
 }
 
 [ExcludeFromDiscovery]
-public class SchedulableAutomationWithServices: SchedulableAutomationBase
+public class SchedulableAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstate, Tatt>, ISchedulableAutomation<Tstate, Tatt>
 {
-    private readonly IHaServices _services;
+    private readonly GetNextEventFromEntityState<Tstate, Tatt> _getNext;
+    private readonly Func<CancellationToken, Task> _execution;
 
-    Func<IHaServices, HaEntityStateChange, CancellationToken, Task<DateTime?>> _getNext;
-    private readonly Func<IHaServices, CancellationToken, Task> _execution;
+    private DateTime? _nextExecution;
+    private SemaphoreSlim _lock = new(1);
 
-    public SchedulableAutomationWithServices(
-        IHaServices services, IEnumerable<string> triggerIds, 
-        Func<IHaServices, HaEntityStateChange, CancellationToken, Task<DateTime?>> getNextEvent,
-        Func<IHaServices, CancellationToken, Task> execution,
-        bool shouldExecutePastEvents = false,
-        bool shouldExecuteOnError = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
+    
+    public SchedulableAutomation(
+        IEnumerable<string> triggerIds, 
+        GetNextEventFromEntityState<Tstate, Tatt> getNextEvent,
+        Func<CancellationToken, Task> execution,
+        bool isReschedulable = false,
+        bool shouldExecutePastEvents = false, 
+        bool shouldExecuteOnError = false) 
+        : base(triggerIds)
     {
-        _services = services;
         _getNext = getNextEvent;
         _execution = execution;
+        base.ShouldExecutePastEvents = shouldExecutePastEvents;
+        base.ShouldExecuteOnContinueError = shouldExecuteOnError;
+        this.IsReschedulable = isReschedulable;
     }
 
-    public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    public bool IsReschedulable { get; internal set; }
+
+    public override async Task<bool> ContinuesToBeTrue(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken ct)
     {
-        return _getNext(_services, stateChange, cancellationToken);
+        var nextEvent = await this.CalculateNext(stateChange, ct);
+
+        if (this._nextExecution != nextEvent)
+        {
+            await _lock.WaitAsync();
+            try
+            {
+                _nextExecution = nextEvent;
+            }
+            finally
+            {
+                _lock.Release();
+            }
+        }
+        return nextEvent is not null;
     }
 
-    public override Task Execute(CancellationToken cancellationToken)
+    public override Task Execute(CancellationToken ct)
     {
-        return _execution(_services, cancellationToken);
+        if (!ct.IsCancellationRequested)
+        {
+            return _execution(ct);
+        }
+        return Task.CompletedTask;
+    }
+
+    public DateTime? GetNextScheduled()
+    {
+        try
+        {
+            _lock.Wait();
+            return _nextExecution;
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    public Task<DateTime?> CalculateNext(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken)
+    {
+        if (!cancellationToken.IsCancellationRequested)
+        {
+            return _getNext(stateChange, cancellationToken);
+        }
+        return Task.FromResult<DateTime?>(null);
     }
 }
 
 public delegate Task<DateTime?> GetNextEventFromEntityState(HaEntityStateChange stateChange, CancellationToken cancellationToken); 
+public delegate Task<DateTime?> GetNextEventFromEntityState<Tstate, Tatt>(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken); 

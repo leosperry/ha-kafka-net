@@ -65,8 +65,7 @@ public interface IDelayableAutomation<in Tchange, Tentity, Tstate, Tatt> : IAuto
 
 public interface IDelayableAutomation<Tstate, Tatt> : 
     IDelayableAutomation<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, HaEntityState<Tstate, Tatt> ,Tstate, Tatt>;
-// public interface IDelayableAutomation<Tstate> :
-//     IDelayableAutomation<HaEntityStateChange<HaEntityState<Tstate, JsonElement>>, HaEntityState<Tstate, JsonElement> ,Tstate, JsonElement>;
+
 public interface IDelayableAutomation : IDelayableAutomation<HaEntityStateChange, HaEntityState, string, JsonElement>;
 
 

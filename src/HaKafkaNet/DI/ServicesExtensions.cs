@@ -165,18 +165,6 @@ public static class ServicesExtensions
             // handle interfaced classes
             switch (type)
             {
-                // case var _ when typeof(IAutomation).IsAssignableFrom(type):
-                //     ServiceDescriptor auto = new(typeof(IAutomation), type, ServiceLifetime.Singleton);
-                //     services.TryAddEnumerable(auto);
-                //     break;
-                // case var _ when typeof(IConditionalAutomation).IsAssignableFrom(type):
-                //     ServiceDescriptor conditional = new(typeof(IConditionalAutomation), type, ServiceLifetime.Singleton);
-                //     services.TryAddEnumerable(conditional);
-                //     break;
-                // case var _ when typeof(ISchedulableAutomation).IsAssignableFrom(type):
-                //     ServiceDescriptor schedulable = new(typeof(ISchedulableAutomation), type, ServiceLifetime.Singleton);
-                //     services.TryAddEnumerable(schedulable);
-                //     break;
                 case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
                     ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Singleton);
                     services.TryAddEnumerable(registry);

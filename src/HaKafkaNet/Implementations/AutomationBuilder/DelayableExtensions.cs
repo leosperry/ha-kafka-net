@@ -55,25 +55,43 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
-    public static T For<T>(this T info, TimeSpan @for) where T : ConditionalAutomationBuildingInfoBase
+    public static TypedConditionalBuildingInfo<Tstate, Tatt> When<Tstate, Tatt>(
+        this TypedConditionalBuildingInfo<Tstate, Tatt> info,
+        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task<bool>> continuesToBeTrue
+        )
+    {
+        info.ContinuesToBeTrue = continuesToBeTrue;
+        return info;
+    }
+
+    public static TypedConditionalBuildingInfo<Tstate, Tatt> When<Tstate, Tatt>(
+        this TypedConditionalBuildingInfo<Tstate, Tatt> info,
+        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, bool> continuesToBeTrue
+        )
+    {
+        info.ContinuesToBeTrue = (sc, ct) => Task.FromResult(continuesToBeTrue(sc));
+        return info;
+    }
+
+    public static T For<T>(this T info, TimeSpan @for) where T : DelayableAutomationBuildingInfo
     {
         info.For = @for;
         return info;
     }
 
-    public static T ForSeconds<T>(this T info, int seconds) where T : ConditionalAutomationBuildingInfoBase
+    public static T ForSeconds<T>(this T info, int seconds) where T : DelayableAutomationBuildingInfo
     {
         info.For = TimeSpan.FromSeconds(seconds);
         return info;
     }
 
-    public static T ForMinutes<T>(this T info, int minutes) where T : ConditionalAutomationBuildingInfoBase
+    public static T ForMinutes<T>(this T info, int minutes) where T : DelayableAutomationBuildingInfo
     {
         info.For = TimeSpan.FromMinutes(minutes);
         return info;
     }
 
-    public static T ForHours<T>(this T info, int hours) where T : ConditionalAutomationBuildingInfoBase
+    public static T ForHours<T>(this T info, int hours) where T : DelayableAutomationBuildingInfo
     {
         info.For = TimeSpan.FromHours(hours);
         return info;
@@ -103,25 +121,30 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
+    public static TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> GetNextScheduled<Tstate, Tatt>(
+        this TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> info, GetNextEventFromEntityState<Tstate, Tatt> getNextFromState)
+    {
+        info.GetNextScheduled = getNextFromState;
+        return info;
+    }
+
     public static SchedulableAutomationBuildingInfo While(this SchedulableAutomationBuildingInfo info, Func<HaEntityStateChange ,bool> condition)
     {
         info.WhileCondition = condition;
         return info;
     }
 
-    public static SchedulableAutomationBuildingInfo For(this SchedulableAutomationBuildingInfo info, TimeSpan forTime)
+    public static T WithExecution<T>(this T info, Func<CancellationToken, Task> execution)
+        where T : DelayableAutomationBuildingInfo
     {
-        if (forTime < TimeSpan.Zero)
-        {
-            throw new ArgumentException("must be greater than zero", nameof(forTime));
-        }
-        info.ForTime = forTime;
+        info.Execution = execution;
         return info;
     }
 
-    public static SchedulableAutomationBuildingInfo WithExecution(this SchedulableAutomationBuildingInfo info, Func<CancellationToken, Task> execution)
+    public static TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> While<Tstate, Tatt>(
+        this TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> info, Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, bool> condition)
     {
-        info.Execution = execution;
+        info.WhileCondition = condition;
         return info;
     }
 }

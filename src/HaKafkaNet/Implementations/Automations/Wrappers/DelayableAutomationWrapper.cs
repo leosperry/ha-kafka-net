@@ -66,7 +66,10 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        if (_automation is ISchedulableAutomation schedulableAutomation)
+        ISchedulableAutomationBase? schedulableAutomation
+            = _automation as ISchedulableAutomationBase ?? (_automation as TypedDelayedAutomationWrapper)?.WrappedAutomation as ISchedulableAutomationBase;
+
+        if (schedulableAutomation is not null)
         {
             var previous = _timeForScheduled;
 

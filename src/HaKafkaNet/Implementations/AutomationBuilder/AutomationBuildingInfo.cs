@@ -30,28 +30,45 @@ public abstract class DelayableAutomationBuildingInfo : MostAutomationsBuildingI
 {
     internal bool ShouldExecutePastEvents { get; set; }
     internal bool ShouldExecuteOnContinueError { get; set; }
+    internal Func<CancellationToken, Task>? Execution { get; set; }
+    internal TimeSpan? For { get; set; }
+
 }
 
 public abstract class ConditionalAutomationBuildingInfoBase : DelayableAutomationBuildingInfo
 {
-    internal TimeSpan? For { get; set; }
-    internal Func<HaEntityStateChange, CancellationToken, Task<bool>>? ContinuesToBeTrue { get; set; }
 }
 
 public class ConditionalAutomationBuildingInfo : ConditionalAutomationBuildingInfoBase
 {
-    internal Func<CancellationToken, Task>? Execution { get; set; }
+    internal Func<HaEntityStateChange, CancellationToken, Task<bool>>? ContinuesToBeTrue { get; set; }
 }
 
-public class SchedulableAutomationBuildingInfo : DelayableAutomationBuildingInfo
+public class TypedConditionalBuildingInfo<Tstate, Tatt> : ConditionalAutomationBuildingInfoBase
+{
+    internal Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task<bool>>? ContinuesToBeTrue { get; set; }
+}
+
+public abstract class SchedulableAutomationBuildingInfoBase : DelayableAutomationBuildingInfo
 {
     internal bool IsReschedulable { get; set; }
-
-    internal Func<CancellationToken, Task>? Execution { get; set; }
-    internal GetNextEventFromEntityState? GetNextScheduled { get; set; }
-    internal Func<HaEntityStateChange, bool>? WhileCondition { get; set; }
-    internal TimeSpan? ForTime { get; set; }
 }
+
+public class SchedulableAutomationBuildingInfo : SchedulableAutomationBuildingInfoBase
+{
+    internal GetNextEventFromEntityState? GetNextScheduled { get; set; }
+
+    internal Func<HaEntityStateChange, bool>? WhileCondition { get; set; }
+}
+
+public class TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> : SchedulableAutomationBuildingInfoBase
+{
+    internal GetNextEventFromEntityState<Tstate, Tatt>? GetNextScheduled { get; set; }
+
+    internal Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, bool>? WhileCondition { get; set; }
+}
+
+
 
 public class SunAutommationBuildingInfo : AutomationBuildingInfo
 {
