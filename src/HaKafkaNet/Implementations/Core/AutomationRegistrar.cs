@@ -43,22 +43,20 @@ internal class AutomationRegistrar : IInternalRegistrar
         }
     }
 
-    public void RegisterTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
-        where Tauto: IAutomation<Tstate, Tatt>
+    public void Register<Tstate, Tatt>(params IAutomation<Tstate,Tatt>[] automations)
     {
         foreach (var item in automations)
         {
-            var wrapped = new TypedAutomationWrapper<Tauto, Tstate, Tatt>(item, _observer);
+            var wrapped = new TypedAutomationWrapper<IAutomation<Tstate, Tatt>, Tstate, Tatt>(item, _observer);
             AddSimple(wrapped);
         }
     }
 
-    public void RegisterDelayedTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
-        where Tauto : IDelayableAutomation<Tstate, Tatt>
+    public void RegisterDelayed<Tstate, Tatt>(params IDelayableAutomation<Tstate, Tatt>[] automations)
     {
         foreach (var item in automations)
         {
-            var wrapped = new TypedDelayedAutomationWrapper<Tauto, Tstate, Tatt>(item, _observer);
+            var wrapped = new TypedDelayedAutomationWrapper<IDelayableAutomation<Tstate, Tatt>, Tstate, Tatt>(item, _observer);
             AddDelayable(wrapped);
         }
     }

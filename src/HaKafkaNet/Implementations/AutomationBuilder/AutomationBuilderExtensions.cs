@@ -82,12 +82,33 @@ public static partial class AutomationBuilderExtensions
 
     public static IConditionalAutomation Build(this ConditionalAutomationBuildingInfo info)
     {
-        return new ConditionalAutomation(
+        var conditional = new ConditionalAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             info.ContinuesToBeTrue ?? throw new AutomationBuilderException("when clause must be specified"),
             info.For ?? TimeSpan.Zero,
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"))
             .WithMeta(GetMeta(info));
+
+        conditional.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
+        conditional.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
+        conditional.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
+
+        return conditional;
+    }
+
+    public static IDelayableAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedConditionalBuildingInfo<Tstate, Tatt> info)
+    {
+        var conditional = new ConditionalAutomation<Tstate,Tatt>(
+            info.TriggerEntityIds ?? Enumerable.Empty<string>(), 
+            info.For ?? throw new AutomationBuilderException("must define for"), 
+            info.ContinuesToBeTrue ?? throw new AutomationBuilderException("must define ContinuesToBeTrue"), 
+            info.Execution ?? throw new AutomationBuilderException("must define execution"));
+        
+        conditional.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
+        conditional.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
+        conditional.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
+
+        return conditional;
     }
 
     public static ISchedulableAutomation Build(this SchedulableAutomationBuildingInfo info)
@@ -95,11 +116,28 @@ public static partial class AutomationBuilderExtensions
         var auto = new SchedulableAutomation(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             Get_GetNextScheduled(info),
-            //info.GetNextScheduled ?? throw new AutomationBuilderException("GetNextScheduled must be specified"),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError)
             .WithMeta(GetMeta(info));
+        auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
+        auto.IsReschedulable = info.IsReschedulable;
+        
+        // auto.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
+        // auto.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
+        
+        return auto;
+    }
+
+    public static ISchedulableAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> info)
+    {
+        var auto = new SchedulableAutomation<Tstate, Tatt>(
+            info.TriggerEntityIds ?? Enumerable.Empty<string>(),
+            Get_GetNextScheduled(info),
+            info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
+            info.ShouldExecutePastEvents,
+            info.ShouldExecuteOnContinueError
+        );
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
         return auto;
@@ -107,7 +145,7 @@ public static partial class AutomationBuilderExtensions
 
     private static GetNextEventFromEntityState Get_GetNextScheduled(SchedulableAutomationBuildingInfo info)
     {
-        if (info.GetNextScheduled is not null && (info.WhileCondition is not null || info.ForTime is not null))
+        if (info.GetNextScheduled is not null && (info.WhileCondition is not null || info.For is not null))
         {
             throw new AutomationBuilderException("cannot specify both GetNextScheduled callback and (WhileCondition or ForTime)");
         }
@@ -116,7 +154,7 @@ public static partial class AutomationBuilderExtensions
             return info.GetNextScheduled;
         }
 
-        if (info.WhileCondition is null || info.ForTime is null)
+        if (info.WhileCondition is null || info.For is null)
         {
             throw new AutomationBuilderException("ForCondition specified, but ForTime is not");
         }
@@ -124,7 +162,32 @@ public static partial class AutomationBuilderExtensions
         return new GetNextEventFromEntityState((sc, ct) => {
             if (info.WhileCondition(sc))
             {
-                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.ForTime.Value));
+                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.For.Value));
+            }
+            return Task.FromResult<DateTime?>(null);
+        });
+    }
+
+    private static GetNextEventFromEntityState<Tstate, Tatt> Get_GetNextScheduled<Tstate, Tatt>(TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> info)
+    {
+        if (info.GetNextScheduled is not null && (info.WhileCondition is not null || info.For is not null))
+        {
+            throw new AutomationBuilderException("cannot specify both GetNextScheduled callback and (WhileCondition or ForTime)");
+        }
+        if (info.GetNextScheduled is not null)
+        {
+            return info.GetNextScheduled;
+        }
+
+        if (info.WhileCondition is null || info.For is null)
+        {
+            throw new AutomationBuilderException("ForCondition specified, but ForTime is not");
+        }
+
+        return new GetNextEventFromEntityState<Tstate, Tatt>((sc, ct) => {
+            if (info.WhileCondition(sc))
+            {
+                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.For.Value));
             }
             return Task.FromResult<DateTime?>(null);
         });

@@ -2,7 +2,7 @@
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public abstract class ConditionalAutomationBase : DelayableAutomationBase, IConditionalAutomation, IAutomationMeta, ISetAutomationMeta
+public abstract class ConditionalAutomationBase : DelayableAutomationBase, IConditionalAutomationBase, IAutomationMeta, ISetAutomationMeta
 {
     readonly TimeSpan _for;
     AutomationMetaData? _meta;
@@ -32,7 +32,7 @@ public abstract class ConditionalAutomationBase : DelayableAutomationBase, ICond
 }
 
 [ExcludeFromDiscovery]
-public class ConditionalAutomation : ConditionalAutomationBase
+public class ConditionalAutomation : ConditionalAutomationBase, IConditionalAutomation
 {
     private readonly Func<HaEntityStateChange, CancellationToken, Task<bool>> _continuesToBeTrue;
 
@@ -59,30 +59,32 @@ public class ConditionalAutomation : ConditionalAutomationBase
 }
 
 [ExcludeFromDiscovery]
-public class ConditionalAutomationWithServices : ConditionalAutomationBase
+public class ConditionalAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstate, Tatt>, IConditionalAutomation<Tstate, Tatt>
 {
-    private readonly IHaServices _services;
-    private readonly Func<IHaServices, HaEntityStateChange, CancellationToken, Task<bool>> _continuesToBeTrue;
-    private readonly Func<IHaServices, CancellationToken, Task> _execute;
+    private readonly TimeSpan _for;
 
-    public ConditionalAutomationWithServices(
-        IHaServices services,IEnumerable<string> triggerEntities, 
-        Func<IHaServices, HaEntityStateChange, CancellationToken, Task<bool>> continuesToBeTrue, 
-        TimeSpan @for, Func<IHaServices, CancellationToken, Task> execute) 
-            : base(triggerEntities, @for)
+    private Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task<bool>> _continue;
+    private Func<CancellationToken, Task> _execute;
+
+    public ConditionalAutomation(IEnumerable<string> triggers, 
+        TimeSpan @for,
+        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task<bool>> continueTrue,
+        Func<CancellationToken, Task> execute) : base(triggers)
     {
-        this._services = services;
-        this._continuesToBeTrue = continuesToBeTrue;
-        this._execute = execute;
+        _for = @for;
+        _continue = continueTrue;
+        _execute = execute;
     }
 
-    public override Task<bool> ContinuesToBeTrue(HaEntityStateChange haEntityStateChange, CancellationToken cancellationToken)
+    public TimeSpan For => _for;
+
+    public override async Task<bool> ContinuesToBeTrue(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken ct)
     {
-        return _continuesToBeTrue(_services, haEntityStateChange, cancellationToken);
+        return await _continue(stateChange, ct);
     }
 
-    public override Task Execute(CancellationToken cancellationToken)
+    public override async Task Execute(CancellationToken ct)
     {
-        return _execute(_services, cancellationToken);
+        await _execute(ct);
     }
 }

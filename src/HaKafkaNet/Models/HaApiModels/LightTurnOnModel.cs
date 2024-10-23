@@ -100,7 +100,7 @@ public record LightTurnOnModel
     public Flash? Flash {get; set;}
 
     /// <summary>
-    /// Tell light to flash, can be either value short or long.
+    /// Applies an effect such as colorloop or random
     /// </summary>
     [JsonPropertyName("effect")]
     public string? Effect {get; set;}

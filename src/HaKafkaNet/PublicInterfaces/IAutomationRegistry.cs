@@ -10,16 +10,13 @@ public interface IAutomationRegistry
 
 public interface IRegistrar
 {
-    
     void Register(params IAutomation[] automation);
 
     void RegisterDelayed(params IDelayableAutomation[] automations);
 
-    void RegisterTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
-        where Tauto: IAutomation<Tstate, Tatt>;
+    void Register<Tstate, Tatt>(params IAutomation<Tstate,Tatt>[] automations);
     
-    void RegisterDelayedTyped<Tauto, Tstate, Tatt>(params Tauto[] automations)
-        where Tauto : IDelayableAutomation<Tstate, Tatt>;
+    void RegisterDelayed<Tstate, Tatt>(params IDelayableAutomation<Tstate, Tatt>[] automations);
 
     void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;

@@ -23,12 +23,12 @@ public class TemplateRegistry : IAutomationRegistry, IInitializeOnStartup
 
     public void Register(IRegistrar reg)
     {
-        reg.RegisterMultiple(
+        reg.Register(
             Simple1(),
             Simple2()
         );
 
-        reg.RegisterMultiple(
+        reg.RegisterDelayed(
             Delay1()
         );
     }
