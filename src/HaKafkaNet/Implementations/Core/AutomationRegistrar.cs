@@ -6,23 +6,30 @@ namespace HaKafkaNet;
 
 internal class AutomationRegistrar : IInternalRegistrar
 {
+    private readonly IWrapperFactory _wrapperFactory;
     readonly IAutomationTraceProvider _trace;
     readonly ILogger<AutomationWrapper> _logger;
     private readonly ISystemObserver _observer;
+    private readonly List<InitializationError> _errors;
+
 
     internal List<AutomationWrapper> RegisteredAutomations { get; private set; } = new();
 
     public IEnumerable<IAutomationWrapper> Registered => RegisteredAutomations.Select(a => a);
 
     public AutomationRegistrar(
+        IWrapperFactory wrapperFactory,
         IEnumerable<IAutomation> automations,
         IAutomationTraceProvider traceProvider,
         ISystemObserver observer,
+        List<InitializationError> errors,
         ILogger<AutomationWrapper> logger
         )
     {
+        this._wrapperFactory = wrapperFactory;
         _trace = traceProvider;
         _logger = logger;
+        this._errors = errors;
         this._observer = observer;
         Register(automations.ToArray());
     }
@@ -31,7 +38,7 @@ internal class AutomationRegistrar : IInternalRegistrar
     {
         foreach (var item in automations)
         {
-            AddSimple(item);
+            AddSimple(item, 0);
         }
     }
 
@@ -39,7 +46,7 @@ internal class AutomationRegistrar : IInternalRegistrar
     {
         foreach (var item in automations)
         {
-            AddDelayable(item);
+            AddDelayable(item, 0);
         }
     }
 
@@ -48,7 +55,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         foreach (var item in automations)
         {
             var wrapped = new TypedAutomationWrapper<IAutomation<Tstate, Tatt>, Tstate, Tatt>(item, _observer);
-            AddSimple(wrapped);
+            AddSimple(wrapped, 0);
         }
     }
 
@@ -57,13 +64,13 @@ internal class AutomationRegistrar : IInternalRegistrar
         foreach (var item in automations)
         {
             var wrapped = new TypedDelayedAutomationWrapper<IDelayableAutomation<Tstate, Tatt>, Tstate, Tatt>(item, _observer);
-            AddDelayable(wrapped);
+            AddDelayable(wrapped, 0);
         }
     }
 
     public void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator) where T : IDelayableAutomation
     {
-        AddDelayableWithEvaluator(automation, delayEvaluator);
+        AddDelayableWithEvaluator(automation, delayEvaluator, 0);
     }
 
     public void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator) 
@@ -71,34 +78,104 @@ internal class AutomationRegistrar : IInternalRegistrar
     {
         foreach (var item in automations)
         {
-            AddDelayableWithEvaluator(item, delayEvaluator);
+            AddDelayableWithEvaluator(item, delayEvaluator, 0);
         }
     }
 
-    private void AddSimple(IAutomation automation)
+    public bool TryRegister(params Func<IAutomationBase>[] activators)
     {
-        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName());
+        bool success = true;
+        foreach (var activator in activators)
+        {
+            try
+            {
+                var auto = activator();
+                AddAny(auto, 0);
+            }
+            catch (System.Exception ex)
+            {
+                var stack = new StackTrace();
+                _errors.Add(new("activator in TryRegister threw exception or returned invalid type", ex, (object?)stack.GetFrame(1)?.GetMethod()?.DeclaringType ?? "unknown"));
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    public bool TryRegister(params IAutomationBase[] automations)
+    {
+        bool success = true;
+        foreach (var auto in automations)
+        {
+            try
+            {
+                AddAny(auto, 0);
+            }
+            catch (System.Exception ex)
+            {
+                success = false;
+                _errors.Add(new("Could not register automation", ex, auto));
+            }
+        }
+        return success;
+    }
+
+    private void AddAny(IAutomationBase auto, int frameCount)
+    {
+        if (auto is IAutomation simple)
+        {
+            AddSimple(simple, ++frameCount);
+            return;
+        }
+        if (auto is IDelayableAutomation delayable)
+        {
+            AddDelayable(delayable, ++frameCount);
+            return;
+        }
+
+        try
+        {
+            var wrapped = _wrapperFactory.GetWrapped(auto);
+            frameCount++;
+            foreach (var item in wrapped)
+            {
+                AddAny(item, frameCount);
+            }
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+
+    }
+
+    private void AddSimple(IAutomation automation, int frameCount)
+    {
+        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName(frameCount));
         RegisteredAutomations.Add(aWrapped);    
     }
 
-    private void AddDelayable<T>(T automation) where T: IDelayableAutomation
+    private void AddDelayable<T>(T automation, int frameCount) where T: IDelayableAutomation
     {
-        var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger);
-        var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
-        RegisteredAutomations.Add(aWrapped);
+        var wrapped = _wrapperFactory.GetWrapped(automation);
+        frameCount++;
+        foreach (var item in wrapped)
+        {
+            AddAny(item, frameCount);
+        }
     }
 
-    private void AddDelayableWithEvaluator<T>(T automation, DelayEvaluator<T> evaluator)
+    private void AddDelayableWithEvaluator<T>(T automation, DelayEvaluator<T> evaluator, int frameCount)
         where T : IDelayableAutomation
     {
-        var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger, () => evaluator(automation));
-        var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName());
+        // var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger, () => evaluator(automation));
+        // var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName(frameCount));
     }
 
-    private string GetSourceTypeName()
+    private string GetSourceTypeName(int frameCount)
     {
         StackTrace trace = new StackTrace();
-        var name = trace.GetFrame(3)?.GetMethod()?.DeclaringType?.Name;
+        var name = trace.GetFrame(frameCount + 3)?.GetMethod()?.DeclaringType?.Name;
         if (name == nameof(AutomationRegistrar))
         {
             name = "discovery";

@@ -25,7 +25,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger logger, Func<TimeSpan>? evaluator = null)
+    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger<T> logger, Func<TimeSpan>? evaluator = null)
     {
         this._automation = automation;
         this._trace = traceProvider;

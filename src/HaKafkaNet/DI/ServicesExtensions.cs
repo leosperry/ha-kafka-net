@@ -141,11 +141,15 @@ public static class ServicesExtensions
             .AddSingleton<IAutomationTraceProvider, TraceLogProvider>()
             .AddSingleton<HknLogTarget>();
 
+        List<InitializationError> errors = new();
+        services.AddSingleton(errors);
+
         services
             .AddTransient(typeof(DelayablelAutomationWrapper<>))
             .AddTransient(typeof(TypedDelayedAutomationWrapper<,,>))
-            .AddTransient(typeof(TypedAutomationWrapper<,,>));
-
+            .AddTransient(typeof(TypedAutomationWrapper<,,>))
+            .AddTransient<IWrapperFactory, WrapperFactory>();
+        
         var eligibleTypes = 
             (from a in AppDomain.CurrentDomain.GetAssemblies()
             from t in a.GetTypes()
@@ -157,7 +161,7 @@ public static class ServicesExtensions
         
         foreach (var type in eligibleTypes)
         {
-            if (typeof(IAutomationBase).IsAssignableFrom(type) && HandleIAutomationBase(services, type))
+            if (typeof(IAutomationBase).IsAssignableFrom(type) && HandleIAutomationBase(services, type, errors))
             {
                 continue;
             }
@@ -166,7 +170,7 @@ public static class ServicesExtensions
             switch (type)
             {
                 case var _ when typeof(IAutomationRegistry).IsAssignableFrom(type):
-                    ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Singleton);
+                    ServiceDescriptor registry = new(typeof(IAutomationRegistry), type, ServiceLifetime.Transient);
                     services.TryAddEnumerable(registry);
                     break;
                 case var _ when typeof(ISystemMonitor).IsAssignableFrom(type):
@@ -181,7 +185,7 @@ public static class ServicesExtensions
     }
 
 
-    private static bool HandleIAutomationBase(IServiceCollection services, Type type)
+    private static bool HandleIAutomationBase(IServiceCollection services, Type type, List<InitializationError> errors)
     {
         var supportedInterfaceTypes = new HashSet<Type>()
         {
@@ -201,34 +205,28 @@ public static class ServicesExtensions
             return false;
         }
 
-        if (stronglyTypedAutomationDefinitions.Length > 1)
+        foreach (var targetInterface in stronglyTypedAutomationDefinitions)
         {
-            errors.Add(new("Custom automations may only implement one type of automation",null, type));
-            return false;
+            ServiceDescriptor? descriptor;
+            if (targetInterface.IsGenericType)
+            {
+                descriptor = GetGenericServiceDescriptor(targetInterface, type, services, errors);
+            }
+            else
+            {
+                descriptor = GetNonGenericServiceDescriptor(targetInterface, type, services, errors);
+            }
+
+            if(descriptor is not null)
+            {
+                services.TryAddEnumerable(descriptor);
+            }
         }
 
-        var targetInterface = stronglyTypedAutomationDefinitions[0];
-
-        ServiceDescriptor? descriptor;
-        if (targetInterface.IsGenericType)
-        {
-            descriptor = GetGenericServiceDescriptor(targetInterface, type, services);
-        }
-        else
-        {
-            descriptor = GetNonGenericServiceDescriptor(targetInterface, type, services);
-        }
-
-        if(descriptor is not null)
-        {
-            services.TryAddEnumerable(descriptor);
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
-    private static ServiceDescriptor? GetGenericServiceDescriptor(Type targetInterface, Type concrete, IServiceCollection services)
+    private static ServiceDescriptor? GetGenericServiceDescriptor(Type targetInterface, Type concrete, IServiceCollection services, List<InitializationError> errors)
     {
         var genericArgs = targetInterface.GetGenericArguments();
 
@@ -256,7 +254,7 @@ public static class ServicesExtensions
         return descriptor;
     }
 
-    private static ServiceDescriptor? GetNonGenericServiceDescriptor(Type @interface, Type concrete, IServiceCollection services)
+    private static ServiceDescriptor? GetNonGenericServiceDescriptor(Type @interface, Type concrete, IServiceCollection services, List<InitializationError> errors)
     {
         if(@interface == typeof(IAutomation))
         {
@@ -279,12 +277,13 @@ public static class ServicesExtensions
         return null;
     }
 
-    static List<InitializationError> errors = new();
+    
 
     private static void InitializeUserCode(
         IServiceProvider services,
         HaKafkaNetConfig config)
     {
+        var errors = services.GetRequiredService<List<InitializationError>>();
         // check hard requirements first
         CheckValidHaConfig(config.HaConnectionInfo, errors);
         CheckCacheRequirement(services, errors);
