@@ -33,10 +33,10 @@ public interface IAutomationFactory
         bool reschedudulable = false
     );
 
-    TypedAutomation<Tstate, Tatt> CreateSimpleTyped<Tstate, Tatt>(
+    SimpleAutomation<Tstate, Tatt> CreateSimple<Tstate, Tatt>(
         IEnumerable<string> triggerIds,
         Func<HaEntityStateChange<HaEntityState<Tstate,Tatt>>, CancellationToken, Task> execute,
-        EventTiming eventTiming
+        EventTiming eventTiming = EventTiming.PostStartup
     );
 
     SimpleAutomation EntityOnOffWithAnother(string primaryEntityId, params string[] secondaries);

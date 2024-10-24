@@ -3,14 +3,14 @@ using System;
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public class TypedAutomation<Tstate, Tatt> : IAutomation<Tstate, Tatt>, IAutomationMeta, ISetAutomationMeta
+public class SimpleAutomation<Tstate, Tatt> : IAutomation<Tstate, Tatt>, IAutomationMeta, ISetAutomationMeta
 {
     private AutomationMetaData? _meta;
     private readonly Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task> _execute;
     internal readonly EventTiming _eventTimings;
     private readonly string[] _triggers;
 
-    public TypedAutomation(IEnumerable<string> triggers, Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task> execute, EventTiming eventTimings)
+    public SimpleAutomation(IEnumerable<string> triggers, Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task> execute, EventTiming eventTimings)
     {
         _triggers = triggers.ToArray();
         _execute = execute;

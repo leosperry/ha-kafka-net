@@ -31,7 +31,7 @@ public partial class AutomationBuilderExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="info"></param>
     /// <returns></returns>
-    public static T MakeDurable<T>(this T info) where T : SchedulableAutomationBuildingInfo
+    public static T MakeDurable<T>(this T info) where T : SchedulableAutomationBuildingInfoBase
     {
         info.ShouldExecutePastEvents = true;
         info.EventTimings = EventTiming.Durable;
@@ -97,7 +97,8 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
-    public static ConditionalAutomationBuildingInfo Then(this ConditionalAutomationBuildingInfo info, Func<CancellationToken, Task> executor)
+    public static T Then<T>(this T info, Func<CancellationToken, Task> executor)
+        where T : ConditionalAutomationBuildingInfoBase
     {
         info.Execution = executor;
         return info;

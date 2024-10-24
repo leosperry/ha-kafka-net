@@ -57,7 +57,7 @@ internal class SystemObserver : ISystemObserver
     internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
     internal event Action<HaServiceResponseArgs, CancellationToken>? HaApiResponse;
     internal event Action<InitializationError[]>? InitializatinFailure;
-    internal event Action<IAutomationBase, HaEntityStateChange, CancellationToken>? AutomationTypeConversionFailure;
+    internal event Action<IAutomationBase, HaEntityStateChange, Exception, CancellationToken>? AutomationTypeConversionFailure;
 
     public SystemObserver(ILogger<SystemObserver> logger)
     {
@@ -120,7 +120,7 @@ internal class SystemObserver : ISystemObserver
         {
             try
             {
-                AutomationTypeConversionFailure?.Invoke(automation, stateChange, ct);
+                AutomationTypeConversionFailure?.Invoke(automation, stateChange, ex, ct);
                 return;
             }
             catch (System.Exception caught)
@@ -160,7 +160,7 @@ internal class SystemObserver : ISystemObserver
             HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
             HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
             InitializatinFailure += (errors) => _ = monitor.InitializationFailure(errors); // don't wrap this one, we want exceptions to bubble up
-            AutomationTypeConversionFailure += (auto, sc, ct) => _ = WrapTask("Automation Type Conversion Failure", () => monitor.AutomationTypeConversionFailure(auto, sc, ct));
+            AutomationTypeConversionFailure += (auto, sc, ex, ct) => _ = WrapTask("Automation Type Conversion Failure", () => monitor.AutomationTypeConversionFailure(auto, sc, ex, ct));
         }    
     }
 

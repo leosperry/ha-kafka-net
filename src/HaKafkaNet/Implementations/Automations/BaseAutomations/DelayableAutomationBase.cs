@@ -30,7 +30,7 @@ public abstract class DelayableAutomationBase : IDelayableAutomation
     public IEnumerable<string> TriggerEntityIds() => _triggerEntities;
 }
 
-public abstract class DelayableAutomationBase<Tstate, Tatt> : IDelayableAutomation<Tstate, Tatt>
+public abstract class DelayableAutomationBase<Tstate, Tatt> : IDelayableAutomation<Tstate, Tatt> , IAutomationMeta, ISetAutomationMeta
 {
     readonly IEnumerable<string> _triggers;
     public EventTiming EventTimings { get; set; } = EventTiming.PostStartup;
@@ -47,4 +47,15 @@ public abstract class DelayableAutomationBase<Tstate, Tatt> : IDelayableAutomati
     public abstract Task Execute(CancellationToken ct);
 
     public IEnumerable<string> TriggerEntityIds() => _triggers;
+
+    private AutomationMetaData? _meta;
+    public AutomationMetaData GetMetaData()
+    {
+        return _meta ??= AutomationMetaData.Create(this);
+    }
+
+    public void SetMeta(AutomationMetaData meta)
+    {
+        _meta = meta;
+    }
 }

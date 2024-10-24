@@ -74,7 +74,7 @@ public static partial class AutomationBuilderExtensions
 
     public static IAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedAutomationBuildingInfo<Tstate, Tatt> info)
     {
-        return new TypedAutomation<Tstate, Tatt>(
+        return new SimpleAutomation<Tstate, Tatt>(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.EventTimings ?? EventTiming.PostStartup).WithMeta(GetMeta(info));
@@ -96,7 +96,7 @@ public static partial class AutomationBuilderExtensions
         return conditional;
     }
 
-    public static IDelayableAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedConditionalBuildingInfo<Tstate, Tatt> info)
+    public static IConditionalAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedConditionalBuildingInfo<Tstate, Tatt> info)
     {
         var conditional = new ConditionalAutomation<Tstate,Tatt>(
             info.TriggerEntityIds ?? Enumerable.Empty<string>(), 
@@ -107,6 +107,8 @@ public static partial class AutomationBuilderExtensions
         conditional.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
         conditional.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
         conditional.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
+
+        conditional.SetMeta(GetMeta(info));
 
         return conditional;
     }
@@ -122,10 +124,7 @@ public static partial class AutomationBuilderExtensions
             .WithMeta(GetMeta(info));
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
-        
-        // auto.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
-        // auto.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
-        
+                
         return auto;
     }
 
@@ -140,6 +139,9 @@ public static partial class AutomationBuilderExtensions
         );
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
+
+        auto.SetMeta(GetMeta(info));
+
         return auto;
     }
 

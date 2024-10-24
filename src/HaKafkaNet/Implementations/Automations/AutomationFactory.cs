@@ -62,12 +62,12 @@ internal class AutomationFactory : IAutomationFactory
         return new SimpleAutomation(triggerEntities, execute, eventTimings);
     }
 
-    public TypedAutomation<Tstate, Tatt> CreateSimpleTyped<Tstate, Tatt>(
+    public SimpleAutomation<Tstate, Tatt> CreateSimple<Tstate, Tatt>(
         IEnumerable<string> triggerIds, 
         Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task> execute, 
-        EventTiming eventTiming)
+        EventTiming eventTiming = EventTiming.PostStartup)
     {
-        return new TypedAutomation<Tstate, Tatt>(triggerIds, execute, eventTiming);
+        return new SimpleAutomation<Tstate, Tatt>(triggerIds, execute, eventTiming);
     }
 
     public ConditionalAutomation EntityAutoOff(string entity_id, TimeSpan timeToLeaveOn)

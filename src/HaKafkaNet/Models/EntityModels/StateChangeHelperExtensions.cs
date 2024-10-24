@@ -40,7 +40,19 @@ public static class StateChangeHelperExtensions
         return ((old is null && allowOldNull) || old <= val) && change.New.State > val;
     }
 
+    public static bool BecameGreaterThan<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
+    {
+        var old = change.Old?.State;
+        return ((old is null && allowOldNull) || old <= val) && change.New.State > val;
+    }
+
     public static bool BecameGreaterThanOrEqual<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
+    {
+        var old = change.Old?.State;
+        return ((old is null && allowOldNull) || old < val) && change.New.State >= val;
+    }
+
+    public static bool BecameGreaterThanOrEqual<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
     {
         var old = change.Old?.State;
         return ((old is null && allowOldNull) || old < val) && change.New.State >= val;
@@ -52,7 +64,18 @@ public static class StateChangeHelperExtensions
         return ((old is null && allowOldNull) || old >= val) && change.New.State < val;
     }
 
+    public static bool BecameLessThan<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
+    {
+        var old = change.Old?.State;
+        return ((old is null && allowOldNull) || old >= val) && change.New.State < val;
+    }
+
     public static bool BecameLessThanOrEqual<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
+    {
+        var old = change.Old?.State;
+        return ((old is null && allowOldNull) || old > val) && change.New.State <= val;
+    }
+    public static bool BecameLessThanOrEqual<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val, bool allowOldNull = true) where T : struct, IComparisonOperators<T, T, bool>
     {
         var old = change.Old?.State;
         return ((old is null && allowOldNull) || old > val) && change.New.State <= val;

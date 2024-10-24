@@ -61,7 +61,9 @@ public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes
                 }
                 else
                 {
-                    throw new HaKafkaNetException("could not pars non-nullable state");
+                    var ex = new HaKafkaNetException("could not parse non-nullable state");
+                    ex.Data.Add("original_value", state);
+                    throw ex;
                 }
             }
             return parsed!;
