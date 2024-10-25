@@ -13,9 +13,10 @@ public class GetAllTests
         Mock<ILogger<AutomationWrapper>> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
         Mock<ISystemObserver> observer = new();
+        Mock<IWrapperFactory> wrapperFactory = new();
 
-        var sut = new AutomationRegistrar(
-            autos, trace.Object, observer.Object, logger.Object);
+        var sut = new AutomationRegistrar(wrapperFactory.Object,
+            autos, trace.Object, observer.Object, new List<InitializationError>(), logger.Object);
         // When
 
         var result = sut.RegisteredAutomations;
@@ -40,8 +41,14 @@ public class GetAllTests
         
         Mock<ISystemObserver> observer = new();
 
+        Mock<IWrapperFactory> wrapperFactory = new();
+        wrapperFactory.Setup(w => w.GetWrapped(It.IsAny<IAutomationBase>()))
+            .Returns([new Mock<IAutomation>().Object]);
+
+
         var sut = new AutomationRegistrar(
-            autos, trace.Object, observer.Object, logger.Object);
+            wrapperFactory.Object,
+            autos, trace.Object, observer.Object, new List<InitializationError>(), logger.Object);
         
         // When
         sut.Register(auto.Object);

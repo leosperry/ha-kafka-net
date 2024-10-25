@@ -13,7 +13,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IDelayableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -31,7 +31,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -52,7 +52,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
 
@@ -87,7 +87,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -116,7 +116,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -147,7 +147,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -179,7 +179,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -218,7 +218,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -245,7 +245,7 @@ public class SchedulableAutomationTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<ISchedulableAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
         Mock<ISchedulableAutomation> auto = new();

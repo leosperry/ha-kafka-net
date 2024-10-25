@@ -18,7 +18,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -44,7 +44,7 @@ public class ConditionalAutomationWrapperTests
             .ReturnsAsync(false);
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
 
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
         Mock<IAutomationTraceProvider> trace = new();
@@ -76,7 +76,7 @@ public class ConditionalAutomationWrapperTests
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
 
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
@@ -109,7 +109,7 @@ public class ConditionalAutomationWrapperTests
 
         auto.Setup(a => a.For).Returns(TimeSpan.FromMilliseconds(delay));
 
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
@@ -145,7 +145,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -178,7 +178,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -215,7 +215,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -254,7 +254,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -287,7 +287,7 @@ public class ConditionalAutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
@@ -315,7 +315,7 @@ public class ConditionalAutomationWrapperTests
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger<DelayablelAutomationWrapper>> logger = new();
+        Mock<ILogger<IConditionalAutomation>> logger = new();
 
         var stateChange = TestHelpers.GetStateChange();
     
