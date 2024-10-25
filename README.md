@@ -12,6 +12,8 @@ This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v9.2.0) br
 
 Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
+> V10 changes are merged to main
+
 ***
 
 It was created with the following goals:
