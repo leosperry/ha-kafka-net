@@ -16,7 +16,7 @@ public class SunComponentTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger> logger = new();
+        Mock<ILogger<SunRiseAutomation>> logger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
@@ -47,7 +47,7 @@ public class SunComponentTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger> logger = new();
+        Mock<ILogger<SunRiseAutomation>> logger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
@@ -78,7 +78,7 @@ public class SunComponentTests
         Mock<IAutomationTraceProvider> trace = new();
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
-        Mock<ILogger> logger = new();
+        Mock<ILogger<SunRiseAutomation>> logger = new();
 
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
