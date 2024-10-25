@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿using FastEndpoints;
+
+namespace HaKafkaNet;
 
 /// <summary>
 /// This is the registry users create implementations of
@@ -15,9 +17,12 @@ public interface IRegistrar
     void RegisterDelayed(params IDelayableAutomation[] automations);
 
     void Register<Tstate, Tatt>(params IAutomation<Tstate,Tatt>[] automations);
-    
+
+    [Obsolete("Please implement ISchedulableAutomation", true)]
     void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
+
+    [Obsolete("Please implement ISchedulableAutomation", true)]
     void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
 
