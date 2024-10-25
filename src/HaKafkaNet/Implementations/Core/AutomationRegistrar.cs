@@ -70,16 +70,13 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     public void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator) where T : IDelayableAutomation
     {
-        AddDelayableWithEvaluator(automation, delayEvaluator, 0);
+        throw new NotImplementedException("deprecated");
     }
 
     public void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator) 
         where T : IDelayableAutomation
     {
-        foreach (var item in automations)
-        {
-            AddDelayableWithEvaluator(item, delayEvaluator, 0);
-        }
+        throw new NotImplementedException("deprecated");
     }
 
     public bool TryRegister(params Func<IAutomationBase>[] activators)
@@ -163,13 +160,6 @@ internal class AutomationRegistrar : IInternalRegistrar
         {
             AddAny(item, frameCount);
         }
-    }
-
-    private void AddDelayableWithEvaluator<T>(T automation, DelayEvaluator<T> evaluator, int frameCount)
-        where T : IDelayableAutomation
-    {
-        // var dWrapped = new DelayablelAutomationWrapper<T>(automation, _trace, _logger, () => evaluator(automation));
-        // var aWrapped = new AutomationWrapper(dWrapped, _trace, GetSourceTypeName(frameCount));
     }
 
     private string GetSourceTypeName(int frameCount)
