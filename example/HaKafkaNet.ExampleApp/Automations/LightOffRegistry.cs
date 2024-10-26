@@ -18,7 +18,7 @@ public class LightOffRegistry : IAutomationRegistry
 
     public void Register(IRegistrar reg)
     {
-        reg.RegisterMultiple(RegisterContitionals());
+        reg.TryRegister(RegisterContitionals().ToArray());
     }
 
     public IEnumerable<IAutomation> Register()

@@ -24,8 +24,8 @@ public class LightOnRegistry : IAutomationRegistry
 
     public void Register(IRegistrar reg)
     {
-        reg.RegisterMultiple(Register());
-        reg.RegisterMultiple(RegisterContitionals());
+        reg.Register(Register().ToArray());
+        reg.RegisterDelayed(RegisterContitionals().ToArray());
     }
 
     public IEnumerable<IAutomation> Register()
@@ -98,7 +98,10 @@ public class LightOnRegistry : IAutomationRegistry
             .WithDescription("from builder using conditional")
             .WithTriggers(OFFICE_MOTION)
             .When(sc => sc.New.State == "on") // there is an asynchronous overload for this method should you need to call services
-            .Then(ct => _services.Api.TurnOn(OFFICE_LIGHT, ct))
+            .Then(async ct => 
+            { 
+                await _services.Api.TurnOn(OFFICE_LIGHT, ct);
+            })
             .Build();
     }
 }

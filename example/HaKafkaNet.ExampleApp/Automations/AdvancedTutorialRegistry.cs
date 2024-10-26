@@ -12,8 +12,10 @@ public class AdvancedTutorialRegistry : IAutomationRegistry
     }
     public void Register(IRegistrar reg)
     {
-        reg.Register(DoorAlert("binary_sensor.front_door_contact", "front door"));
-        reg.Register(DoorAlert("binary_sensor.back_door_contact", "back door"));
+        reg.TryRegister(
+            () => DoorAlert("binary_sensor.front_door_contact", "front door"),
+            () => DoorAlert("binary_sensor.back_door_contact", "back door")
+        );
     }
 
     IConditionalAutomation DoorAlert(string entityId, string friendlyName)

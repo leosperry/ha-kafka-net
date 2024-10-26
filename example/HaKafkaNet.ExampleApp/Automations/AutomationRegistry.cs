@@ -21,11 +21,11 @@ public class AutomationRegistry : IAutomationRegistry
     /// <param name="reg"></param>
     public void Register(IRegistrar reg)
     {
-        reg.RegisterMultiple(Register());
-        reg.RegisterMultiple(RegisterContitionals());
+        reg.Register(Register().ToArray());
+        reg.RegisterDelayed(RegisterContitionals().ToArray());
 
         // new feature! Turn on front porch light 15 minutes before sunset
-        reg.Register(_automationFactory.SunSetAutomation(
+        reg.RegisterDelayed(_automationFactory.SunSetAutomation(
             ct => _services.Api.TurnOn("light.front_porch"), 
             TimeSpan.FromMinutes(-15)));
     }
