@@ -98,5 +98,10 @@ public static class StateExtensions
     {
         return state?.State == "home";
     }
+
+    public static string FriendlyName<_>(this IHaEntity<_, JsonElement> state, string? fallback = null)
+    {
+        return state.Attributes.GetProperty("friendly_name").GetString() ?? fallback ?? "name not specified";
+    }
 }
 
