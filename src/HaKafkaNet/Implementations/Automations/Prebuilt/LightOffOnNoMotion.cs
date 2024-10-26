@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
-public class LightOffOnNoMotion : ConditionalAutomationBase
+public class LightOffOnNoMotion : ConditionalAutomationBase, IConditionalAutomation
 {
     private readonly List<string> _motionIds = new();
     private readonly List<string> _lightIds = new();
