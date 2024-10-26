@@ -1,4 +1,6 @@
 ﻿
+using System.Text;
+
 namespace HaKafkaNet;
 
 [ExcludeFromDiscovery]
@@ -88,13 +90,10 @@ internal class AutomationWrapper : IAutomationWrapper
                 Description = underlyingType.FullName,
                 Enabled = true,
                 KeyRequest = GenerateKey(source, underlyingType.Name),
-                UnderlyingType = underlyingType.Name
             };
         }
-        if (meta.UnderlyingType is null)
-        {
-            meta.UnderlyingType = underlyingType.Name;
-        }
+
+        meta.UnderlyingType = underlyingType.PrettyPrint();
 
         if (string.IsNullOrEmpty(meta.KeyRequest))
         {
@@ -138,4 +137,24 @@ internal class AutomationWrapper : IAutomationWrapper
     }    
 
     public IEnumerable<string> TriggerEntityIds() => _triggers;
+
 }
+
+static class PrettyPrintTypeNameExtensions
+{
+    public static string PrettyPrint(this Type type)
+    {
+        if (!type.IsGenericType)
+        {
+            return type.Name;
+        }
+        StringBuilder builder = new();
+        builder.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
+        builder.Append('<');
+        builder.Append(string.Join(", ", type.GetGenericArguments().Select(t => t.PrettyPrint())));
+        builder.Append('>');
+
+        return builder.ToString();
+    }
+}
+

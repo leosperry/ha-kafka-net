@@ -30,7 +30,6 @@ public record AutomationMetaData
             Name = automation.GetType().Name,
             Description = automation.GetType().Name,
             Enabled = true,
-            UnderlyingType = automation.GetType().Name
         };
     }
 }
