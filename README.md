@@ -9,7 +9,7 @@ Kafka ensures automations are durable and state is restored between restarts.
 ***
 Version 10 Released!
 
-This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.0.0) add more strong typing capabilities as well as an ability to register all automations in a registry with a single call to `TryRegiester`. 
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.0.0) adds more strong typing capabilities as well as an ability to register all automations in a registry with a single call to `TryRegister`. 
 
 Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
