@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HaKafkaNet" Version="9.*" />
+    <PackageReference Include="HaKafkaNet" Version="10.*" />
   
     <Folder Include="nugetAssets/" />
   </ItemGroup>
