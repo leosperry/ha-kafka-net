@@ -14,6 +14,8 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
     internal readonly IAutomation<Tstate, Tatt> _automation;
     private readonly ISystemObserver _observer;
 
+    private AutomationMetaData? _meta;
+
     public TypedAutomationWrapper(Tauto automation, ISystemObserver observer)
     {
         this._automation = automation;
@@ -47,6 +49,11 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
     public IEnumerable<string> TriggerEntityIds()
     {
         return _automation.TriggerEntityIds();
+    }
+
+    public AutomationMetaData GetMetaData()
+    {
+        return _meta ??= AutomationMetaData.Create(_automation);
     }
 }
 

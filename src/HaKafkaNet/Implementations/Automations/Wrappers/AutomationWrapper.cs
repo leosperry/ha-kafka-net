@@ -34,30 +34,37 @@ internal class AutomationWrapper : IAutomationWrapper
             _triggers = Enumerable.Empty<string>();
         }
 
-        _meta = GetMeta(source);
+        _meta = GetOrMakeMeta(source);
         _meta.UserTriggerError = hasTriggerError;
 
         
         _eventTimings = automation.EventTimings;        
     }
 
-    AutomationMetaData GetMeta(string source)
+    AutomationMetaData GetOrMakeMeta(string source)
     {
         AutomationMetaData meta;
 
-        var underlyingType = _auto switch
-        {
-            IAutomationWrapperBase delayable => delayable.WrappedAutomation.GetType(),
-            TypedAutomationWrapper typed => typed.WrappedType,
-            _ => _auto.GetType()
-        };
+        var auto = _auto is IAutomationWrapperBase wrapperBase ? wrapperBase.GetRoot() : _auto;
         
-        if (_auto is IAutomationMeta metaAuto) // all prebuilt automations and user implemented
+        IAutomationMeta? autoImplementingmeta = _auto as IAutomationMeta;
+        
+        IAutomationBase target = _auto;
+        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
         {
+            target = targetWrapper.WrappedAutomation;
+            autoImplementingmeta = target as IAutomationMeta;
+        }
+
+        var underlyingType = auto.GetType();
+
+        if(autoImplementingmeta is not null)
+        {
+            // use it's data
             try
             {
                 // user implemented, could throw an exception
-                meta = metaAuto.GetMetaData();
+                meta = autoImplementingmeta.GetMetaData();
             }
             catch
             {
@@ -70,10 +77,11 @@ internal class AutomationWrapper : IAutomationWrapper
                     UserMetaError = true
                 };
             }
-            meta.UnderlyingType = underlyingType.Name;
         }
         else
         {
+            // not a wrapper, likely user implemented
+            // make the meta 
             meta = new AutomationMetaData()
             {
                 Name = underlyingType.Name,
@@ -82,6 +90,10 @@ internal class AutomationWrapper : IAutomationWrapper
                 KeyRequest = GenerateKey(source, underlyingType.Name),
                 UnderlyingType = underlyingType.Name
             };
+        }
+        if (meta.UnderlyingType is null)
+        {
+            meta.UnderlyingType = underlyingType.Name;
         }
 
         if (string.IsNullOrEmpty(meta.KeyRequest))
@@ -92,7 +104,6 @@ internal class AutomationWrapper : IAutomationWrapper
         meta.Source = source;
 
         return meta;
-        
     }
 
     public AutomationMetaData GetMetaData()

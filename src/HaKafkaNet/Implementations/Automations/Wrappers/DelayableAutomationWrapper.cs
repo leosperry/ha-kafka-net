@@ -25,21 +25,16 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger<T> logger, Func<TimeSpan>? evaluator = null)
+    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger<T> logger)
     {
         this._automation = automation;
         this._trace = traceProvider;
         _logger = logger;
 
-        if (automation is IAutomationMeta metaAuto)
-        {
-            _meta = metaAuto.GetMetaData();
-            _meta.UnderlyingType = _automation.GetType().Name;
-        }
-        else
-        {
-            _meta = AutomationMetaData.Create(this.WrappedAutomation);
-        }
+        IAutomationBase target = ((IAutomationWrapperBase)this).GetRoot();
+
+        _meta = target is IAutomationMeta automationMeta ? automationMeta.GetMetaData() : AutomationMetaData.Create(target);
+
         _meta.IsDelayable = true;
 
         if (automation is ISchedulableAutomationBase || (automation is TypedDelayedAutomationWrapper typed && typed.WrappedAutomation is ISchedulableAutomationBase))
@@ -60,7 +55,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         }
         else 
         {
-            _getDelay = evaluator ?? throw new HaKafkaNetException("Delay evaluator not provided");
+            throw new HaKafkaNetException("Delay evaluator not provided");
         }
     }
 
