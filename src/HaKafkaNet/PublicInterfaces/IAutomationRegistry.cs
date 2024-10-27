@@ -13,8 +13,9 @@ public interface IAutomationRegistry
 public interface IRegistrar
 {
     void Register(params IAutomation[] automations);
-
     void RegisterDelayed(params IDelayableAutomation[] automations);
+    bool TryRegister(params IAutomationBase[] automations);
+    bool TryRegister(params Func<IAutomationBase>[] activators);
 
     void Register<Tstate, Tatt>(params IAutomation<Tstate,Tatt>[] automations);
 
@@ -26,8 +27,6 @@ public interface IRegistrar
     void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
         where T : IDelayableAutomation;
 
-    bool TryRegister(params IAutomationBase[] automations);
-    bool TryRegister(params Func<IAutomationBase>[] activators);
 
 
 
