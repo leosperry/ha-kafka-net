@@ -12,7 +12,7 @@ internal abstract class DelayablelAutomationWrapper
 internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAutomationWrapper where T : IDelayableAutomation 
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
-    AutomationMetaData _meta;
+    AutomationMetaData? _meta;
     private readonly T _automation;
     public IAutomationBase WrappedAutomation { get => _automation; }
 
@@ -32,10 +32,6 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         _logger = logger;
 
         IAutomationBase target = ((IAutomationWrapperBase)this).GetRoot();
-
-        _meta = target is IAutomationMeta automationMeta ? automationMeta.GetMetaData() : AutomationMetaData.Create(target);
-
-        _meta.IsDelayable = true;
 
         if (automation is ISchedulableAutomationBase || (automation is TypedDelayedAutomationWrapper typed && typed.WrappedAutomation is ISchedulableAutomationBase))
         {
@@ -180,7 +176,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         if (_cts is null)
         {
             _logger.LogDebug("automation scheduled in {automationCalculatedDelay}", delay);
-            _meta.NextScheduled = DateTime.Now + delay;
+            _meta!.NextScheduled = DateTime.Now + delay;
             // run with delay
             try
             {
@@ -205,7 +201,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
 
     private async Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
-        this._meta.LastExecuted = DateTime.Now;
+        this._meta!.LastExecuted = DateTime.Now;
         this._meta.NextScheduled = null;
         var evt = new TraceEvent(){
             EventType = "Delayed-Execution",
@@ -252,7 +248,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
                 if (_cts is not null)
                 {
                     _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason.ToString());
-                    _meta.NextScheduled = null;
+                    _meta!.NextScheduled = null;
                     try
                     {
                         _cts.Cancel();
@@ -276,7 +272,25 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         return _automation.TriggerEntityIds();
     }
 
-    public AutomationMetaData GetMetaData() => _meta;
+    public AutomationMetaData GetMetaData()
+    {
+        return _meta ??= GetOrMakeMetaData();
+    }
+
+    private AutomationMetaData GetOrMakeMetaData()
+    {
+        IAutomationMeta? autoImplementingmeta = _automation as IAutomationMeta;
+        IAutomationBase target = _automation;
+        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
+        {
+            target = targetWrapper.WrappedAutomation;
+            autoImplementingmeta = target as IAutomationMeta;
+        }
+
+        var meta = autoImplementingmeta is null ? AutomationMetaData.Create(target) : autoImplementingmeta.GetMetaData();
+        meta.IsDelayable = true;
+        return meta;
+    }
 }
 
 internal enum StopReason

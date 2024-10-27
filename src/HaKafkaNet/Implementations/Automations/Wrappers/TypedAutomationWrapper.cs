@@ -53,7 +53,20 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
 
     public AutomationMetaData GetMetaData()
     {
-        return _meta ??= AutomationMetaData.Create(_automation);
+        return _meta ??= GetOrMakeMetaData();
+    }
+
+    private AutomationMetaData GetOrMakeMetaData()
+    {
+        IAutomationMeta? autoImplementingmeta = _automation as IAutomationMeta;
+        IAutomationBase target = _automation;
+        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
+        {
+            target = targetWrapper.WrappedAutomation;
+            autoImplementingmeta = target as IAutomationMeta;
+        }
+
+        return autoImplementingmeta is null ? AutomationMetaData.Create(target) : autoImplementingmeta.GetMetaData();
     }
 }
 
