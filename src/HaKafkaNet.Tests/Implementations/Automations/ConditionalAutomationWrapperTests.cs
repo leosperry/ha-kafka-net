@@ -1,5 +1,4 @@
-﻿using Castle.Components.DictionaryAdapter;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Tests;
 

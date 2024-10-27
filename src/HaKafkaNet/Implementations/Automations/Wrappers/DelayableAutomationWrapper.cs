@@ -176,7 +176,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         if (_cts is null)
         {
             _logger.LogDebug("automation scheduled in {automationCalculatedDelay}", delay);
-            _meta!.NextScheduled = DateTime.Now + delay;
+            GetMetaData().NextScheduled = DateTime.Now + delay;
             // run with delay
             try
             {
@@ -201,16 +201,17 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
 
     private async Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
-        this._meta!.LastExecuted = DateTime.Now;
-        this._meta.NextScheduled = null;
+        var meta = GetMetaData();
+        meta.LastExecuted = DateTime.Now;
+        meta.NextScheduled = null;
         var evt = new TraceEvent(){
             EventType = "Delayed-Execution",
-            AutomationKey = this._meta.GivenKey,
+            AutomationKey = meta.GivenKey,
             EventTime = DateTime.Now,
         };
         try
         {
-            await _trace.Trace(evt, _meta, () => _automation.Execute(token));
+            await _trace.Trace(evt, meta, () => _automation.Execute(token));
         }
         finally
         {
@@ -248,7 +249,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
                 if (_cts is not null)
                 {
                     _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason.ToString());
-                    _meta!.NextScheduled = null;
+                    GetMetaData().NextScheduled = null;
                     try
                     {
                         _cts.Cancel();
