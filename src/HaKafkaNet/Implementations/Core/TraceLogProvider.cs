@@ -214,7 +214,8 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     task.Wait();
                     await task;
                 }
-                catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
+                catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException || 
+                    (ex is AggregateException agg && agg.InnerExceptions.Any(e => e is TaskCanceledException || e is OperationCanceledException)))
                 {
                     _logger.LogDebug(ex, "Task canceled during automation run");
                 }
