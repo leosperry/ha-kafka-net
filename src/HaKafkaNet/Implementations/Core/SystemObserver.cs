@@ -59,10 +59,12 @@ internal class SystemObserver : ISystemObserver
     internal event Action<InitializationError[]>? InitializatinFailure;
     internal event Action<IAutomationBase, HaEntityStateChange, Exception, CancellationToken>? AutomationTypeConversionFailure;
 
+    // used for auto-updating entities
+    ConcurrentDictionary<string, UpdateEntity> updaters = new();
+
     public SystemObserver(ILogger<SystemObserver> logger)
     {
         _logger = logger;
-
     }
 
     private async Task WrapTask(string taskType, Func<Task> funcToErrorHandle)
@@ -164,16 +166,21 @@ internal class SystemObserver : ISystemObserver
         }    
     }
 
-
     public void OnEntityStateUpdate(HaEntityState state)
     {
         if (updaters.TryGetValue(state.EntityId, out var updateMethod))
         {
-            updateMethod(state);
+            try
+            {
+                updateMethod(state);
+            }
+            catch (System.Exception ex)
+            {
+                // re-throwing here could cause automations to not run
+                _logger.LogError(ex, "error updating auto-updating entity - raw data : {rawState}", state.ToString());
+            }       
         }   
     }
-
-    ConcurrentDictionary<string, UpdateEntity> updaters = new();
 
     public void RegisterThreadSafeEntityUpdater(string entityId, UpdateEntity updater)
     {

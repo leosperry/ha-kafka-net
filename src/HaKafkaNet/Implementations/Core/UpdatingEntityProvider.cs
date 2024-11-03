@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Implementations.Core;
 
 internal class UpdatingEntityProvider : IUpdatingEntityProvider
 {
     ISystemObserver _sysObserver;
-    IHaEntityProvider _entityProvider;
 
-    public UpdatingEntityProvider(ISystemObserver systemObserver, IHaEntityProvider haEntityProvider)
+    public UpdatingEntityProvider(ISystemObserver systemObserver)
     {
         _sysObserver = systemObserver;
-        _entityProvider = haEntityProvider;
     }
-
 
     public IHaEntity<Tstate, Tatt> GetEntity<Tstate, Tatt>(string entityId)
     {
