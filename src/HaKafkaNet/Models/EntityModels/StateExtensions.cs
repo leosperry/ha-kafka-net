@@ -11,17 +11,8 @@ public static class StateExtensions
 
     public static T? GetState<T>(this HaEntityState state)
     {
-        try
-        {
-            var stringToDeserialize = $"\"{state.State}\"";
-            return JsonSerializer.Deserialize<T>(stringToDeserialize, _options);
-        }
-        catch (Exception) 
-        {
-            //System.Console.WriteLine(ex);
-            // if state is unknown or unavailable, return default
-        }
-        return default;
+        ReadOnlySpan<char> wrapped = new ReadOnlySpan<char>(['"', ..state.State.ToArray(), '"']);
+        return JsonSerializer.Deserialize<T>(wrapped, _options);
     }
 
     public static T? GetStateEnum<T>(this HaEntityState state) where T: struct, Enum
@@ -32,9 +23,9 @@ public static class StateExtensions
         }
         catch (System.Exception)
         {
-            // if state is unknown or unavailable, return default
+            // if state is unknown or unavailable, return null
         }
-        return default;
+        return null;
     }
 
     public static T? GetAttributes<T>(this HaEntityState state)

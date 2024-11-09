@@ -20,11 +20,19 @@ public interface IHaEntity<Tstate, Tatt>
     Tatt? Attributes { get; }
 }
 
-internal record ThreadSafeEntity<Tstate, Tatt> : IHaEntity<Tstate, Tatt>
+public interface IUpdatingEntity<Tstate,Tatt> : IHaEntity<Tstate, Tatt>
+{
+    IHaEntity<Tstate,Tatt> Snapshot();
+}
+
+internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
 {
 
+    bool _nonNullableValueType;
+
+
 #region interface properties
-    public string EntityId {get; private set; }
+    public string EntityId { get; private set; }
 
     DateTime _lastChanged;
     public DateTime LastChanged
@@ -85,7 +93,8 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IHaEntity<Tstate, Tatt>
             _loc.EnterReadLock();
             try
             {
-                return _state ?? default!;
+                // throw exception only if non-nullalble and bad
+                return (_nonNullableValueType && _badState) ? throw new HaKafkaNetException("non nullable state has bad value") : _state!;
             }
             finally
             {
@@ -102,7 +111,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IHaEntity<Tstate, Tatt>
             _loc.EnterReadLock();
             try
             {
-                return _atts;
+                return _badState ? throw new HaKafkaNetException("auto updating entity has a bad state") : _atts;
             }
             finally
             {
@@ -113,21 +122,49 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IHaEntity<Tstate, Tatt>
 #endregion
 
     private ReaderWriterLockSlim _loc = new();
+    private bool _badState = true;
 
-    internal void Set(HaEntityState<Tstate, Tatt> state)
+    internal void Set(Func<HaEntityState<Tstate, Tatt>> stateGetter)
     {
         _loc.EnterWriteLock();
         try
         {
+            var state = stateGetter();
             this._lastChanged = state.LastChanged;
             this._lastUpdated = state.LastUpdated;
             this._context = state.Context;
             this._state = state.State;
             this._atts = state.Attributes;
+            _badState = false;
+        }
+        catch
+        {
+            _badState = true;
         }
         finally
         {
             _loc.ExitWriteLock();
+        }
+    }
+
+    public IHaEntity<Tstate, Tatt> Snapshot()
+    {
+        _loc.EnterReadLock();
+        try
+        {
+            return new HaEntityState<Tstate, Tatt>()
+            {
+                EntityId = this.EntityId,
+                State = this.State,
+                Attributes = this.Attributes,
+                Context = this.Context,
+                LastChanged = this.LastChanged,
+                LastUpdated = this.LastUpdated            
+            };
+        }
+        finally
+        {
+            _loc.ExitReadLock();
         }
     }
 
@@ -136,5 +173,11 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IHaEntity<Tstate, Tatt>
         this.EntityId = entity_id;
         this._lastChanged = DateTime.MinValue;
         this._lastUpdated = DateTime.MinValue;
+
+        var stateType = typeof(Tstate);
+        if (stateType.IsValueType && Nullable.GetUnderlyingType(stateType) != null)
+        {
+            _nonNullableValueType = true;
+        }
     } 
 }

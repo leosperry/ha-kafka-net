@@ -7,13 +7,13 @@ namespace HaKafkaNet;
 [JsonConverter(typeof(JsonStringEnumConverter<MediaPlayerState>))]
 public enum MediaPlayerState
 {
+    Unknown,
+    Unavailable,
     Off,
     On,
     Idle,
     Playing,
     Paused,
     Standby,
-    Buffering,
-    Unknown,
-    Unavailable
+    Buffering
 }

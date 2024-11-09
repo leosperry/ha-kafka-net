@@ -1,4 +1,7 @@
 
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,62 +29,66 @@ public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes
 
     public static explicit operator HaEntityState<Tstate, Tattributes>(HaEntityState state)
     {
-        Func<Tstate> stateGetter = () => {
+        var newState = GetState(state);
+        var newAttributes = state.GetAttributes<Tattributes>();
 
-            Tstate? retVal;
-            bool isNullable = Nullable.GetUnderlyingType(typeof(Tstate)) != null;
-
-            if (typeof(Tstate).IsEnum)
-            {
-                var newVal = (Tstate)Enum.Parse(typeof(Tstate), state.State, true);
-                return newVal;
-            }
-
-            if (isNullable && Nullable.GetUnderlyingType(typeof(Tstate))!.IsEnum)
-            {
-                try
-                {
-                    retVal = (Tstate)Enum.Parse(typeof(Tstate), state.State, true);
-                }
-                catch
-                {
-                    // couldn't parse it, make it null
-                    retVal = default;
-                }
-                return retVal!;
-            }
-
-            // now handle non-enum
-            var parsed = state.GetState<Tstate>();
-            if (parsed is null)
-            {
-                if (IsNullable(typeof(Tstate)))
-                {
-                    return parsed!;
-                }
-                else
-                {
-                    var ex = new HaKafkaNetException("could not parse non-nullable state");
-                    ex.Data.Add("original_value", state);
-                    throw ex;
-                }
-            }
-            return parsed!;
-        };
-        var attributes = state.GetAttributes<Tattributes>() ?? throw new HaKafkaNetException("could not convert attributes");
-        var newState = stateGetter();
         return new()
         {
             EntityId = state.EntityId,
             State = newState,
-            Attributes = attributes,
+            Attributes = newAttributes,
             Context = state.Context,
             LastChanged = state.LastChanged,
-            LastUpdated = state.LastUpdated
+            LastUpdated = state.LastUpdated,
         };
-    }    
+    }
 
-    static bool IsNullable(Type type) => Nullable.GetUnderlyingType(type) != null;
+    private static Tstate GetState(HaEntityState state)
+    {
+        // handle enum value type e.g. OnOff
+        if (typeof(Tstate).IsEnum)
+        {
+            var newVal = (Tstate)Enum.Parse(typeof(Tstate), state.State, true);
+            return newVal;
+        }
+
+        var nullableUnderlyingType = Nullable.GetUnderlyingType(typeof(Tstate));
+        bool isNullableValueType = nullableUnderlyingType is not null;
+
+        // handle nullable enums
+        if (isNullableValueType && nullableUnderlyingType!.IsEnum)
+        {
+            Tstate? retVal;
+            try
+            {
+                retVal = (Tstate)Enum.Parse(typeof(Tstate), state.State, true);
+            }
+            catch
+            {
+                // couldn't parse it, make it null
+                retVal = default;
+            }
+            return retVal!;
+        }
+
+        // now handle non-enum
+        try
+        {
+            // this line could throw exception
+            var parsed = state.GetState<Tstate>();
+
+            return parsed!;
+        }
+        catch (System.Exception)
+        {
+            if (isNullableValueType)
+            {
+                // return null
+                return default!;
+            }
+            throw;
+        }
+    }
 }
 
 public record HaEntityState : HaEntityState<string, JsonElement>, IHaEntity

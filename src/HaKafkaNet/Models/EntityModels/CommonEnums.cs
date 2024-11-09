@@ -5,13 +5,20 @@ namespace HaKafkaNet;
 [JsonConverter(typeof(JsonStringEnumConverter<OnOff>))]
 public enum OnOff
 {
-    On, Off, Unknown, Unavailable
+    Unknown, 
+    Unavailable,
+    On, 
+    Off
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<BatteryState>))]
 public enum BatteryState
 {
-    Charging, Discharging, Not_Charging, Unknown, Unavailable
+    Unknown, 
+    Unavailable,
+    Charging, 
+    Discharging, 
+    Not_Charging
 }
 
 /// <summary>
