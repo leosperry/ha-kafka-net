@@ -1,5 +1,5 @@
 # HaKafkaNet
-A library for easily creating Home Assistant automations in .NET and C#.
+A framework for creating Home Assistant automations in .NET and C#.
 
 Kafka ensures automations are durable and state is restored between restarts.
 
@@ -17,7 +17,8 @@ It was created with the following goals:
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
-  * [Tracing with log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing) 
+  * [Tracing with log capturing](https://github.com/leosperry/ha-kafka-net/wiki/Tracing)
+  * [Open Telemetry Instrumentation](https://github.com/leosperry/ha-kafka-net/wiki/Open-Telemetry-Instrumentation)
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
@@ -25,5 +26,17 @@ It was created with the following goals:
 * [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax for quickly creating automations.
 * Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
 * MIT license
+
+## Example
+Example of multiple durable automations. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
+```csharp
+registrar.TryRegister(
+    _factory.SunRiseAutomation(
+        cancelToken => _api.TurnOff("light.night_light", cancelToken)),
+    _factory.SunSetAutomation(
+        cancelToken => _api.TurnOn("light.night_light", cancelToken),
+        TimeSpan.FromMinutes(-10))
+);
+```
 
 See [Documentation](https://github.com/leosperry/ha-kafka-net/wiki) for full details.

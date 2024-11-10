@@ -7,9 +7,10 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 10 Released!
+Version 10.1 Released!
 
-This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.0.0) adds [strongly typed automations](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Types#generic-automations) as well as an ability to register all automations in a [registry](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry) with a single call to `TryRegister`. 
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.1.0) builds on [V10](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.1.0) in that it brings consistency to type conversion failures.
+See [Type Conversion](https://github.com/leosperry/ha-kafka-net/wiki/Entity-States#type-conversion) for details. Also see [Updating Entity Provider](https://github.com/leosperry/ha-kafka-net/wiki/Updating-Entity-Provider)  
 
 Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
 
@@ -25,7 +26,7 @@ It was created with the following goals:
 ## Example
 Example of multiple durable automations. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
 ```csharp
-registrar.RegisterMultiple(
+registrar.TryRegister(
     _factory.SunRiseAutomation(
         cancelToken => _api.TurnOff("light.night_light", cancelToken)),
     _factory.SunSetAutomation(
