@@ -11,7 +11,9 @@ public static class StateExtensions
 
     public static T? GetState<T>(this HaEntityState state)
     {
-        ReadOnlySpan<char> wrapped = new ReadOnlySpan<char>(['"', ..state.State.ToArray(), '"']);
+        if (state.State is T str) return str; // leave it alone if string
+        const char quote = '"';
+        ReadOnlySpan<char> wrapped = new ReadOnlySpan<char>([quote, ..state.State.ToArray(), quote]);
         return JsonSerializer.Deserialize<T>(wrapped, _options);
     }
 
@@ -19,7 +21,7 @@ public static class StateExtensions
     {
         try
         {
-            return Enum.Parse<T>(state.State!, true);
+            return Enum.Parse<T>(state.State, true);
         }
         catch (System.Exception)
         {
@@ -30,6 +32,7 @@ public static class StateExtensions
 
     public static T? GetAttributes<T>(this HaEntityState state)
     {
+        if(state.Attributes is T typed) return typed; // if it's JsonElement leave it alone
         return JsonSerializer.Deserialize<T>(state.Attributes, _options);
     }
 

@@ -28,7 +28,16 @@ public interface IUpdatingEntity<Tstate,Tatt> : IHaEntity<Tstate, Tatt>
 internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
 {
 
-    bool _nonNullableValueType;
+    static bool _nonNullableValueType;
+
+    static ThreadSafeEntity()
+    {
+        var stateType = typeof(Tstate);
+        if (stateType.IsValueType && Nullable.GetUnderlyingType(stateType) is null)
+        {
+            _nonNullableValueType = true;
+        }
+    }
 
 
 #region interface properties
@@ -111,7 +120,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
             _loc.EnterReadLock();
             try
             {
-                return _badState ? throw new HaKafkaNetException("auto updating entity has a bad state") : _atts;
+                return _badAttributes ? throw new HaKafkaNetException("auto updating entity has bad attributes") : _atts;
             }
             finally
             {
@@ -123,23 +132,38 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
 
     private ReaderWriterLockSlim _loc = new();
     private bool _badState = true;
+    private bool _badAttributes = true;
 
-    internal void Set(Func<HaEntityState<Tstate, Tatt>> stateGetter)
+    internal void Set(HaEntityState raw)
     {
         _loc.EnterWriteLock();
         try
         {
-            var state = stateGetter();
-            this._lastChanged = state.LastChanged;
-            this._lastUpdated = state.LastUpdated;
-            this._context = state.Context;
-            this._state = state.State;
-            this._atts = state.Attributes;
-            _badState = false;
-        }
-        catch
-        {
-            _badState = true;
+            this._context = raw.Context;
+            this._lastChanged = raw.LastChanged;
+            this._lastUpdated = raw.LastUpdated;
+            
+            try
+            {
+                this._state = raw.GetState<Tstate>();
+                this._badState = false;
+            }
+            catch (System.Exception)
+            {
+                this._badState = true;
+                this._state = default;
+            }
+
+            try
+            {
+                this._atts = raw.GetAttributes<Tatt>();
+                this._badAttributes = false;
+            }
+            catch (System.Exception)
+            {
+                this._badAttributes = true;
+                this._atts = default;
+            }
         }
         finally
         {
@@ -157,9 +181,9 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
                 EntityId = this.EntityId,
                 State = this.State,
                 Attributes = this.Attributes,
-                Context = this.Context,
-                LastChanged = this.LastChanged,
-                LastUpdated = this.LastUpdated            
+                Context = this._context,
+                LastChanged = this._lastChanged,
+                LastUpdated = this._lastUpdated            
             };
         }
         finally
@@ -173,11 +197,5 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
         this.EntityId = entity_id;
         this._lastChanged = DateTime.MinValue;
         this._lastUpdated = DateTime.MinValue;
-
-        var stateType = typeof(Tstate);
-        if (stateType.IsValueType && Nullable.GetUnderlyingType(stateType) != null)
-        {
-            _nonNullableValueType = true;
-        }
     } 
 }

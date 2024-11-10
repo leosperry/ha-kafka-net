@@ -71,10 +71,8 @@ internal class UpdatingEntityProvider : IUpdatingEntityProvider
             if(_instances.TryGetValue(state.EntityId, out var instance))
             {
                 // an exception thrown here is caught in the observer
-                instance.Set(() => (HaEntityState<Tstate, Tatt>)state);
+                instance.Set(state);
             }
         } 
     }
 }
-
-
