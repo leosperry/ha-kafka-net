@@ -1,13 +1,6 @@
 ﻿namespace HaKafkaNet;
 public static partial class AutomationBuilderExtensions
 {
-    [Obsolete("Id has been replaced with key. This method does nothing", false)]
-    public static T WithId<T>(this T info, Guid id) where T: AutomationBuildingInfo
-    {
-        //info.Id = id;
-        return info;
-    }
-
     public static T WithName<T>(this T info, string name) where T: AutomationBuildingInfo
     {
         info.Name = name;
@@ -249,5 +242,10 @@ public static partial class AutomationBuilderExtensions
             AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null,
             TriggerOnBadState = info.TriggerOnBadState
         };
+    }
+
+    public static TypedAutomationBuildingInfo<DateTime?, SceneControllerEvent> CreateSceneController(this IAutomationBuilder bldr, bool enabledAtStartup = true)
+    {
+        return bldr.CreateSimple<DateTime?, SceneControllerEvent>(enabledAtStartup);
     }
 }

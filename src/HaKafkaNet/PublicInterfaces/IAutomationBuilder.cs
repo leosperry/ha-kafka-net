@@ -22,8 +22,3 @@ public interface IAutomationBuilder
 
     SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true);
 }
-
-
-
-
-
