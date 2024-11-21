@@ -6,7 +6,10 @@ namespace HaKafkaNet;
 
 internal interface ISystemObserver
 {
-    bool IsInitialized{get;}
+    bool IsInitialized{ get; }
+
+    IEnumerable<string> RegisteredUpdatingEntities { get; }
+
     event Action? StateHandlerInitialized;
 
     void InitializeMonitors(IEnumerable<ISystemMonitor> monitors);
@@ -50,6 +53,13 @@ internal class SystemObserver : ISystemObserver
     ILogger _logger;
 
     public bool IsInitialized { get; private set; }
+    public IEnumerable<string> RegisteredUpdatingEntities 
+    {
+        get
+        {
+            return updaters.Keys.ToArray();
+        }
+    }
     public event Action? StateHandlerInitialized;
     internal event Action<AutomationMetaData, Exception>? UnhandledException;
     internal event Action<BadEntityState>? BadEntityState;

@@ -327,6 +327,8 @@ public static class ServicesExtensions
             automationManager.Initialize(errors);
 
             InitializeAutomations(automationManager, errors);
+
+            InitializeUpdatingEntities(services, observer, errors);
         }
         catch (System.Exception ex)
         {
@@ -337,6 +339,45 @@ public static class ServicesExtensions
         }
 
         Notify(services, errors, observer);
+    }
+
+    private static void InitializeUpdatingEntities(IServiceProvider services, ISystemObserver observer, List<InitializationError> errors)
+    {
+        var api = services.GetRequiredService<IHaApiProvider>();
+        List<Task> tasks = new();
+        SemaphoreSlim sem = new SemaphoreSlim(5); // don't overload Home Assistant API
+        try
+        {
+            foreach (var id in observer.RegisteredUpdatingEntities)
+            {
+                string entityId = id;
+                tasks.Add(Task.Run(async () => {
+                    sem.Wait();
+                    try
+                    {
+                        var state = await api.GetEntity(entityId);
+                        state.response.EnsureSuccessStatusCode();
+                        if (state.entityState is not null)
+                        {
+                            observer.OnEntityStateUpdate(state.entityState);
+                        }
+                    }
+                    catch(Exception initEx)
+                    {
+                        errors.Add(new("initializing updating entitiy failed", initEx, entityId));
+                    }
+                    finally
+                    {
+                        sem.Release();
+                    }
+                }));
+            }
+            Task.WaitAll(tasks.ToArray());
+        }
+        catch (System.Exception ex)
+        {
+            errors.Add(new("not all updating entities were initialized", ex));
+        }
     }
 
     private static void CheckValidHaConfig(HomeAssistantConnectionInfo connectionInfo, List<InitializationError> errors)
