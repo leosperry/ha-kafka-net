@@ -80,6 +80,12 @@ public static class ApiExtensions
     public static Task<HttpResponseMessage> LightSetBrightness(this IHaApiProvider api, IEnumerable<string> entity_id, byte brightness, CancellationToken cancellationToken = default)
         => api.CallService(LIGHT, TURN_ON, new { entity_id, brightness }, cancellationToken);
 
+    public static Task<HttpResponseMessage> LightSetBrightnessByLabel(this IHaApiProvider api, string label_id, byte brightness, CancellationToken cancellationToken = default)
+        => api.CallService(LIGHT, TURN_ON, new { label_id, brightness }, cancellationToken);
+
+    public static Task<HttpResponseMessage> LightSetBrightnessByLabel(this IHaApiProvider api, IEnumerable<string> label_id, byte brightness, CancellationToken cancellationToken = default)
+        => api.CallService(LIGHT, TURN_ON, new { label_id, brightness }, cancellationToken);
+
     public static Task<HttpResponseMessage> LightTurnOff(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
         => api.CallService(LIGHT, TURN_OFF, new { entity_id }, cancellationToken);
 
