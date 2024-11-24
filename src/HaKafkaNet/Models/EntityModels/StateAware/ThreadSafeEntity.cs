@@ -130,7 +130,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
     }
 #endregion
 
-    private ReaderWriterLockSlim _loc = new();
+    private ReaderWriterLockSlim _loc = new(LockRecursionPolicy.SupportsRecursion);
     private bool _badState = true;
     private bool _badAttributes = true;
 
