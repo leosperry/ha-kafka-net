@@ -1,5 +1,4 @@
-﻿
-using System.Text;
+﻿using System.Text;
 
 namespace HaKafkaNet;
 
@@ -8,6 +7,7 @@ internal class AutomationWrapper : IAutomationWrapper
 {
     readonly IAutomation _auto;
     readonly IAutomationTraceProvider _trace;
+    readonly IAutomationExecutor _executor;
     EventTiming _eventTimings;
 
     AutomationMetaData _meta;
@@ -20,7 +20,7 @@ internal class AutomationWrapper : IAutomationWrapper
         get => _auto;
     }
 
-    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, string source)
+    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, string source, IExecutorFactory? executorFactory = null)
     {
         _auto = automation;
         _trace = traceProvider;
@@ -40,7 +40,9 @@ internal class AutomationWrapper : IAutomationWrapper
         _meta.UserTriggerError = hasTriggerError;
 
         
-        _eventTimings = automation.EventTimings;        
+        _eventTimings = automation.EventTimings;
+
+        _executor = executorFactory?.GetExecutor(_meta.Mode) ?? new ParallelExecutor();    
     }
 
     AutomationMetaData GetOrMakeMeta(string source)
@@ -116,7 +118,7 @@ internal class AutomationWrapper : IAutomationWrapper
     /// <param name="stateChange"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         this._meta.LastTriggered = DateTime.Now;
         TraceEvent evt = new()
@@ -127,7 +129,10 @@ internal class AutomationWrapper : IAutomationWrapper
             StateChange = stateChange,
         };
 
-        await _trace.Trace(evt, _meta, () => _auto.Execute(stateChange, cancellationToken));
+        return _trace.Trace(evt, _meta, 
+            () => _executor.Execute(
+                ct => _auto.Execute(stateChange, ct), 
+            cancellationToken));
     }
 
     private string GenerateKey(string source, string name)
@@ -137,7 +142,6 @@ internal class AutomationWrapper : IAutomationWrapper
     }    
 
     public IEnumerable<string> TriggerEntityIds() => _triggers;
-
 }
 
 static class PrettyPrintTypeNameExtensions

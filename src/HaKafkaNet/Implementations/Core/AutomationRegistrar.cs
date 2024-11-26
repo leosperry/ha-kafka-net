@@ -7,6 +7,7 @@ namespace HaKafkaNet;
 internal class AutomationRegistrar : IInternalRegistrar
 {
     private readonly IWrapperFactory _wrapperFactory;
+    private readonly IExecutorFactory? _executorFactory;
     readonly IAutomationTraceProvider _trace;
     readonly ILogger<AutomationWrapper> _logger;
     private readonly ISystemObserver _observer;
@@ -23,10 +24,12 @@ internal class AutomationRegistrar : IInternalRegistrar
         IAutomationTraceProvider traceProvider,
         ISystemObserver observer,
         List<InitializationError> errors,
-        ILogger<AutomationWrapper> logger
+        ILogger<AutomationWrapper> logger,
+        IExecutorFactory? executorFactory = null
         )
     {
         this._wrapperFactory = wrapperFactory;
+        this._executorFactory = executorFactory;
         _trace = traceProvider;
         _logger = logger;
         this._errors = errors;
@@ -148,7 +151,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     private void AddSimple(IAutomation automation, int frameCount)
     {
-        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName(frameCount));
+        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName(frameCount), _executorFactory);
         RegisteredAutomations.Add(aWrapped);    
     }
 

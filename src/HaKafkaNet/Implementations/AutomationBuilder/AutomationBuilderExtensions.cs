@@ -43,6 +43,12 @@ public static partial class AutomationBuilderExtensions
         return info;
     }
 
+    public static T WithMode<T>(this T info, AutomationMode mode) where T : AutomationBuildingInfo
+    {
+        info.Mode = mode;
+        return info;
+    }
+
 
     public static SimpleAutomationBuildingInfo WithExecution(this SimpleAutomationBuildingInfo info, Func<HaEntityStateChange, CancellationToken, Task> execution)
     {
@@ -240,7 +246,8 @@ public static partial class AutomationBuilderExtensions
             Description = info.Description,
             Enabled = info.EnabledAtStartup,
             AdditionalEntitiesToTrack = info is MostAutomationsBuildingInfo most ? most.AdditionalEntitiesToTrack : null,
-            TriggerOnBadState = info.TriggerOnBadState
+            TriggerOnBadState = info.TriggerOnBadState,
+            Mode = info.Mode
         };
     }
 

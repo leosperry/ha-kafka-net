@@ -123,8 +123,7 @@ public static class ServicesExtensions
                 .WithoutStoringOffsets()
                 .AddMiddlewares(middlewares => middlewares
                     .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
-                    .AddTypedHandlers(h => h.
-                        AddHandler<HaStateHandler>())
+                    .AddTypedHandlers(h => h.AddHandler<HaStateHandler>())
                 )
             );
 
@@ -145,10 +144,19 @@ public static class ServicesExtensions
         services.AddSingleton(errors);
 
         services
+            // wrappers
             .AddTransient(typeof(DelayablelAutomationWrapper<>))
             .AddTransient(typeof(TypedDelayedAutomationWrapper<,,>))
             .AddTransient(typeof(TypedAutomationWrapper<,,>))
-            .AddTransient<IWrapperFactory, WrapperFactory>();
+            .AddTransient<IWrapperFactory, WrapperFactory>()
+            // executors
+            .AddKeyedTransient<IAutomationExecutor, SingleExecutor>(AutomationMode.Single)
+            .AddKeyedTransient<IAutomationExecutor, RestartExecutor>(AutomationMode.Restart)
+            .AddKeyedTransient<IAutomationExecutor, QueuedExecutor>(AutomationMode.Queued)
+            .AddKeyedTransient<IAutomationExecutor, ParallelExecutor>(AutomationMode.Parallel)
+            .AddKeyedTransient<IAutomationExecutor, SmartExecutor>(AutomationMode.Smart)
+            .AddSingleton<IExecutorFactory, ExecutorFactory>()
+            ;
         
         var eligibleTypes = 
             (from a in AppDomain.CurrentDomain.GetAssemblies()

@@ -8,6 +8,7 @@ public abstract class AutomationBuildingInfo
     internal bool EnabledAtStartup { get; set; }
     internal EventTiming? EventTimings { get; set; }
     internal bool TriggerOnBadState { get; set; } = false;
+    internal AutomationMode Mode { get; set; }
 }
 
 public abstract class MostAutomationsBuildingInfo : AutomationBuildingInfo

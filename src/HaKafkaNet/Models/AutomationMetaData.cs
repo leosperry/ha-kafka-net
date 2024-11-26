@@ -1,6 +1,4 @@
-﻿using Confluent.Kafka.Admin;
-
-namespace HaKafkaNet;
+﻿namespace HaKafkaNet;
 
 public record AutomationMetaData
 {
@@ -8,6 +6,8 @@ public record AutomationMetaData
     public required string Name { get; init; }
     public string? Description { get; init;}
     public string? KeyRequest { get; set; }
+
+    public AutomationMode Mode { get; set; }
     public string GivenKey { get; internal set; } = string.Empty;
 
     public bool TriggerOnBadState { get; set; } = false;
@@ -32,5 +32,14 @@ public record AutomationMetaData
             Enabled = true,
         };
     }
+}
+
+public enum AutomationMode
+{
+    Smart = 0,
+    Single,
+    Restart,
+    Queued,
+    Parallel
 }
 
