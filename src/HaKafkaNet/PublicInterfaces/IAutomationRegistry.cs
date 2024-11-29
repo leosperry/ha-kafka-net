@@ -13,40 +13,17 @@ public interface IAutomationRegistry
 public interface IRegistrar
 {
     void Register(params IAutomation[] automations);
-    void RegisterDelayed(params IDelayableAutomation[] automations);
-    bool TryRegister(params IAutomationBase[] automations);
-    bool TryRegister(params Func<IAutomationBase>[] activators);
-
     void Register<Tstate, Tatt>(params IAutomation<Tstate,Tatt>[] automations);
+    void RegisterDelayed(params IDelayableAutomation[] automations);
 
-    [Obsolete("Please implement ISchedulableAutomation", true)]
-    void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator)
-        where T : IDelayableAutomation;
+    bool TryRegister(params IAutomationBase[] automations);
 
-    [Obsolete("Please implement ISchedulableAutomation", true)]
-    void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator)
-        where T : IDelayableAutomation;
-
-
-
-
-    [Obsolete("Please use RegisterDelayed or TryRegister", false)]
-    void Register(IDelayableAutomation automation) => RegisterDelayed(automation);
-
-    [Obsolete("Please use Register or TryRegister", false)]
-    void RegisterMultiple(IEnumerable<IAutomation> automations) => Register(automations.ToArray());
-
-    [Obsolete("Please use RegisterDelayed or TryRegister", false)]
-    void RegisterMultiple(IEnumerable<IDelayableAutomation> automations) => RegisterDelayed(automations.ToArray());
-
-    [Obsolete("Please use Register or TryRegister", false)]
-    void RegisterMultiple(params IAutomation[] automations) => Register(automations);
-
-    [Obsolete("Please use RegisterDelayed or TryRegister", false)]
-    void Register(params IDelayableAutomation[] automation) => RegisterDelayed(automation);
-
-    [Obsolete("Please use RegisterDelayed or TryRegister", false)]
-    void RegisterMultiple(params IDelayableAutomation[] automations) => RegisterDelayed(automations);
+    /// <summary>
+    /// Recommended
+    /// </summary>
+    /// <param name="activators"></param>
+    /// <returns></returns>
+    bool TryRegister(params Func<IAutomationBase>[] activators);
 }
 
 internal interface IInternalRegistrar : IRegistrar
