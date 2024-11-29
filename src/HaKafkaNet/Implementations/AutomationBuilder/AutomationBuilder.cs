@@ -2,13 +2,6 @@
 
 internal class AutomationBuilder : IAutomationBuilder
 {   
-    readonly IHaServices _services;
-
-    public AutomationBuilder(IHaServices haServices)
-    {
-        _services = haServices;
-    }
-
     public SimpleAutomationBuildingInfo CreateSimple(bool enabledAtStartup = true)
     {
         return new()
@@ -33,12 +26,12 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-    public SchedulableAutomationBuildingInfo CreateSchedulable(bool reschdulable = false, bool enabledAtStartup = true)
+    public SchedulableAutomationBuildingInfo CreateSchedulable(bool reschedulable = false, bool enabledAtStartup = true)
     {
         return new()
         {
             EnabledAtStartup = enabledAtStartup,
-            IsReschedulable = reschdulable
+            IsReschedulable = reschedulable
         };
     }
 
@@ -50,7 +43,7 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-    public  SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
+    public  SunAutomationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
     {
         return new()
         {
@@ -59,12 +52,12 @@ internal class AutomationBuilder : IAutomationBuilder
         };
     }
 
-    public TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> CreateSchedulable<Tstate, Tatt>(bool reschdulable = false, bool enabledAtStartup = true)
+    public TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> CreateSchedulable<Tstate, Tatt>(bool reschedulable = false, bool enabledAtStartup = true)
     {
         return new()
         {
             EnabledAtStartup = enabledAtStartup,
-            IsReschedulable = reschdulable
+            IsReschedulable = reschedulable
         };
     }
 }

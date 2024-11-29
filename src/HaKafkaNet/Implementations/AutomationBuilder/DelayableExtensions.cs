@@ -111,7 +111,7 @@ public partial class AutomationBuilderExtensions
     }
 
     /// <summary>
-    /// Tells the automation how to get the next scheuled time
+    /// Tells the automation how to get the next scheduled time
     /// </summary>
     /// <param name="info"></param>
     /// <param name="getNextFromState">Asynchronous method that should return a DateTime? based on input state change. Return null if you do not want to schedule</param>

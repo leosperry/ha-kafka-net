@@ -23,7 +23,7 @@ public interface IHaStateCache : IEntityStateProvider
     Task<bool> SetUserDefinedObject<T>(string key, T item, CancellationToken cancellationToken = default) where T: class;
 
     /// <summary>
-    /// Gets a user saved item. Usefull for things like DateTime, int, etc.
+    /// Gets a user saved item. Useful for things like DateTime, int, etc.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
@@ -33,7 +33,7 @@ public interface IHaStateCache : IEntityStateProvider
     Task<T?> GetUserDefinedItem<T>(string key, bool throwOnParseException = false, CancellationToken cancellationToken = default) where T : IParsable<T>;
 
     /// <summary>
-    /// Storage for user defined items. Usefull for things like DateTime, int, etc.
+    /// Storage for user defined items. Useful for things like DateTime, int, etc.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>

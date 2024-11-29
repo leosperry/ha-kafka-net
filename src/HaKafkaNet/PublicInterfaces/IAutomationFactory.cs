@@ -20,8 +20,8 @@ public interface IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false,
-        EventTiming timngs = EventTiming.PostStartup, 
-        bool reschedudulable = false
+        EventTiming timings = EventTiming.PostStartup, 
+        bool reschedulable = false
     );
 
     SchedulableAutomation CreateDurable(
@@ -30,7 +30,7 @@ public interface IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = true,
         bool shouldExecuteOnError = false,
-        bool reschedudulable = false
+        bool reschedulable = false
     );
 
     SimpleAutomation<Tstate, Tatt> CreateSimple<Tstate, Tatt>(

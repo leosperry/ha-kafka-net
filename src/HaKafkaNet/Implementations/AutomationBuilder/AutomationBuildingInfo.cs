@@ -71,7 +71,7 @@ public class TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> : SchedulableA
 
 
 
-public class SunAutommationBuildingInfo : AutomationBuildingInfo
+public class SunAutomationBuildingInfo : AutomationBuildingInfo
 {
     internal bool ExecutePast { get; set; } = true;
     internal SunEventType SunEvent { get; set; }

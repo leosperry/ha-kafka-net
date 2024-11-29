@@ -45,13 +45,11 @@ public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta, ISetA
 public class SimpleAutomation : SimpleAutomationBase
 {
     private readonly Func<HaEntityStateChange, CancellationToken, Task> _execute;
-    private readonly EventTiming _eventTimings;
 
     public SimpleAutomation(IEnumerable<string> triggerEntities, Func<HaEntityStateChange, CancellationToken, Task> execute, EventTiming eventTimings)
         :base(triggerEntities,eventTimings)
     {
         this._execute = execute;
-        this._eventTimings = eventTimings;
     }
 
     public override Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)

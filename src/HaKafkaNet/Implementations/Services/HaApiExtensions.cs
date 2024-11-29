@@ -7,7 +7,7 @@ namespace HaKafkaNet;
 public static class HaApiExtensions
 {
     /// <summary>
-    /// Sometimes and entity is non-reponsive, but HA does not report an error.
+    /// Sometimes and entity is non-responsive, but HA does not report an error.
     /// This method turns on an entity then verifies it turned on
     /// </summary>
     /// <param name="api"></param>
@@ -19,10 +19,10 @@ public static class HaApiExtensions
         await api.TurnOn(entityId,cancellationToken);
         var apiResponse = await api.GetEntity<HaEntityState<OnOff, JsonElement>>(entityId, cancellationToken);
         return !apiResponse.entityState.Bad() && apiResponse.entityState?.State == OnOff.On;
-    }    
-    
+    }
+
     /// <summary>
-    /// Sometimes and entity is non-reponsive, but HA does not report an error.
+    /// Sometimes and entity is non-responsive, but HA does not report an error.
     /// This method turns on an entity then verifies it turned off
     /// </summary>
     /// <param name="api"></param>

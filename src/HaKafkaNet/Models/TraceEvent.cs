@@ -7,20 +7,20 @@ public record TraceEvent
     public required string EventType { get; init; }
     public required string AutomationKey { get; init; }
     public HaEntityStateChange? StateChange { get; init; }
-    public ExecptionInfo? Exception {get; set; }
+    public ExceptionInfo? Exception {get; set; }
 }
 
-public record ExecptionInfo
+public record ExceptionInfo
 {
     public required string Type { get; init; }
     public required string Message { get; init; }
     public string? StackTrace { get; init; }
-    public ExecptionInfo? InnerException { get; init; }
-    public IEnumerable<ExecptionInfo>? InnerExceptions { get; init; }
+    public ExceptionInfo? InnerException { get; init; }
+    public IEnumerable<ExceptionInfo>? InnerExceptions { get; init; }
 
-    public static ExecptionInfo Create(Exception ex)
+    public static ExceptionInfo Create(Exception ex)
     {
-        return new ExecptionInfo()
+        return new ExceptionInfo()
         {
             Type = ex.GetType().FullName ?? ex.GetType().Name,
             Message = ex.Message,

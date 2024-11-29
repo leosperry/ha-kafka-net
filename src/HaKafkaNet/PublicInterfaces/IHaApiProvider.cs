@@ -26,7 +26,7 @@ public interface IHaApiProvider
     Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntityState(string entity_id, CancellationToken cancellationToken = default);
     
     /// <summary>
-    /// Gets the state of an entity with stronly type attributes
+    /// Gets the state of an entity with strongly type attributes
     /// </summary>
     /// <typeparam name="T">The type to construct from the attributes</typeparam>
     /// <param name="entity_id"></param>
@@ -40,7 +40,7 @@ public interface IHaApiProvider
     Task<(HttpResponseMessage? response, bool ApiAvailable)> CheckApi();
 
     /// <summary>
-    /// Warning: This endpoint sets the representation of a device within Home Assistant and will not communicate with the actual device. To communicate with the device, use the CallService method or other extentions methods
+    /// Warning: This endpoint sets the representation of a device within Home Assistant and will not communicate with the actual device. To communicate with the device, use the CallService method or other extensions methods
     /// </summary>
     /// <typeparam name="Tstate"></typeparam>
     /// <typeparam name="Tatt"></typeparam>

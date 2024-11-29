@@ -78,10 +78,10 @@ internal class TraceLogProvider : IAutomationTraceProvider
     {
         bool writtenToTrace = false;
 
-        ExecptionInfo? exInfo = null;
+        ExceptionInfo? exInfo = null;
         if (logEvent.Exception is not null)
         {
-            exInfo = ExecptionInfo.Create(logEvent.Exception);
+            exInfo = ExceptionInfo.Create(logEvent.Exception);
         }
         LogInfo info = new LogInfo()
         {
@@ -225,7 +225,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     _logger.LogError(ex, automation_fault);
 
                     _observer.OnUnhandledException(meta, ex);
-                    evt.Exception = ExecptionInfo.Create(ex);
+                    evt.Exception = ExceptionInfo.Create(ex);
                     //give any last logs a chance to make it in
                     _ = Task.Delay(500).ContinueWith(t => WriteTraceToCache(new TraceData()
                     {

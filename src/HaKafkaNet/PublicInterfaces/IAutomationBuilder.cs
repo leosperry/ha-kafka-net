@@ -15,10 +15,10 @@ public interface IAutomationBuilder
     TypedConditionalBuildingInfo<Tstate, JsonElement> CreateConditional<Tstate>(bool enabledAtStartup = true) 
         => CreateConditional<Tstate, JsonElement>(enabledAtStartup);
 
-    SchedulableAutomationBuildingInfo CreateSchedulable(bool reschdulable = false, bool enabledAtStartup = true);
-    TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> CreateSchedulable<Tstate, Tatt>(bool reschdulable = false, bool enabledAtStartup = true);
-    TypedSchedulableAutomationBuildingInfo<Tstate, JsonElement> CreateSchedulable<Tstate>(bool reschdulable = false, bool enabledAtStartup = true) 
-        => CreateSchedulable<Tstate, JsonElement>(reschdulable, enabledAtStartup);
+    SchedulableAutomationBuildingInfo CreateSchedulable(bool reschedulable = false, bool enabledAtStartup = true);
+    TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> CreateSchedulable<Tstate, Tatt>(bool reschedulable = false, bool enabledAtStartup = true);
+    TypedSchedulableAutomationBuildingInfo<Tstate, JsonElement> CreateSchedulable<Tstate>(bool reschedulable = false, bool enabledAtStartup = true) 
+        => CreateSchedulable<Tstate, JsonElement>(reschedulable, enabledAtStartup);
 
-    SunAutommationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true);
+    SunAutomationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true);
 }

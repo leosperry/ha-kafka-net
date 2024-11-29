@@ -14,7 +14,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
 
         if (this._nextExecution != nextEvent)
         {
-            await _lock.WaitAsync();
+            await _lock.WaitAsync(cancellationToken);
             try
             {
                 _nextExecution = nextEvent;
@@ -83,11 +83,11 @@ public class SchedulableAutomation : SchedulableAutomationBase
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false,
-        bool reschedudulable = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
+        bool reschedulable = false) : base(triggerIds, shouldExecutePastEvents, shouldExecuteOnError)
     {
         _getNext = getNextEvent;
         _execution = execution;
-        IsReschedulable = reschedudulable;
+        IsReschedulable = reschedulable;
     }
 
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
@@ -143,7 +143,7 @@ public class SchedulableAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstat
 
         if (this._nextExecution != nextEvent)
         {
-            await _lock.WaitAsync();
+            await _lock.WaitAsync(ct);
             try
             {
                 _nextExecution = nextEvent;

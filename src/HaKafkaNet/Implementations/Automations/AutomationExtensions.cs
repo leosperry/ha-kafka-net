@@ -2,10 +2,10 @@
 
 public static class AutomationExtensions
 {
-    public static T WithMeta<T>(this T auto, string name, string? description = null, bool enabledAtStartup = true, Guid? id = null) 
+    public static T WithMeta<T>(this T auto, string name, string? description = null, bool enabledAtStartup = true) 
         where T: ISetAutomationMeta
     {
-        AutomationMetaData meta = new AutomationMetaData()
+        AutomationMetaData meta = new()
         {
             Name = name,
             Description = description,

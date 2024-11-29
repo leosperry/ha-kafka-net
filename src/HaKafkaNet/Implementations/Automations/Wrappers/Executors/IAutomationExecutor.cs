@@ -43,7 +43,7 @@ class QueuedExecutor : IAutomationExecutor
 
     public async Task Execute(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        await _sem.WaitAsync();
+        await _sem.WaitAsync(cancellationToken);
         try
         {
             await action(cancellationToken);
@@ -62,7 +62,7 @@ class RestartExecutor : IAutomationExecutor
     public async Task Execute(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
     {
         CancellationToken token;
-        await _sem.WaitAsync();
+        await _sem.WaitAsync(cancellationToken);
         try
         {
             if (_source is not null)
@@ -81,7 +81,7 @@ class RestartExecutor : IAutomationExecutor
 
         await action(token);
 
-        await _sem.WaitAsync();
+        await _sem.WaitAsync(cancellationToken);
         try
         {
             _source = null;
@@ -139,7 +139,7 @@ class SmartExecutor : IAutomationExecutor
     {
         if (_running)
         {
-            await _sem.WaitAsync();
+            await _sem.WaitAsync(cancellationToken);
             try
             {
                 _lastAction = action;
@@ -159,7 +159,7 @@ class SmartExecutor : IAutomationExecutor
             while (_lastAction is not null)
             {
 
-                await _sem.WaitAsync();
+                await _sem.WaitAsync(cancellationToken);
                 try
                 {
                     act = _lastAction;

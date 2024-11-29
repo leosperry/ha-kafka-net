@@ -194,7 +194,7 @@ public static partial class AutomationBuilderExtensions
         });
     }
 
-    public static SunAutomation Build(this SunAutommationBuildingInfo info)
+    public static SunAutomation Build(this SunAutomationBuildingInfo info)
     {
         return info.SunEvent switch
         {
@@ -220,19 +220,19 @@ public static partial class AutomationBuilderExtensions
         };
     }
 
-    public static SunAutommationBuildingInfo WithOffset(this SunAutommationBuildingInfo info, TimeSpan offset)
+    public static SunAutomationBuildingInfo WithOffset(this SunAutomationBuildingInfo info, TimeSpan offset)
     {
         info.Offset = offset;
         return info;
     }
 
-    public static SunAutommationBuildingInfo ExecutePastEvents(this SunAutommationBuildingInfo info, bool executePast)
+    public static SunAutomationBuildingInfo ExecutePastEvents(this SunAutomationBuildingInfo info, bool executePast)
     {
         info.ExecutePast = executePast;
         return info;
     }
 
-    public static SunAutommationBuildingInfo WithExecution(this SunAutommationBuildingInfo info, Func<CancellationToken, Task> execution)
+    public static SunAutomationBuildingInfo WithExecution(this SunAutomationBuildingInfo info, Func<CancellationToken, Task> execution)
     {
         info.Execution = execution;
         return info;

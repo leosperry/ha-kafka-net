@@ -13,6 +13,6 @@ public record LogInfo
     public string? RenderedMessage { get;set; }
     public IDictionary<string,object>? Scopes { get; set; }
     public required IDictionary<string,object> Properties { get; set; }
-    public ExecptionInfo? Exception { get; set; }
+    public ExceptionInfo? Exception { get; set; }
     public DateTime? TimeStamp { get; set; }
 }

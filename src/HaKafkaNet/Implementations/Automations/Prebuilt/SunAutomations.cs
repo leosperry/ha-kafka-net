@@ -67,7 +67,7 @@ public sealed class SunSetAutomation : SunAutomation
 public sealed class SunDawnAutomation : SunAutomation
 {
     public SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, true) { }
+        : base(execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDawn;
 }
