@@ -7,12 +7,9 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 10.1 Released!
+Version 10.2 Released!
 
-This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.1.0) builds on [V10](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.1.0) in that it brings consistency to type conversion failures.
-See [Type Conversion](https://github.com/leosperry/ha-kafka-net/wiki/Entity-States#type-conversion) for details. Also see [Updating Entity Provider](https://github.com/leosperry/ha-kafka-net/wiki/Updating-Entity-Provider)  
-
-Special note regarding Home Assistant 2024.8: [Version 8 and Home Assistant 2024.8](https://github.com/leosperry/ha-kafka-net/wiki/Version-8-and-Home-Assistant-2024.8)
+This [version](https://github.com/leosperry/ha-kafka-net/releases/tag/v10.2.0) introduces automation modes including the all new "smart" mode, which both increase stability and performance. For full details checkout [Parallelism and threads in automations](https://github.com/leosperry/ha-kafka-net/wiki/Parallelism-and-threads-in-automations)  
 
 ***
 
@@ -43,7 +40,7 @@ registrar.TryRegister(
 ## Why ha-kafka-net ? 
 * [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
 * Durable - Automations that [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations). See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
-* Fast - Automations run in parallel and asynchronously.
+* Fast - Automations run in [parallel](https://github.com/leosperry/ha-kafka-net/wiki/Parallelism-and-threads-in-automations) and asynchronously.
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
 * Observability through
   * [ISystemMonitor](https://github.com/leosperry/ha-kafka-net/wiki/System-Monitor)
@@ -53,7 +50,7 @@ registrar.TryRegister(
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
   * Create your own automamtions from scratch
-* [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax for quickly creating automations.
+* [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Builder) with fluent syntax for quickly creating automations.
 * Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
 * MIT license
 
