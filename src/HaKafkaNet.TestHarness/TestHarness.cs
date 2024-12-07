@@ -50,7 +50,7 @@ public class TestHarness
         Services.Setup(s => s.EntityProvider).Returns(EntityProvider.Object);
 
         Factory = new AutomationFactory(Services.Object);
-        Builder = new AutomationBuilder(Services.Object);
+        Builder = new AutomationBuilder();
 
         if (defaultState is not null)
         {
