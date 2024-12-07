@@ -31,9 +31,9 @@ public static class ApiExtensions
         => api.CallService("input_button", "press", new { entity_id }, cancellationToken);
 
     public static Task<HttpResponseMessage> InputNumberDecrement(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
-        => api.CallService("input_number", "decrement", new { entity_id }, cancellationToken);
+        => api.CallService(INPUT_NUMBER, "decrement", new { entity_id }, cancellationToken);
     public static Task<HttpResponseMessage> InputNumberIncrement(this IHaApiProvider api, string entity_id, CancellationToken cancellationToken = default)
-        => api.CallService("input_number", "increment", new { entity_id }, cancellationToken);
+        => api.CallService(INPUT_NUMBER, "increment", new { entity_id }, cancellationToken);
     public static Task<HttpResponseMessage> InputNumberSet(this IHaApiProvider api, string entity_id, int value, CancellationToken cancellationToken = default)
         => api.CallService(INPUT_NUMBER, SET_VALUE, new { entity_id, value }, cancellationToken);
     public static Task<HttpResponseMessage> InputNumberSet(this IHaApiProvider api, string entity_id, float value, CancellationToken cancellationToken = default)
