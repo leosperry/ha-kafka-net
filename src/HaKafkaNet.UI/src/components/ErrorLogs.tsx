@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Accordion, Button } from "react-bootstrap";
 import { Api } from "../services/Api";
 import { LogInfo } from "../models/AutomationDetailResponse";

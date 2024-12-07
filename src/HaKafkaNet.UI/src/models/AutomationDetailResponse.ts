@@ -5,6 +5,7 @@ export interface AutomationDetailsResponse {
     keyRequest: string;
     givenKey : string;
     eventTimings: string;
+    mode: string;
     triggerIds : string[];
     additionalEntities : string[];
     type : string;

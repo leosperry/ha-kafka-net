@@ -55,6 +55,7 @@ function AutomationDetails() {
         <div className='col-2 overflow-hidden'>Key Request:</div><div className='col-10'>{data.keyRequest}</div>
         <div className='col-2 overflow-hidden'>Given Key:</div><div className='col-10'>{data.givenKey}</div>
         <div className='col-2 overflow-hidden'>Event Timings:</div><div className='col-10'>{data.eventTimings}</div>
+        <div className='col-2 overflow-hidden'>Mode:</div><div className='col-10'>{data.mode}</div>
         <div className='col-2 overflow-hidden'>Trigger IDs:</div><div className='col-10'>{data.triggerIds.length > 0 ? renderStringArray(data.triggerIds) : "none"}</div>
         <div className='col-2 overflow-hidden'>Additional IDs:</div><div className='col-10'>{(data.additionalEntities.length > 0) ? renderStringArray(data.additionalEntities) : "none"}</div>
         <div className='col-2 overflow-hidden'>Is Delayable:</div><div className='col-10'>{data.isDelayable.toString()}</div>

@@ -6,6 +6,7 @@ public record AutomationDetailResponse(
     string KeyRequest,
     string GivenKey,
     string EventTimings,
+    string Mode,
     IEnumerable<string> TriggerIds,
     IEnumerable<string> AdditionalEntities,
     string Type,

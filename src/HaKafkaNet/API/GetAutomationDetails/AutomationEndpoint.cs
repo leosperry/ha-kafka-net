@@ -42,6 +42,7 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
             meta.KeyRequest ??  "none",
             meta.GivenKey,
             auto.EventTimings.ToString(),
+            meta.Mode.ToString(),
             auto.TriggerEntityIds(),
             meta.AdditionalEntitiesToTrack ?? Enumerable.Empty<string>(),
             meta.UnderlyingType!,
