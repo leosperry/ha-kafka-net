@@ -67,7 +67,7 @@ rest_command:
 # Use the ISystemMonitor interface in HaKafkaNet
 automation:
 
-    id: HaKafkaNet_SendNotifications
+  - id: HaKafkaNet_SendNotifications
     alias: HaKafkaNet - Send Notification updates
     description: Send all notifications to HaKafkaNet
     trigger:
