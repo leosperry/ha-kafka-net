@@ -274,7 +274,7 @@ public class ConditionalAutomationWrapperTests
     }
 
     [Fact]
-    public async void WhenExecutionThrows_ShouldRaiseEvent()
+    public async Task WhenExecutionThrows_ShouldRaiseEvent()
     {
         // Given
         Mock<IConditionalAutomation> auto = new();
