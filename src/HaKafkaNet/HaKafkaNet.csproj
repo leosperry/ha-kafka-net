@@ -16,6 +16,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>hkn_128.png</PackageIcon>
     <PackageTags>Home Assistant;Automation;HomeAssistant;Hass;dotnet;.NET;Kafka;daemon</PackageTags>
+    
+    <DebugType>Embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
   </PropertyGroup>
 
   <ItemGroup>
