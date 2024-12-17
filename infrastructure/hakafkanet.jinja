@@ -5,21 +5,26 @@ http://homeassistant.local:8123/developer-tools/template
 It will render C# classes for you to quickly reference all your Entities, Labels, and Areas
 #}
 {% macro clean(str, parent) %}{% set name = str.title().replace('_', '') %}{% set cleanedName = ("_" + name) if name | regex_match('^\d+') or str.title() == parent else name %}{{ cleanedName }}{% endmacro %}
-namespace MyHome
-{ 
-    public class Labels
-    { {% for l in labels() %}
-        public const string {{ clean(l, "Labels") }} = "{{ l }}";{% endfor %}
-    }
 
-    public class Areas
-    { {% for a in areas() %} {% set name = a.title().replace('_', '') %}{% set cleanedName = ("_" + name) if name | regex_match('^\d+') or a.title() == "Labels" else name %}
-        public const string {{ clean(a, "Areas") }} = "{{ a }}";{% endfor %}
-    }
-{% for d in states | groupby('domain') %}
-    public class {{ d[0].title() }}
-    { {% for e in states[d[0]] %} 
-        public const string {{ clean(e.entity_id.split('.')[1] , d[0].title()) }} = "{{e.entity_id}}";{% endfor %}      
-    }
-{% endfor %}
+{% for dd in states.input_select %} {% set enumName = clean(dd.entity_id.split('.')[1]) %}
+public enum {{ enumName }}
+{ 
+  Unknown, Unavailable{% for val in state_attr(dd.entity_id, "options") %},
+  {{ clean(val) | regex_replace('[^\w]', '_')  }}{% endfor %}
 }
+{% endfor %}
+public class Labels
+{ {% for l in labels() %}
+    public const string {{ clean(l, "Labels") }} = "{{ l }}";{% endfor %}
+}
+
+public class Areas
+{ {% for a in areas() %} {% set name = a.title().replace('_', '') %}{% set cleanedName = ("_" + name) if name | regex_match('^\d+') or a.title() == "Labels" else name %}
+    public const string {{ clean(a, "Areas") }} = "{{ a }}";{% endfor %}
+}
+{% for d in states | groupby('domain') %}
+public class {{ d[0].title() }}
+{ {% for e in states[d[0]] %} 
+    public const string {{ clean(e.entity_id.split('.')[1] , d[0].title()) }} = "{{e.entity_id}}";{% endfor %}      
+}
+{% endfor %}
