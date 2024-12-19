@@ -19,6 +19,7 @@
     
     <DebugType>Embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

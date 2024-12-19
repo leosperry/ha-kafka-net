@@ -42,6 +42,7 @@ internal class HaStateCache : IHaStateCache
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="entityId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<T?> GetEntity<T>(string entityId, CancellationToken cancellationToken) where T : class
     {

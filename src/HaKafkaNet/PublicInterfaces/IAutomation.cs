@@ -52,7 +52,7 @@ public interface IDelayableAutomationBase
     /// Called after the first time ContinuesToBeTrue is called and after the For specified amount of time
     /// as long as all the calls to ContinuesToBeTrue returned true during that time
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="ct"></param>
     /// <returns></returns>
     Task Execute(CancellationToken ct);
 }

@@ -174,7 +174,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunrise</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
@@ -186,7 +188,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunrise</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
@@ -198,7 +202,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
@@ -210,7 +216,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
@@ -222,7 +230,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
@@ -234,7 +244,9 @@ internal class AutomationFactory : IAutomationFactory
     /// May not work in arctic circle
     /// </summary>
     /// <param name="execution"></param>
-    /// <param name="offset">Positive or negative offset from Sunset</param>
+    /// <param name="offset"></param>
+    /// <param name="timings"></param>
+    /// <param name="executePast"></param>
     /// <returns></returns>
     public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {

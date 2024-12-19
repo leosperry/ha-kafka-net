@@ -13,7 +13,7 @@ internal interface IAutomationManager
     /// Enables or disables an automation
     /// </summary>
     /// <param name="key">The key of the automation to update</param>
-    /// <param name="Enable">true to enable; false to disable</param>
+    /// <param name="enable">true to enable; false to disable</param>
     /// <returns>true if found and updated, otherwise false</returns>
     bool EnableAutomation(string key, bool enable);
 
