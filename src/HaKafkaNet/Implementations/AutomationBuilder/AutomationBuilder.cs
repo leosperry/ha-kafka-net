@@ -48,7 +48,8 @@ internal class AutomationBuilder : IAutomationBuilder
         return new()
         {
             EnabledAtStartup = enabledAtStartup,
-            SunEvent = sunEvent
+            SunEvent = sunEvent,
+            Mode = AutomationMode.Parallel
         };
     }
 

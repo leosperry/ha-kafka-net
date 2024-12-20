@@ -1,6 +1,6 @@
 ﻿namespace HaKafkaNet;
 
-public abstract class SunAutomation : SchedulableAutomationBase
+public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationMeta
 {
     readonly TimeSpan _offset;
     readonly Func<CancellationToken, Task> _execute;

@@ -196,7 +196,7 @@ public static partial class AutomationBuilderExtensions
 
     public static SunAutomation Build(this SunAutomationBuildingInfo info)
     {
-        return info.SunEvent switch
+        SunAutomation auto = info.SunEvent switch
         {
             SunEventType.Dawn => new SunDawnAutomation(
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
@@ -218,6 +218,8 @@ public static partial class AutomationBuilderExtensions
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             _ => throw new AutomationBuilderException("Unknown sun type. This should not be possible")
         };
+        auto.WithMeta(GetMeta(info));
+        return auto;
     }
 
     public static SunAutomationBuildingInfo WithOffset(this SunAutomationBuildingInfo info, TimeSpan offset)
