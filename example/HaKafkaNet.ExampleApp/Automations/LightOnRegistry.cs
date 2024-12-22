@@ -37,7 +37,6 @@ public class LightOnRegistry : IAutomationRegistry
             .WithMeta(new AutomationMetaData(){
                 Name = "Office Light On Motion",        //defaults to GetType().Name
                 Description = "from factory prebuilt",  //defaults to GetType().FullName
-                Enabled = false                         //defaults to true
             });
 
         //use the factory to create any automation
@@ -52,15 +51,14 @@ public class LightOnRegistry : IAutomationRegistry
             }).WithMeta(new AutomationMetaData(){
                 Name = "Office Light On Motion",
                 Description = "from factory manual",
-                Enabled = false
             });
         
         //create your own automations for reuse
-        //you could also put a manual construction like this in a facotry extension method
+        //you could also put a manual construction like this in a factory extension method
         yield return new LightOnCustomAutomation(_services.Api, OFFICE_MOTION, OFFICE_LIGHT, 200, "Office Light On Motion", "custom built");
         
         //the builder offers a more descriptive way create automations
-        yield return _builder.CreateSimple(false) // false is for enabled at startup which defaults to true if not specified
+        yield return _builder.CreateSimple() // false is for enabled at startup which defaults to true if not specified
             .WithName("Office Light On Motion")
             .WithDescription("from builder without services")
             .WithTriggers(OFFICE_MOTION)
@@ -74,7 +72,7 @@ public class LightOnRegistry : IAutomationRegistry
             .Build();
         
         // you can rely on the builder to pass in home assistant services
-        yield return _builder.CreateSimple(false)
+        yield return _builder.CreateSimple()
             .WithName("Office Light On Motion")
             .WithDescription("from builder with services")
             .WithTriggers(OFFICE_MOTION)
@@ -93,7 +91,7 @@ public class LightOnRegistry : IAutomationRegistry
         //the conditional automation us typically used to run an automation on a delay
         //by not specifying the 'For" it defaults to TimeSpan.Zero and runs immediately
         //this allows you to clean up some of the if statements in the examples above
-        yield return _builder.CreateConditional(false)
+        yield return _builder.CreateConditional()
             .WithName("Office Light On Motion")
             .WithDescription("from builder using conditional")
             .WithTriggers(OFFICE_MOTION)

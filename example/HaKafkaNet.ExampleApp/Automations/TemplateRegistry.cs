@@ -37,6 +37,7 @@ public class TemplateRegistry : IAutomationRegistry, IInitializeOnStartup
     {
         return _helpers.Builder.CreateSimple()
             // fill in automation
+            .WithExecution(async (sc, ct) => await Task.CompletedTask)
             .Build();
     }
 
@@ -47,6 +48,9 @@ public class TemplateRegistry : IAutomationRegistry, IInitializeOnStartup
 
     IDelayableAutomation Delay1()
     {
-        throw new NotImplementedException();
+        return _helpers.Builder.CreateConditional()
+            .When(sc => false)
+            .WithExecution(async ct => await Task.CompletedTask)
+            .Build();
     }
 }

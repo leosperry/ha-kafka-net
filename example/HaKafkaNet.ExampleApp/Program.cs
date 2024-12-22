@@ -8,6 +8,9 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
 using NLog.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,22 +46,29 @@ services.AddHaKafkaNet(config);
 // // Version 7 overload
 // services.AddHaKafkaNet(config, (kafka, cluster) => {
 //    // add logging, telemetry, and/or topics options as desired
-      // https://farfetch.github.io/kafkaflow/docs/guides/open-telemetry/
+// https://farfetch.github.io/kafkaflow/docs/guides/open-telemetry/
 //});
 
 // provide an IDistributedCache implementation
-var redisUri = builder.Configuration.GetConnectionString("RedisConStr");
-services.AddStackExchangeRedisCache(options => 
-{
-    options.Configuration = redisUri;
-    /* optionally prefix keys */
-    options.InstanceName = "ExampleApp.";
-});
-
+//var redisUri = builder.Configuration.GetConnectionString("RedisConStr");
+//services.AddStackExchangeRedisCache(options => 
+//{
+//    options.Configuration = redisUri;
+//    /* optionally prefix keys */
+//    options.InstanceName = "ExampleApp.";
+//});
 // get rid of warning about AspNetCore protecting keys
-var redis = ConnectionMultiplexer.Connect(redisUri!);
-services.AddDataProtection()
-    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+//var redis = ConnectionMultiplexer.Connect(redisUri!);
+//services.AddDataProtection()
+//    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+
+// this example app uses an in memory cache so that it can run anywhere
+// Caution
+// it it recommended to use a cache which will survive restarts like the Redis example above
+// see https://github.com/leosperry/ha-kafka-net/wiki/Data-Persistence for details
+IOptions<MemoryDistributedCacheOptions> options = Options.Create(new MemoryDistributedCacheOptions());
+var cache = new MemoryDistributedCache(options);
+services.AddSingleton<IDistributedCache>(cache);
 
 // Open Telemetry configuration
 var otlpEndpoint = "http://your_otlp_endpoint:4317";
@@ -119,3 +129,5 @@ await app.StartHaKafkaNet();
 
 app.Run();
 
+// this line is so that ASP.NET will play nice with integration tests
+public partial class Program { }

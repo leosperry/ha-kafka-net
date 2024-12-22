@@ -24,7 +24,6 @@ public class LightOnCustomAutomation : IAutomation, IAutomationMeta
         {
             Name = name,
             Description = description,
-            Enabled = false // for demonstration purposes only
         };
     }
 
