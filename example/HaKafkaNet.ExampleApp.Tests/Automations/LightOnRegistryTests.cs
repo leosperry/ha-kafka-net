@@ -1,11 +1,10 @@
-﻿using System.Text.Json;
-using HaKafkaNet;
-using Moq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using HaKafkaNet;
 using HaKafkaNet.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using System.Text.Json;
 
 namespace HaKafkaNet.ExampleApp.Tests;
-
 
 public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
 {
@@ -22,11 +21,9 @@ public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
         // Given
 
         _fixture.API.Setup(api => api.GetEntity<HaEntityState<OnOff, JsonElement>>(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.OK }, new HaEntityState<OnOff, JsonElement>()
-            { EntityId = LightOnRegistry.OFFICE_LIGHT, State = OnOff.Off, Attributes = JsonSerializer.SerializeToElement("{}") }));
+            .ReturnsAsync(TestHelper.Api_GetEntity_Response<OnOff>(OnOff.Off));
 
         var sut = _fixture.Services.GetRegistry<LightOnRegistry>();
-        
 
         // When
 

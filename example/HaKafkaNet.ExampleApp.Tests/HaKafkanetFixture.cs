@@ -1,12 +1,16 @@
 ﻿using HaKafkaNet.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
 using System.Text.Json;
 
 namespace HaKafkaNet.ExampleApp.Tests
 {
+    /// <summary>
+    /// Reminder: Updates to the framework may require updates to this file.
+    /// If there are breaking changes to the framework re-copy this file from
+    /// https://raw.githubusercontent.com/leosperry/ha-kafka-net/refs/heads/main/example/HaKafkaNet.ExampleApp.Tests/HaKafkanetFixture.cs
+    /// </summary>
     public class HaKafkaNetFixture : WebApplicationFactory<Program>
     {
         public Mock<IHaApiProvider> API { get; } = new Mock<IHaApiProvider>();
@@ -15,9 +19,7 @@ namespace HaKafkaNet.ExampleApp.Tests
         {
             // This ensures nothing explicitly configured will return something the framework can handle.
             API.Setup(api => api.GetEntity(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((new HttpResponseMessage()
-                { Content = new StringContent(""), StatusCode = System.Net.HttpStatusCode.OK }, new HaEntityState()
-                { EntityId = "", State = "unknown", Attributes = JsonSerializer.SerializeToElement("{}") }));
+                .ReturnsAsync(TestHelper.Api_GetEntity_Response());
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -26,6 +28,7 @@ namespace HaKafkaNet.ExampleApp.Tests
                 services.ConfigureForIntegrationTests(API.Object);
             });
         }
+
 
     }
 }
