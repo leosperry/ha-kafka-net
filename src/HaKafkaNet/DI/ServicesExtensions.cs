@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FastEndpoints;
 using HaKafkaNet.Implementations.Core;
+using HaKafkaNet.Testing;
 using KafkaFlow;
 using KafkaFlow.Admin.Dashboard;
 using KafkaFlow.Configuration;
@@ -105,10 +106,14 @@ public static class ServicesExtensions
             app.UseRouting();
             app.MapControllers();
         }
-        
-        // kafka handler requires automation manager and in turn user automations
-        var kafkaBus = app.Services.CreateKafkaBus();
-        await kafkaBus.StartAsync();
+
+        var testMode = app.Services.GetService<TestMode>();
+        if (testMode is null)
+        {
+            // kafka handler requires automation manager and in turn user automations
+            var kafkaBus = app.Services.CreateKafkaBus();
+            await kafkaBus.StartAsync();
+        }
     }
 
     private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)

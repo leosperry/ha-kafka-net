@@ -15,6 +15,7 @@ namespace HaKafkaNet.Testing
             var cache = new MemoryDistributedCache(options);
 
             services
+                .AddSingleton<TestMode>()
                 .RemoveAll<IDistributedCache>()
                 .AddSingleton<IDistributedCache>(cache)
                 .RemoveAll<IHaApiProvider>()
@@ -23,5 +24,5 @@ namespace HaKafkaNet.Testing
         }
     }
 
-
+    internal record TestMode;
 }

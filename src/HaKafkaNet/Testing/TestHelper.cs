@@ -29,6 +29,8 @@ namespace HaKafkaNet.Testing
                 EntityId = entityId,
                 State = state,
                 Attributes = EmptyAttributes(),
+                LastChanged = DateTime.Now.AddMinutes(1),
+                LastUpdated = DateTime.Now.AddMinutes(1),
             };
         }
 
