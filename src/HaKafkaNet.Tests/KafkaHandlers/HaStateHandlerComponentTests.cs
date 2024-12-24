@@ -35,7 +35,7 @@ public class HaStateHandlerComponentTests
         context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
         var fakeState = TestHelpers.GetState();
         //act
-        HaStateHandler sut = new HaStateHandler(cache.Object, manager, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, manager, observer.Object, TimeProvider.System, logger.Object);
         
         observer.Verify(o => o.OnStateHandlerInitialized(), Times.Once);
 
@@ -71,7 +71,7 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object,collector, observer.Object, TimeProvider.System, logger.Object);
         
         //act
         await sut.Handle(null!, newState);
@@ -107,7 +107,7 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         
         Mock<IMessageContext> context = new();
         var cancellationToken = new CancellationToken();
@@ -155,7 +155,7 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -202,7 +202,7 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
@@ -249,7 +249,7 @@ public class HaStateHandlerComponentTests
         collector.Initialize(new List<InitializationError>());
 
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -289,7 +289,7 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -321,7 +321,7 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -355,7 +355,7 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -390,7 +390,7 @@ public class HaStateHandlerComponentTests
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
         collector.Initialize(new List<InitializationError>());
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -425,7 +425,7 @@ public class HaStateHandlerComponentTests
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
         collector.Initialize(new List<InitializationError>());
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -460,7 +460,7 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -494,7 +494,7 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
         // When
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -531,7 +531,7 @@ public class HaStateHandlerComponentTests
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(1), state:"unknown");
 
         // act
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
 
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
@@ -571,7 +571,7 @@ public class HaStateHandlerComponentTests
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(1), state:"unknown");
 
         // act
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, logger.Object);
+        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
 
         await sut.Handle(fakeContext.Object, fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled

@@ -16,7 +16,7 @@ public class GetAllTests
         Mock<IWrapperFactory> wrapperFactory = new();
 
         var sut = new AutomationRegistrar(wrapperFactory.Object,
-            autos, trace.Object, observer.Object, new List<InitializationError>(), logger.Object);
+            autos, trace.Object, observer.Object, new List<InitializationError>(), TimeProvider.System, logger.Object);
         // When
 
         var result = sut.RegisteredAutomations;
@@ -48,7 +48,7 @@ public class GetAllTests
 
         var sut = new AutomationRegistrar(
             wrapperFactory.Object,
-            autos, trace.Object, observer.Object, new List<InitializationError>(), logger.Object);
+            autos, trace.Object, observer.Object, new List<InitializationError>(), TimeProvider.System, logger.Object);
         
         // When
         sut.Register(auto.Object);

@@ -10,7 +10,7 @@ public class GetByKeyTests
         // Given
         Mock<IAutomationTraceProvider> trace = new();
 
-        AutomationWrapper wrapper = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
+        AutomationWrapper wrapper = new AutomationWrapper(new FakeAuto(), trace.Object, TimeProvider.System, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
@@ -36,8 +36,8 @@ public class GetByKeyTests
         // Given
         Mock<IAutomationTraceProvider> trace = new();
 
-        AutomationWrapper wrapper1 = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
-        AutomationWrapper wrapper2 = new AutomationWrapper(new FakeAuto(), trace.Object, "test");
+        AutomationWrapper wrapper1 = new AutomationWrapper(new FakeAuto(), trace.Object, TimeProvider.System, "test");
+        AutomationWrapper wrapper2 = new AutomationWrapper(new FakeAuto(), trace.Object, TimeProvider.System, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
@@ -66,7 +66,7 @@ public class GetByKeyTests
         var fake = new FakeAutoWithMeta();
         fake.SetKey("!@#$ Evil !@#$ Spock !@#$");
         Mock<IAutomationTraceProvider> trace = new();
-        AutomationWrapper wrapper = new AutomationWrapper(fake, trace.Object, "test");
+        AutomationWrapper wrapper = new AutomationWrapper(fake, trace.Object, TimeProvider.System, "test");
         
         Mock<IAutomationRegistry> registry = new();
 
