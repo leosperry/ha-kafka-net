@@ -25,7 +25,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
     readonly ISystemObserver _observer;
     readonly ILogger<TraceLogProvider> _logger;
 
-    const string CachKeyPrefix = "hkn.tracedata.";
+    const string CacheKeyPrefix = "hkn.tracedata.";
     ConcurrentDictionary<string, SemaphoreSlim> _automationLocks = new();
 
     IReadOnlyDictionary<string, SemaphoreSlim> _globalLocks = new Dictionary<string, SemaphoreSlim>()
@@ -113,7 +113,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                 loc.Wait();
                 /*
                 this locks all active traces for a specific automation
-                potential improvment to be made for locking a specific trace instead of all traces
+                potential improvement to be made for locking a specific trace instead of all traces
                 this is only an issue where an automation has long running tasks
                 */
                 try
@@ -164,7 +164,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
     {
         var scopeData = new Dictionary<string, object?>()
         {
-            // required for trace funcionality
+            // required for trace functionality
             {scopeTraceAutomationKey, meta.GivenKey},
             {scopeTraceAutomationEventType, evt.EventType},
             {scopeTraceAutomationEventTime, evt.EventTime.ToString("O")},
@@ -206,7 +206,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                 try
                 {
                     // this line will throw an exception
-                    // if the automation threw an excption
+                    // if the automation threw an exception
                     task = traceFunction();
                     // if the task is not-awaited
                     // this line could throw an exception
@@ -285,7 +285,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                         Logs = tuple.logQueue
                     };
             }
-            var cached = await ReadTracesFromCache(CachKeyPrefix + automationKey);
+            var cached = await ReadTracesFromCache(CacheKeyPrefix + automationKey);
             return (cached ?? Enumerable.Empty<TraceData>()).Union(locals ?? Enumerable.Empty<TraceData>()).Reverse().ToArray();
         }
         finally
@@ -347,7 +347,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
 
     private async Task WriteTraceToCache(TraceData traceData)
     {
-        var key = CachKeyPrefix + traceData.TraceEvent.AutomationKey;
+        var key = CacheKeyPrefix + traceData.TraceEvent.AutomationKey;
 
         var loc = _automationLocks.GetOrAdd(traceData.TraceEvent.AutomationKey, new SemaphoreSlim(1));
 

@@ -151,7 +151,7 @@ internal class AutomationManager : IAutomationManager
         if (_internalAutomationsByKey.TryGetValue(key, out var auto))
         {
             auto.GetMetaData().Enabled = enable;
-            if (auto.WrappedAutomation is DelayablelAutomationWrapper conditional)
+            if (auto.WrappedAutomation is DelayableAutomationWrapper conditional)
             {
                 if (!enable)
                 {

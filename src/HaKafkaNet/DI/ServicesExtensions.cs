@@ -23,16 +23,16 @@ namespace HaKafkaNet;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafabuilder = null)
+    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         HaKafkaNetConfig config = new();
         options(config);
 
-        AddHaKafkaNet(services, config, kafabuilder);
+        AddHaKafkaNet(services, config, kafkaBuilder);
         return services;
     }
 
-    public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafabuilder = null)
+    public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         services.AddSingleton(config);
         services.AddKafka(kafka => 
@@ -48,7 +48,7 @@ public static class ServicesExtensions
                         .EnableAdminMessages("kafka-flow.admin")
                         .EnableTelemetry("kafka-flow.admin");
                     
-                    kafabuilder?.Invoke(kafka, cluster);
+                    kafkaBuilder?.Invoke(kafka, cluster);
                 }
             );
         });
@@ -153,7 +153,7 @@ public static class ServicesExtensions
 
         services
             // wrappers
-            .AddTransient(typeof(DelayablelAutomationWrapper<>))
+            .AddTransient(typeof(DelayableAutomationWrapper<>))
             .AddTransient(typeof(TypedDelayedAutomationWrapper<,,>))
             .AddTransient(typeof(TypedAutomationWrapper<,,>))
             .AddTransient<IWrapperFactory, WrapperFactory>()
@@ -211,8 +211,8 @@ public static class ServicesExtensions
             typeof(IDelayableAutomation<,>),
         };
 
-        var typeIneterfaces = type.GetInterfaces();
-        var stronglyTypedAutomationDefinitions = typeIneterfaces.Where(i => 
+        var typeInterfaces = type.GetInterfaces();
+        var stronglyTypedAutomationDefinitions = typeInterfaces.Where(i => 
             supportedInterfaceTypes.Contains(i) ||  (i.IsGenericType && supportedInterfaceTypes.Contains(i.GetGenericTypeDefinition()))
                 ).ToArray();
         
@@ -246,18 +246,18 @@ public static class ServicesExtensions
     {
         var genericArgs = targetInterface.GetGenericArguments();
 
-        Type? iautomationType;
+        Type? automationType;
         switch(targetInterface.GetGenericTypeDefinition())
         {
             case var x when x == typeof(IAutomation<>):
-                iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], typeof(JsonElement)]);
+                automationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], typeof(JsonElement)]);
                 break;
             case var x when x == typeof(IAutomation<,>):
-                iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
+                automationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
                 break;
             case var x when x == typeof(IDelayableAutomation<,>):
                 var typedWRapperType2 = typeof(TypedDelayedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
-                iautomationType = typeof(DelayablelAutomationWrapper<>).MakeGenericType([typedWRapperType2]);
+                automationType = typeof(DelayableAutomationWrapper<>).MakeGenericType([typedWRapperType2]);
                 break;
             default:
                 errors.Add(new("could not find appropriate wrapper", null, concrete ));
@@ -266,7 +266,7 @@ public static class ServicesExtensions
 
         services.AddSingleton(concrete);
 
-        var descriptor = new ServiceDescriptor(typeof(IAutomation), iautomationType, ServiceLifetime.Singleton);        
+        var descriptor = new ServiceDescriptor(typeof(IAutomation), automationType, ServiceLifetime.Singleton);        
         return descriptor;
     }
 
@@ -283,7 +283,7 @@ public static class ServicesExtensions
             // first register the type for retrieval later
             services.AddSingleton(concrete);
 
-            var wrapperTyped = typeof(DelayablelAutomationWrapper<>).MakeGenericType([concrete]);
+            var wrapperTyped = typeof(DelayableAutomationWrapper<>).MakeGenericType([concrete]);
             var descriptor = new ServiceDescriptor(typeof(IAutomation), wrapperTyped, ServiceLifetime.Singleton);
             return descriptor;
         }
@@ -380,7 +380,7 @@ public static class ServicesExtensions
                     }
                     catch(Exception initEx)
                     {
-                        errors.Add(new("initializing updating entitiy failed", initEx, entityId));
+                        errors.Add(new("initializing updating entity failed", initEx, entityId));
                     }
                     finally
                     {
@@ -400,7 +400,7 @@ public static class ServicesExtensions
     {
         if (string.IsNullOrEmpty(connectionInfo.BaseUri))
         {
-            errors.Add(new("BaseUri for Home Assisstant instance is not set."));
+            errors.Add(new("BaseUri for Home Assistant instance is not set."));
         }
         try
         {
@@ -533,11 +533,11 @@ public static class ServicesExtensions
 
     private static async Task SendNotificationToHomeAssistant(IHaApiProvider api, IEnumerable<InitializationError> errors)
     {
-        string message = getFormatedMessage(errors);
-        await api.PersistentNotificationDetail(message, "HaKafkanNet did not initialize completely");
+        string message = getFormattedMessage(errors);
+        await api.PersistentNotificationDetail(message, "HaKafkaNet did not initialize completely");
     }
 
-    private static string getFormatedMessage(IEnumerable<InitializationError> errors)
+    private static string getFormattedMessage(IEnumerable<InitializationError> errors)
     {
         StringBuilder sb = new();
         foreach (var error in errors)
@@ -566,7 +566,7 @@ public static class ServicesExtensions
         {
             var message = "System Monitors could not be initialized";
             errors.Add(new(message, ex));
-            // threoretically only errors here should be from user constructors
+            // theoretically only errors here should be from user constructors
             // in which case, NO monitors would be enabled.
             System.Console.WriteLine();
         }
@@ -614,7 +614,7 @@ public static class ServicesExtensions
         catch (AggregateException ex)
         {
             // in theory, this line should not be hit
-            // becaues in the continuation, we did not access the result property
+            // because in the continuation, we did not access the result property
             errors.Add(new($"Error initializing automations", ex));
         }
     }

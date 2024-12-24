@@ -4,7 +4,7 @@
 public enum EventTiming
 {
     /// <summary>
-    /// Can be used in development to effectivly disable an automation
+    /// Can be used in development to effectively disable an automation
     /// </summary>
     None =                          0b000000,
     /// <summary>
@@ -12,7 +12,7 @@ public enum EventTiming
     /// </summary>
     PreStartupNotCached =           0b000001,
     /// <summary>
-    /// State currently being handled happened before the most recent cach entry
+    /// State currently being handled happened before the most recent cache entry
     /// </summary>
     PreStartupPreLastCached =       0b000010,
     /// <summary>
@@ -25,7 +25,7 @@ public enum EventTiming
     /// </summary>
     PreStartupSameTimeLastCached =  0b001000,
     /// <summary>
-    /// State currently being handled happened after the most recent cach entry
+    /// State currently being handled happened after the most recent cache entry
     /// </summary>
     PreStartupPostLastCached =      0b010000,
     /// <summary>

@@ -2,14 +2,14 @@
 
 namespace HaKafkaNet;
 
-internal abstract class DelayablelAutomationWrapper
+internal abstract class DelayableAutomationWrapper
 {
     protected internal abstract void StopIfRunning(StopReason reason);
 }
 
 
 [ExcludeFromDiscovery]
-internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAutomationWrapper where T : IDelayableAutomation 
+internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAutomationWrapper where T : IDelayableAutomation 
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
     AutomationMetaData? _meta;
@@ -26,7 +26,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, ILogger<T> logger)
+    public DelayableAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, ILogger<T> logger)
     {
         this._automation = automation;
         this._trace = traceProvider;
@@ -282,15 +282,15 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
 
     private AutomationMetaData GetOrMakeMetaData()
     {
-        IAutomationMeta? autoImplementingmeta = _automation as IAutomationMeta;
+        IAutomationMeta? autoImplementingMeta = _automation as IAutomationMeta;
         IAutomationBase target = _automation;
-        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
+        while(autoImplementingMeta is null && target is IAutomationWrapperBase targetWrapper)
         {
             target = targetWrapper.WrappedAutomation;
-            autoImplementingmeta = target as IAutomationMeta;
+            autoImplementingMeta = target as IAutomationMeta;
         }
 
-        var meta = autoImplementingmeta is null ? AutomationMetaData.Create(target) : autoImplementingmeta.GetMetaData();
+        var meta = autoImplementingMeta is null ? AutomationMetaData.Create(target) : autoImplementingMeta.GetMetaData();
         meta.IsDelayable = true;
         return meta;
     }

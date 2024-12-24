@@ -21,13 +21,13 @@ public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationM
         DateTime? next = base.GetNextScheduled();
         if (next is null || next < _timeProvider.GetLocalNow().LocalDateTime)
         {
-            var sunAtts = stateChange.New.GetAttributes<SunAttributes>()!;
-            next = this.GetNextSunEvent(sunAtts) + _offset;
+            var sunAttributes = stateChange.New.GetAttributes<SunAttributes>()!;
+            next = this.GetNextSunEvent(sunAttributes) + _offset;
         }
         return Task.FromResult(next);
     }
 
-    protected abstract DateTime GetNextSunEvent(SunAttributes atts);
+    protected abstract DateTime GetNextSunEvent(SunAttributes sunAttributes);
 
     public override Task Execute(CancellationToken cancellationToken)
     {
@@ -45,7 +45,7 @@ public sealed class SunRiseAutomation : SunAutomation
     public SunRiseAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextRising;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextRising;
 }
 
 /// <summary>
@@ -58,7 +58,7 @@ public sealed class SunSetAutomation : SunAutomation
     public SunSetAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextSetting;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextSetting;
 }
 
 /// <summary>
@@ -71,7 +71,7 @@ public sealed class SunDawnAutomation : SunAutomation
     public SunDawnAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDawn;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextDawn;
 }
 
 /// <summary>
@@ -84,7 +84,7 @@ public sealed class SunDuskAutomation : SunAutomation
     public SunDuskAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDusk;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextDusk;
 }
 
 /// <summary>
@@ -97,7 +97,7 @@ public sealed class SunMidnightAutomation : SunAutomation
     public SunMidnightAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextMidnight;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextMidnight;
 }
 
 /// <summary>
@@ -110,6 +110,6 @@ public sealed class SunNoonAutomation : SunAutomation
     public SunNoonAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(timeProvider, execution, offset, timings, executePast) { }
 
-    protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextNoon;
+    protected override DateTime GetNextSunEvent(SunAttributes sunAttributes) => sunAttributes.NextNoon;
 }
 
