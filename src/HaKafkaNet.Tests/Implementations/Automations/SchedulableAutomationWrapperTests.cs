@@ -23,7 +23,7 @@ public class SchedulableAutomationTests
         // When
         // Then
 
-        Assert.Throws<HaKafkaNetException>(() => new DelayablelAutomationWrapper<IDelayableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object));
+        Assert.Throws<HaKafkaNetException>(() => new DelayableAutomationWrapper<IDelayableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object));
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
     
@@ -66,7 +66,7 @@ public class SchedulableAutomationTests
 
         auto.Setup(a => a.GetNextScheduled()).Returns(DateTime.Now.AddMilliseconds(delay));
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
         await sut.Execute(stateChange, default);
@@ -94,7 +94,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
     
@@ -123,7 +123,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
         await Task.Delay(delay * 2);
@@ -154,7 +154,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
         await Task.Delay(delay);
@@ -186,7 +186,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
         await sut.Execute(stateChange, default);
@@ -225,7 +225,7 @@ public class SchedulableAutomationTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
         // When
         await sut.Execute(stateChange, default);
         await sut.Execute(stateChange, default);
@@ -258,7 +258,7 @@ public class SchedulableAutomationTests
             .Returns(() => DateTime.Now.AddMilliseconds(delay))
             .Returns(() => DateTime.Now.AddMilliseconds(delay));        
         
-        DelayablelAutomationWrapper<ISchedulableAutomation> sut = new DelayablelAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<ISchedulableAutomation> sut = new DelayableAutomationWrapper<ISchedulableAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
 
         // When
         await sut.Execute(stateChange, default);

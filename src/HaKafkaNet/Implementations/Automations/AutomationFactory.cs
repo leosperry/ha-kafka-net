@@ -30,13 +30,13 @@ internal class AutomationFactory : IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = false,
         bool shouldExecuteOnError = false,
-        EventTiming timngs = EventTiming.PostStartup,
-        bool reschedudulable = false
+        EventTiming timings = EventTiming.PostStartup,
+        bool reschedulable = false
     )
     {
-        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError, reschedudulable)
+        var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError, reschedulable)
         {
-            EventTimings = timngs,
+            EventTimings = timings,
         };
         return scheduled;
     }
@@ -47,12 +47,12 @@ internal class AutomationFactory : IAutomationFactory
         Func<CancellationToken, Task> execution,
         bool shouldExecutePastEvents = true,
         bool shouldExecuteOnError = false,
-        bool reschedudulable = false
+        bool reschedulable = false
     )
     {
         var scheduled = new SchedulableAutomation(triggerIds, getNextEvent, execution, shouldExecutePastEvents, shouldExecuteOnError)
         {
-            IsReschedulable = reschedudulable,
+            IsReschedulable = reschedulable,
             EventTimings = EventTiming.Durable
         };
         return scheduled;    

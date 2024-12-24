@@ -26,7 +26,7 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object, _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
@@ -57,7 +57,7 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
@@ -89,7 +89,7 @@ public class SunComponentTests
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
         sut.ShouldExecutePastEvents = false;
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();

@@ -15,13 +15,13 @@ internal class WrapperFactory : IWrapperFactory
     private readonly IServiceProvider _serviceProvider;
     private readonly IAutomationTraceProvider _trace;
     private readonly ISystemObserver _observer;
-    private readonly ILogger<DelayablelAutomationWrapper> _logger;
+    private readonly ILogger<DelayableAutomationWrapper> _logger;
 
     public WrapperFactory(
         IServiceProvider serviceProvider,
         IAutomationTraceProvider trace,
         ISystemObserver observer,
-        ILogger<DelayablelAutomationWrapper> logger)
+        ILogger<DelayableAutomationWrapper> logger)
     {
         _serviceProvider = serviceProvider;
         _trace = trace;
@@ -33,7 +33,7 @@ internal class WrapperFactory : IWrapperFactory
     {
         if (auto is IDelayableAutomation delayable)
         {
-            var newType = typeof(DelayablelAutomationWrapper<>).MakeGenericType([auto.GetType()]);
+            var newType = typeof(DelayableAutomationWrapper<>).MakeGenericType([auto.GetType()]);
 
             yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, newType, auto);
         }
@@ -46,8 +46,8 @@ internal class WrapperFactory : IWrapperFactory
 
         var concrete = auto.GetType();
 
-        var typeIneterfaces = auto.GetType().GetInterfaces();
-        var stronglyTypedAutomationDefinitions = typeIneterfaces.Where(i => 
+        var typeInterfaces = auto.GetType().GetInterfaces();
+        var stronglyTypedAutomationDefinitions = typeInterfaces.Where(i => 
             supportedInterfaceTypes.Contains(i) ||  (i.IsGenericType && supportedInterfaceTypes.Contains(i.GetGenericTypeDefinition()))
                 ).ToArray();
 
@@ -55,24 +55,24 @@ internal class WrapperFactory : IWrapperFactory
         {
             var genericArgs = targetInterface.GetGenericArguments();
 
-            Type? iautomationType;
+            Type? automationType;
 
             switch(targetInterface.GetGenericTypeDefinition())
             {
                 case var x when x == typeof(IAutomation<>):
-                    iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], typeof(JsonElement)]);
-                    yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, iautomationType, auto);;
+                    automationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], typeof(JsonElement)]);
+                    yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, automationType, auto);;
                     break;
                 case var x when x == typeof(IAutomation<,>):
-                    iautomationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
-                    yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, iautomationType, auto);
+                    automationType = typeof(TypedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
+                    yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, automationType, auto);
                     break;
                 case var x when x == typeof(IDelayableAutomation<,>):
                     var typedWrapperType = typeof(TypedDelayedAutomationWrapper<,,>).MakeGenericType([concrete, genericArgs[0], genericArgs[1]]);
 
                     IDelayableAutomation delayableAutomation = (IDelayableAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, typedWrapperType, auto);
 
-                    var newType = typeof(DelayablelAutomationWrapper<>).MakeGenericType([typedWrapperType]);
+                    var newType = typeof(DelayableAutomationWrapper<>).MakeGenericType([typedWrapperType]);
 
                     yield return (IAutomation)ActivatorUtilities.CreateInstance(_serviceProvider, newType, delayableAutomation);
                     break;
