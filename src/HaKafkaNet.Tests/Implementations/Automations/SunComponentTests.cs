@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Time.Testing;
 
 namespace HaKafkaNet.Tests;
 
@@ -9,6 +10,8 @@ namespace HaKafkaNet.Tests;
 /// </summary>
 public class SunComponentTests
 {
+    FakeTimeProvider _timeProvider = new();
+
     [Fact]
     public async Task WhenStartup_ShouldScheduleAndExecute()
     {
@@ -21,10 +24,10 @@ public class SunComponentTests
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
 
-        SunRiseAutomation sut = new SunRiseAutomation(execution);
+        SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
+        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object, _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
@@ -52,10 +55,10 @@ public class SunComponentTests
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
 
-        SunRiseAutomation sut = new SunRiseAutomation(execution);
+        SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
+        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));
@@ -83,11 +86,11 @@ public class SunComponentTests
         bool didRun = false;
         Func<CancellationToken, Task> execution = ct => Task.FromResult(didRun = true);
 
-        SunRiseAutomation sut = new SunRiseAutomation(execution);
+        SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
         sut.ShouldExecutePastEvents = false;
 
-        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, logger.Object);
-        AutomationWrapper autoWrapper = new(wrapper, trace.Object, "test");
+        DelayablelAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
         registrar.Setup(r => r.Registered).Returns(Enumerable.Repeat<IAutomationWrapper>(autoWrapper, 1));

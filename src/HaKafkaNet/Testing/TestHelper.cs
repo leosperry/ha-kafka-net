@@ -19,6 +19,8 @@ namespace HaKafkaNet.Testing
                 EntityId = entityId,
                 State = state,
                 Attributes = EmptyAttributes(),
+                LastChanged = DateTime.Now.AddMinutes(1),
+                LastUpdated = DateTime.Now.AddMinutes(1)
             };
         }
 
@@ -34,13 +36,15 @@ namespace HaKafkaNet.Testing
             };
         }
 
-        public static HaEntityState<Tstate, Tatt> Make<Tstate, Tatt>(string entityId, Tstate state, Tatt attributes)
+        public static HaEntityState<Tstate, Tatt> Make<Tstate, Tatt>(string entityId, Tstate state, Tatt attributes, DateTime time)
         {
             return new HaEntityState<Tstate, Tatt>()
             {
                 EntityId = entityId,
                 State = state,
                 Attributes = attributes,
+                LastChanged = time,
+                LastUpdated = time
             };
         }
 

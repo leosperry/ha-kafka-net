@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 
 namespace HaKafkaNet.Testing
 {
@@ -15,7 +16,9 @@ namespace HaKafkaNet.Testing
             var cache = new MemoryDistributedCache(options);
 
             services
-                .AddSingleton<TestMode>()
+                .AddTransient<TestMode>()
+                .RemoveAll<TimeProvider>()
+                .AddSingleton<TimeProvider, FakeTimeProvider>()
                 .RemoveAll<IDistributedCache>()
                 .AddSingleton<IDistributedCache>(cache)
                 .RemoveAll<IHaApiProvider>()

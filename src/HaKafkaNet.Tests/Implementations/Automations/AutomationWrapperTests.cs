@@ -15,7 +15,7 @@ public class AutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, TimeProvider.System, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -32,7 +32,7 @@ public class AutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, TimeProvider.System, "test");
     
         // Then
         var meta = sut.GetMetaData();
@@ -50,7 +50,7 @@ public class AutomationWrapperTests
         Mock<IAutomationTraceProvider> trace = new();
     
         // When
-        AutomationWrapper sut = new(auto, trace.Object, "test");
+        AutomationWrapper sut = new(auto, trace.Object, TimeProvider.System, "test");
     
         // Then
         var meta = sut.GetMetaData();
