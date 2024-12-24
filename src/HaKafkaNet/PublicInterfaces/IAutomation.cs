@@ -39,7 +39,7 @@ public interface IAutomation : IAutomationBase, IAutomation<HaEntityStateChange,
 public interface IDelayableAutomationBase
 {
     /// <summary>
-    /// In some cases, especially if handling pre-startup events, this determines if executions should run if it was scheduled to run previous to DateTime.Now
+    /// In some cases, especially if handling pre-startup events, this determines if executions should run if it was scheduled to run prior to startup
     /// </summary>
     bool ShouldExecutePastEvents { get => false; }
 

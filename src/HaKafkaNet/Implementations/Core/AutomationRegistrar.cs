@@ -9,6 +9,7 @@ internal class AutomationRegistrar : IInternalRegistrar
     private readonly IWrapperFactory _wrapperFactory;
     private readonly IExecutorFactory? _executorFactory;
     readonly IAutomationTraceProvider _trace;
+    private readonly TimeProvider _timeProvider;
     readonly ILogger<AutomationWrapper> _logger;
     private readonly ISystemObserver _observer;
     private readonly List<InitializationError> _errors;
@@ -24,6 +25,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         IAutomationTraceProvider traceProvider,
         ISystemObserver observer,
         List<InitializationError> errors,
+        TimeProvider timeProvider, 
         ILogger<AutomationWrapper> logger,
         IExecutorFactory? executorFactory = null
         )
@@ -31,6 +33,7 @@ internal class AutomationRegistrar : IInternalRegistrar
         this._wrapperFactory = wrapperFactory;
         this._executorFactory = executorFactory;
         _trace = traceProvider;
+        _timeProvider = timeProvider;
         _logger = logger;
         this._errors = errors;
         this._observer = observer;
@@ -151,7 +154,7 @@ internal class AutomationRegistrar : IInternalRegistrar
 
     private void AddSimple(IAutomation automation, int frameCount)
     {
-        var aWrapped = new AutomationWrapper(automation, _trace, GetSourceTypeName(frameCount), _executorFactory);
+        var aWrapped = new AutomationWrapper(automation, _trace, _timeProvider, GetSourceTypeName(frameCount), _executorFactory);
         RegisteredAutomations.Add(aWrapped);    
     }
 

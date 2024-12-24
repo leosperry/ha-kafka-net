@@ -4,10 +4,12 @@ public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationM
 {
     readonly TimeSpan _offset;
     readonly Func<CancellationToken, Task> _execute;
+    private TimeProvider _timeProvider;
 
-    public SunAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+    public SunAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
         : base(["sun.sun"], executePast)
     {
+        this._timeProvider = timeProvider;
         base.IsReschedulable = false;
         base.EventTimings = timings;
         _execute = execution;
@@ -17,7 +19,7 @@ public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationM
     public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         DateTime? next = base.GetNextScheduled();
-        if (next is null || next < DateTime.Now)
+        if (next is null || next < _timeProvider.GetLocalNow().LocalDateTime)
         {
             var sunAtts = stateChange.New.GetAttributes<SunAttributes>()!;
             next = this.GetNextSunEvent(sunAtts) + _offset;
@@ -40,8 +42,8 @@ public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationM
 [ExcludeFromDiscovery]
 public sealed class SunRiseAutomation : SunAutomation
 {
-    public SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunRiseAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextRising;
 }
@@ -53,8 +55,8 @@ public sealed class SunRiseAutomation : SunAutomation
 [ExcludeFromDiscovery]
 public sealed class SunSetAutomation : SunAutomation
 {
-    public SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunSetAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextSetting;
 }
@@ -66,8 +68,8 @@ public sealed class SunSetAutomation : SunAutomation
 [ExcludeFromDiscovery]
 public sealed class SunDawnAutomation : SunAutomation
 {
-    public SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunDawnAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDawn;
 }
@@ -79,8 +81,8 @@ public sealed class SunDawnAutomation : SunAutomation
 [ExcludeFromDiscovery]
 public sealed class SunDuskAutomation : SunAutomation
 {
-    public SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunDuskAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextDusk;
 }
@@ -92,8 +94,8 @@ public sealed class SunDuskAutomation : SunAutomation
 [ExcludeFromDiscovery]
 public sealed class SunMidnightAutomation : SunAutomation
 {
-    public SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunMidnightAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextMidnight;
 }
@@ -105,8 +107,8 @@ public sealed class SunMidnightAutomation : SunAutomation
 [ExcludeFromDiscovery]
 public sealed class SunNoonAutomation : SunAutomation
 {
-    public SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
-        : base(execution, offset, timings, executePast) { }
+    public SunNoonAutomation(TimeProvider timeProvider, Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
+        : base(timeProvider, execution, offset, timings, executePast) { }
 
     protected override DateTime GetNextSunEvent(SunAttributes atts) => atts.NextNoon;
 }

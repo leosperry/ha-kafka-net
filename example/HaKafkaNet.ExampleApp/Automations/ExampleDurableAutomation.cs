@@ -42,7 +42,7 @@ public class ExampleDurableAutomation : ISchedulableAutomation
         if (shouldContinue)
         {
             // set _nextScheduled
-            _nextScheduled = DateTime.Now.AddMinutes(5);
+            _nextScheduled = haEntityStateChange.New.LastChanged.AddMinutes(5);
         }
         else
         {

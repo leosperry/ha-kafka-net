@@ -17,6 +17,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     public IAutomationBase WrappedAutomation { get => _automation; }
 
     readonly IAutomationTraceProvider _trace;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger _logger;
 
     private readonly SemaphoreSlim lockObj = new (1);
@@ -25,10 +26,11 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     private Func<TimeSpan> _getDelay;
     private DateTime? _timeForScheduled;
 
-    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, ILogger<T> logger)
+    public DelayablelAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, ILogger<T> logger)
     {
         this._automation = automation;
         this._trace = traceProvider;
+        this._timeProvider = timeProvider;
         _logger = logger;
 
         IAutomationBase target = ((IAutomationWrapperBase)this).GetRoot();
@@ -38,7 +40,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
             _getDelay = () => _timeForScheduled switch
             {
                 null => TimeSpan.MinValue,
-                var time => time.Value - DateTime.Now
+                var time => time.Value - _timeProvider.GetLocalNow().LocalDateTime
             };
         }
         else if (automation is IConditionalAutomationBase conditional)
@@ -176,7 +178,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
         if (_cts is null)
         {
             _logger.LogDebug("automation scheduled in {automationCalculatedDelay}", delay);
-            GetMetaData().NextScheduled = DateTime.Now + delay;
+            GetMetaData().NextScheduled = _timeProvider.GetLocalNow().LocalDateTime + delay;
             // run with delay
             try
             {
@@ -186,7 +188,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
                 {
                     _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                    return Task.Delay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
+                    return Task.Delay(delay, _timeProvider, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
                 }
             }
             finally
@@ -202,12 +204,12 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
     private async Task ActualExecute(CancellationToken token, Action? postRun = null)
     {
         var meta = GetMetaData();
-        meta.LastExecuted = DateTime.Now;
+        meta.LastExecuted = _timeProvider.GetLocalNow().LocalDateTime;
         meta.NextScheduled = null;
         var evt = new TraceEvent(){
             EventType = "Delayed-Execution",
             AutomationKey = meta.GivenKey,
-            EventTime = DateTime.Now,
+            EventTime = _timeProvider.GetLocalNow().LocalDateTime,
         };
         try
         {
@@ -248,7 +250,7 @@ internal class DelayablelAutomationWrapper<T> : DelayablelAutomationWrapper, IAu
             {
                 if (_cts is not null)
                 {
-                    _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", DateTime.Now, reason.ToString());
+                    _logger.LogInformation("Automation was running at {stopTime} and is being stopped because {stopReason}", _timeProvider.GetLocalNow().LocalDateTime, reason.ToString());
                     GetMetaData().NextScheduled = null;
                     try
                     {

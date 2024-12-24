@@ -82,7 +82,6 @@ internal class SystemObserver : ISystemObserver
         Task t;
         Dictionary<string, object> scope = new()
         {
-            {"systemMonitorCall",DateTime.Now},
             {"systemMonitorCallType", taskType}
         };
         using(_logger.BeginScope(scope))

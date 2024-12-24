@@ -25,11 +25,11 @@ public class ExceptionTrowingAutomation : IConditionalAutomation, IAutomationMet
         _switchState = onOff.IsOn();
         if (_switchState)
         {
-            _logger.LogWarning("The switch is on at: {OnTime}", DateTime.Now);
+            _logger.LogWarning("The switch is on at: {OnTime}", haEntityStateChange.New.LastUpdated);
         }
         else
         {
-            _logger.LogInformation("The switch is off at {OffTime}", DateTime.Now);
+            _logger.LogInformation("The switch is off at {OffTime}", haEntityStateChange.New.LastUpdated);
         }
         
         return Task.FromResult(true);
