@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /app
 
 COPY *.sln ./
@@ -14,7 +14,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out ./HaKafkaNet.ExampleApp/HaKafkaNet.ExampleApp.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 # Set your timezone
 ENV TZ="US/Eastern" 
 WORKDIR /app
