@@ -7,6 +7,8 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
+Version 11, soon to be released will use .NET 9 and will introduce integration testing. See [special release statemtne](https://github.com/leosperry/ha-kafka-net/wiki/Updating-to-Version-11) for details.
+***
 Featured on an episode of [On .NET Live](https://www.youtube.com/live/rEY9Bi0jOiE) !
 
 [![HaKafkaNet featured On .NET Live](http://img.youtube.com/vi/rEY9Bi0jOiE/hqdefault.jpg)](https://www.youtube.com/live/rEY9Bi0jOiE)
