@@ -163,7 +163,7 @@ public static partial class AutomationBuilderExtensions
         return new GetNextEventFromEntityState((sc, ct) => {
             if (info.WhileCondition(sc))
             {
-                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.For.Value));
+                return Task.FromResult<DateTime?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
             }
             return Task.FromResult<DateTime?>(null);
         });
@@ -188,7 +188,7 @@ public static partial class AutomationBuilderExtensions
         return new GetNextEventFromEntityState<Tstate, Tatt>((sc, ct) => {
             if (info.WhileCondition(sc))
             {
-                return Task.FromResult<DateTime?>(DateTime.Now.Add(info.For.Value));
+                return Task.FromResult<DateTime?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
             }
             return Task.FromResult<DateTime?>(null);
         });
@@ -198,22 +198,22 @@ public static partial class AutomationBuilderExtensions
     {
         SunAutomation auto = info.SunEvent switch
         {
-            SunEventType.Dawn => new SunDawnAutomation(
+            SunEventType.Dawn => new SunDawnAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
-            SunEventType.Rise => new SunRiseAutomation(
+            SunEventType.Rise => new SunRiseAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
-            SunEventType.Noon => new SunNoonAutomation(
+            SunEventType.Noon => new SunNoonAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
-            SunEventType.Set => new SunSetAutomation(
+            SunEventType.Set => new SunSetAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
-            SunEventType.Dusk => new SunDuskAutomation(
+            SunEventType.Dusk => new SunDuskAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
-            SunEventType.Midnight => new SunMidnightAutomation(
+            SunEventType.Midnight => new SunMidnightAutomation(info.TimeProvider,
                 info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             _ => throw new AutomationBuilderException("Unknown sun type. This should not be possible")

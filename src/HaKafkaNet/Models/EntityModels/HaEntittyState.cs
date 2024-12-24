@@ -8,9 +8,15 @@ public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes
     [JsonPropertyName("entity_id")]
     public required string EntityId { get; init; }
 
+    /// <summary>
+    /// only updates on state changes
+    /// </summary>
     [JsonPropertyName("last_changed")]
     public DateTime LastChanged { get; init; }
     
+    /// <summary>
+    /// updates when attributes or state changes
+    /// </summary>
     [JsonPropertyName("last_updated")]
     public DateTime LastUpdated { get; init; }
     

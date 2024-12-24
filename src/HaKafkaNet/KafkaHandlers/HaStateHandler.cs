@@ -17,7 +17,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
     readonly HashSet<string> _trackedEntities;
 
-    DateTime _startTime = DateTime.Now;
+    DateTime _startTime;
     DistributedCacheEntryOptions _cacheOptions = new ()
     {
         SlidingExpiration = TimeSpan.FromDays(30)
@@ -27,13 +27,14 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
     
     public HaStateHandler(
         IDistributedCache cache, IAutomationManager automationMgr,
-        ISystemObserver observer, ILogger<HaStateHandler> logger)
+        ISystemObserver observer, TimeProvider timeProvider, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
         _autoMgr = automationMgr;
         _logger = logger;
         _observer = observer;
         _trackedEntities = automationMgr.GetEntitiesToTrack();
+        _startTime = timeProvider.GetLocalNow().LocalDateTime;
 
         _cacheOptions.SlidingExpiration = TimeSpan.FromDays(30);
 

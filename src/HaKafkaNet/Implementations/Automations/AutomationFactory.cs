@@ -3,11 +3,13 @@ namespace HaKafkaNet;
 
 internal class AutomationFactory : IAutomationFactory
 {
-    readonly IHaServices _services;   
+    readonly IHaServices _services;
+    private readonly TimeProvider _timeProvider;
 
-    public AutomationFactory(IHaServices services)
+    public AutomationFactory(IHaServices services, TimeProvider timeProvider)
     {
         _services = services;
+        _timeProvider = timeProvider;
     }
 
     public IHaServices Services
@@ -180,7 +182,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunDawnAutomation SunDawnAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunDawnAutomation(execution, offset, timings, executePast);
+        return new SunDawnAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -194,7 +196,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunRiseAutomation SunRiseAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunRiseAutomation(execution, offset, timings, executePast);
+        return new SunRiseAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -208,7 +210,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunNoonAutomation SunNoonAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunNoonAutomation(execution, offset, timings, executePast);
+        return new SunNoonAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -222,7 +224,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunSetAutomation SunSetAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunSetAutomation(execution, offset, timings, executePast);
+        return new SunSetAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -236,7 +238,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunDuskAutomation SunDuskAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunDuskAutomation(execution, offset, timings, executePast);
+        return new SunDuskAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     /// <summary>
@@ -250,7 +252,7 @@ internal class AutomationFactory : IAutomationFactory
     /// <returns></returns>
     public SunMidnightAutomation SunMidnightAutomation(Func<CancellationToken, Task> execution, TimeSpan? offset = null, EventTiming timings = EventTiming.Durable, bool executePast = true)
     {
-        return new SunMidnightAutomation(execution, offset, timings, executePast);
+        return new SunMidnightAutomation(_timeProvider, execution, offset, timings, executePast);
     }
 
     public SimpleAutomation EntityOnOffWithAnother(string primaryEntityId, params string[] secondaries)

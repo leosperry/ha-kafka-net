@@ -131,8 +131,11 @@ public static class ServicesExtensions
                     .AddTypedHandlers(h => h.AddHandler<HaStateHandler>())
                 )
             );
+        
+        services.TryAddSingleton(TimeProvider.System);
 
-        services.AddSingleton<IHaServices, HaServices>()
+        services
+            .AddSingleton<IHaServices, HaServices>()
             .AddSingleton<IStartupHelpers, StartupHelpers>()
             .AddSingleton<IHaStateCache, HaStateCache>()
             .AddSingleton<IHaEntityProvider, HaEntityProvider>()
@@ -426,8 +429,9 @@ public static class ServicesExtensions
     {
         try
         {
+            var time = services.GetRequiredService<TimeProvider>();
             var cache = services.GetRequiredService<IDistributedCache>();
-            Task.Run(async () => await cache.SetStringAsync("HaKafKanet.StartTime", DateTime.Now.ToString())).Wait();
+            Task.Run(async () => await cache.SetStringAsync("HaKafKanet.StartTime", time.GetLocalNow().LocalDateTime.ToString())).Wait();
         }
         catch(AggregateException agg)
         {

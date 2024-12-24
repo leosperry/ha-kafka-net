@@ -7,6 +7,7 @@ internal class AutomationWrapper : IAutomationWrapper
 {
     readonly IAutomation _auto;
     readonly IAutomationTraceProvider _trace;
+    private readonly TimeProvider _timeProvider;
     readonly IAutomationExecutor _executor;
     EventTiming _eventTimings;
 
@@ -20,10 +21,11 @@ internal class AutomationWrapper : IAutomationWrapper
         get => _auto;
     }
 
-    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, string source, IExecutorFactory? executorFactory = null)
+    public AutomationWrapper(IAutomation automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, string source, IExecutorFactory? executorFactory = null)
     {
         _auto = automation;
         _trace = traceProvider;
+        _timeProvider = timeProvider;
         
         bool hasTriggerError = false;
         try
@@ -120,12 +122,12 @@ internal class AutomationWrapper : IAutomationWrapper
     /// <returns></returns>
     public Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        this._meta.LastTriggered = DateTime.Now;
+        this._meta.LastTriggered = _timeProvider.GetLocalNow().LocalDateTime;
         TraceEvent evt = new()
         {
             EventType = "Trigger",
             AutomationKey = this._meta.GivenKey,
-            EventTime = DateTime.Now,
+            EventTime = _timeProvider.GetLocalNow().LocalDateTime,
             StateChange = stateChange,
         };
 

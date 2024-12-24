@@ -9,6 +9,7 @@ public abstract class AutomationBuildingInfo
     internal EventTiming? EventTimings { get; set; }
     internal bool TriggerOnBadState { get; set; } = false;
     internal AutomationMode Mode { get; set; }
+    public required TimeProvider TimeProvider { get; set; }
 }
 
 public abstract class MostAutomationsBuildingInfo : AutomationBuildingInfo

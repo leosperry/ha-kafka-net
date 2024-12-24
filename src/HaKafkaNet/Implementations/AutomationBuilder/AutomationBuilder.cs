@@ -2,10 +2,18 @@
 
 internal class AutomationBuilder : IAutomationBuilder
 {   
+    private readonly TimeProvider _timeProvider;
+
+    public AutomationBuilder(TimeProvider timeProvider)
+    {
+        _timeProvider = timeProvider;
+    }
+
     public SimpleAutomationBuildingInfo CreateSimple(bool enabledAtStartup = true)
     {
-        return new()
+        return new SimpleAutomationBuildingInfo()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup
         };
     }
@@ -14,22 +22,25 @@ internal class AutomationBuilder : IAutomationBuilder
     {
         return new TypedAutomationBuildingInfo<Tstate, Tatt>()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup
         };
     }
     
     public ConditionalAutomationBuildingInfo CreateConditional(bool enabledAtStartup = true)
     {
-        return new()
+        return new ConditionalAutomationBuildingInfo()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup
         };
     }
 
     public SchedulableAutomationBuildingInfo CreateSchedulable(bool reschedulable = false, bool enabledAtStartup = true)
     {
-        return new()
+        return new SchedulableAutomationBuildingInfo()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup,
             IsReschedulable = reschedulable
         };
@@ -39,14 +50,16 @@ internal class AutomationBuilder : IAutomationBuilder
     {
         return new TypedConditionalBuildingInfo<Tstate, Tatt>()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup
         };
     }
 
     public  SunAutomationBuildingInfo CreateSunAutomation(SunEventType sunEvent, bool enabledAtStartup = true)
     {
-        return new()
+        return new SunAutomationBuildingInfo()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup,
             SunEvent = sunEvent,
             Mode = AutomationMode.Parallel
@@ -55,8 +68,9 @@ internal class AutomationBuilder : IAutomationBuilder
 
     public TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> CreateSchedulable<Tstate, Tatt>(bool reschedulable = false, bool enabledAtStartup = true)
     {
-        return new()
+        return new TypedSchedulableAutomationBuildingInfo<Tstate, Tatt>()
         {
+            TimeProvider = _timeProvider,
             EnabledAtStartup = enabledAtStartup,
             IsReschedulable = reschedulable
         };
