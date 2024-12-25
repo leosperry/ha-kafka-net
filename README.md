@@ -21,7 +21,7 @@ It was created with the following goals:
 * Enable all automation code to be fully unit testable
 
 ## Example
-Example of multiple durable automations. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations) for more examples.
+Example of multiple durable automations. See [Tutorial](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial-%E2%80%90-Creating-Automations) for more examples.
 ```csharp
 registrar.TryRegister(
     _factory.SunRiseAutomation(
