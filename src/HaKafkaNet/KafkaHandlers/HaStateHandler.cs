@@ -88,7 +88,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         if (cachedBytes is not null)
         {
             cached = JsonSerializer.Deserialize<HaEntityState>(cachedBytes)!;
-            cached.Previous = null; // don't recursivly explode the cache
+            cached.Previous = null; // don't recursively explode the cache
             message.Previous = cached;
         }
 

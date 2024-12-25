@@ -165,7 +165,7 @@ public class ConditionalAutomationWrapperTests
     }
 
     [Fact]
-    public async Task WhenTrueThenTimeElapseThenTrue_ShoulTriggerTwice()
+    public async Task WhenTrueThenTimeElapseThenTrue_ShouldTriggerTwice()
     {
         // Given
         int delay = 200;
@@ -198,7 +198,7 @@ public class ConditionalAutomationWrapperTests
     }
 
     [Fact]
-    public async Task WhenAbunchTrue_ShoulTriggerOnce()
+    public async Task WhenABunchTrue_ShouldTriggerOnce()
     {
         // Given
         int delay = 200;
@@ -239,7 +239,7 @@ public class ConditionalAutomationWrapperTests
     }
 
     [Fact]
-    public async Task WhenAbunchTrueWith1False_ShouldNotTriggerOnce()
+    public async Task WhenABunchTrueWith1False_ShouldNotTriggerOnce()
     {
         // Given
         int delay = 500;

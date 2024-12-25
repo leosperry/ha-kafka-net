@@ -155,7 +155,7 @@ internal class AutomationManager : IAutomationManager
             {
                 if (!enable)
                 {
-                    //diable any running conditionals
+                    //disable any running conditionals
                     conditional.StopIfRunning(StopReason.Disabled);
                 }
                 // else if (conditional.WrappedConditional is ISchedulableAutomation)
@@ -168,7 +168,7 @@ internal class AutomationManager : IAutomationManager
 
             return true;
         }
-        //doesnt' exist / not found
+        //doesn't exist / not found
         return false;
     }
 

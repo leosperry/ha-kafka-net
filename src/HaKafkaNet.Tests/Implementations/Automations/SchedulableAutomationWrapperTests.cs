@@ -165,7 +165,7 @@ public class SchedulableAutomationTests
     }
 
     [Fact]
-    public async Task WhenShouldReschedleFalse_andEarlierTimePassed_DoesRunButDoesNotReschedule()
+    public async Task WhenShouldRescheduleFalse_andEarlierTimePassed_DoesRunButDoesNotReschedule()
     {
         int delay= 200;
         // Given
@@ -202,7 +202,7 @@ public class SchedulableAutomationTests
     }
 
     [Fact]
-    public async Task WhenShouldReschedleTrue_andEarlierTimePassed_DoesRunRescheduled()
+    public async Task WhenShouldRescheduleTrue_andEarlierTimePassed_DoesRunRescheduled()
     {
         int delay= 200;
         // Given

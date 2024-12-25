@@ -6,6 +6,7 @@ namespace HaKafkaNet.ExampleApp;
 /// The execute method has several exceptions that can be 
 /// commented/uncomented for testing different scenarios
 /// </summary>
+[ExcludeFromDiscovery]
 public class ExceptionTrowingAutomation : IConditionalAutomation, IAutomationMeta
 {
     readonly ILogger _logger;
