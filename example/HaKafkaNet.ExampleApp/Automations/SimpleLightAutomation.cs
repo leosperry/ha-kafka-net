@@ -27,6 +27,7 @@ public class SimpleLightAutomation : IAutomation, IAutomationMeta
 
     public async Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
+        // the entity provider will attempt to get an entity from the cache and fall back to an api call
         var currentLightState = await _services.EntityProvider.GetColorLightEntity(_idOfLightToDim);
         if (currentLightState == null)
         {

@@ -3,6 +3,7 @@ using HaKafkaNet;
 
 namespace HaKafkaNet.ExampleApp.Automations;
 
+[ExcludeFromDiscovery]// IMPORTANT : REMOVE THIS LINE FROM YOUR IMPLEMENTATION
 public class TemplateRegistry : IAutomationRegistry, IInitializeOnStartup
 {
     readonly IStartupHelpers _helpers;

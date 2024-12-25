@@ -72,7 +72,7 @@ public static class StateExtensions
 
     /// <summary>
     /// returns true if the state and last updated times have less than one second difference.
-    /// sometimes scene controllers update state, but wern't actually pressed
+    /// sometimes scene controllers update state, but weren't actually pressed
     /// </summary>
     /// <param name="state"></param>
     /// <returns></returns>
