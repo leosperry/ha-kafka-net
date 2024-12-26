@@ -3,7 +3,7 @@
 public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta, ISetAutomationMeta
 {    
     private AutomationMetaData? _meta;
-    protected DateTime? _nextExecution;
+    protected DateTimeOffset? _nextExecution;
     private SemaphoreSlim _lock = new(1);
 
     public bool IsReschedulable { get; set;}
@@ -34,13 +34,13 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
             
         }
 
-    public abstract Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken);
+    public abstract Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
     /// <summary>
     /// Thread safe way of getting a copy of the currently next scheduled time
     /// </summary>
     /// <returns></returns>
-    public DateTime? GetNextScheduled()
+    public DateTimeOffset? GetNextScheduled()
     {
         try
         {
@@ -90,13 +90,13 @@ public class SchedulableAutomation : SchedulableAutomationBase
         IsReschedulable = reschedulable;
     }
 
-    public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    public override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         if (!cancellationToken.IsCancellationRequested)
         {
             return _getNext(stateChange, cancellationToken);
         }
-        return Task.FromResult<DateTime?>(null);
+        return Task.FromResult<DateTimeOffset?>(null);
     }
 
     public override Task Execute(CancellationToken cancellationToken)
@@ -115,7 +115,7 @@ public class SchedulableAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstat
     private readonly GetNextEventFromEntityState<Tstate, Tatt> _getNext;
     private readonly Func<CancellationToken, Task> _execution;
 
-    private DateTime? _nextExecution;
+    private DateTimeOffset? _nextExecution;
     private SemaphoreSlim _lock = new(1);
 
     
@@ -165,7 +165,7 @@ public class SchedulableAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstat
         return Task.CompletedTask;
     }
 
-    public DateTime? GetNextScheduled()
+    public DateTimeOffset? GetNextScheduled()
     {
         try
         {
@@ -178,15 +178,15 @@ public class SchedulableAutomation<Tstate, Tatt> : DelayableAutomationBase<Tstat
         }
     }
 
-    public Task<DateTime?> CalculateNext(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken)
+    public Task<DateTimeOffset?> CalculateNext(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken)
     {
         if (!cancellationToken.IsCancellationRequested)
         {
             return _getNext(stateChange, cancellationToken);
         }
-        return Task.FromResult<DateTime?>(null);
+        return Task.FromResult<DateTimeOffset?>(null);
     }
 }
 
-public delegate Task<DateTime?> GetNextEventFromEntityState(HaEntityStateChange stateChange, CancellationToken cancellationToken); 
-public delegate Task<DateTime?> GetNextEventFromEntityState<Tstate, Tatt>(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken); 
+public delegate Task<DateTimeOffset?> GetNextEventFromEntityState(HaEntityStateChange stateChange, CancellationToken cancellationToken); 
+public delegate Task<DateTimeOffset?> GetNextEventFromEntityState<Tstate, Tatt>(HaEntityStateChange<HaEntityState<Tstate, Tatt>> stateChange, CancellationToken cancellationToken); 

@@ -21,9 +21,8 @@ public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
         // Given
 
         _fixture.API.Setup(api => api.GetEntity<HaEntityState<OnOff, JsonElement>>(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(TestHelper.Api_GetEntity_Response<OnOff>(OnOff.Off));
+            .ReturnsAsync(_fixture.Helpers.Api_GetEntity_Response<OnOff>(OnOff.Off));
 
-        var sut = _fixture.Services.GetRegistry<LightOnRegistry>();
 
         // When
 
@@ -36,7 +35,7 @@ public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
             LastUpdated = DateTime.UtcNow.AddMinutes(1),
         };
 
-        await _fixture.Services.SendState(motionOnState);
+        await _fixture.Helpers.SendState(motionOnState);
 
         await Task.Delay(300); // conditional automation execute on another thread and need to be scheduled
 

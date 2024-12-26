@@ -163,9 +163,9 @@ public static partial class AutomationBuilderExtensions
         return new GetNextEventFromEntityState((sc, ct) => {
             if (info.WhileCondition(sc))
             {
-                return Task.FromResult<DateTime?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
+                return Task.FromResult<DateTimeOffset?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
             }
-            return Task.FromResult<DateTime?>(null);
+            return Task.FromResult<DateTimeOffset?>(null);
         });
     }
 
@@ -188,9 +188,9 @@ public static partial class AutomationBuilderExtensions
         return new GetNextEventFromEntityState<Tstate, Tatt>((sc, ct) => {
             if (info.WhileCondition(sc))
             {
-                return Task.FromResult<DateTime?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
+                return Task.FromResult<DateTimeOffset?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
             }
-            return Task.FromResult<DateTime?>(null);
+            return Task.FromResult<DateTimeOffset?>(null);
         });
     }
 
@@ -253,8 +253,8 @@ public static partial class AutomationBuilderExtensions
         };
     }
 
-    public static TypedAutomationBuildingInfo<DateTime?, SceneControllerEvent> CreateSceneController(this IAutomationBuilder bldr, bool enabledAtStartup = true)
+    public static TypedAutomationBuildingInfo<DateTime?, SceneControllerEvent> CreateSceneController(this IAutomationBuilder builder, bool enabledAtStartup = true)
     {
-        return bldr.CreateSimple<DateTime?, SceneControllerEvent>(enabledAtStartup);
+        return builder.CreateSimple<DateTime?, SceneControllerEvent>(enabledAtStartup);
     }
 }

@@ -102,7 +102,7 @@ public interface ISchedulableAutomationBase
     /// If this returns null, your automation will not execute as if ContinuesToBeTrue returned false. 
     /// </summary>
     /// <returns></returns>
-    DateTime? GetNextScheduled();
+    DateTimeOffset? GetNextScheduled();
 }
 
 public interface ISchedulableAutomation<in Tchange, Tentity, Tstate, Tatt> : IDelayableAutomation<Tchange, Tentity, Tstate, Tatt> , ISchedulableAutomationBase   

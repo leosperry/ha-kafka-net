@@ -107,8 +107,9 @@ public static class ServicesExtensions
             app.MapControllers();
         }
 
-        var testMode = app.Services.GetService<TestMode>();
-        if (testMode is null)
+        // don't wire up if running integration tests
+        var testHelper = app.Services.GetService<TestHelper>();
+        if (testHelper is null)
         {
             // kafka handler requires automation manager and in turn user automations
             var kafkaBus = app.Services.CreateKafkaBus();

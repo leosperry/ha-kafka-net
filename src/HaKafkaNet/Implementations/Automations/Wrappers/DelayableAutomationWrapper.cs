@@ -24,7 +24,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
     private CancellationTokenSource? _cts;
 
     private Func<TimeSpan> _getDelay;
-    private DateTime? _timeForScheduled;
+    private DateTimeOffset? _timeForScheduled;
 
     public DelayableAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, ILogger<T> logger)
     {

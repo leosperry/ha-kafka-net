@@ -1,0 +1,1 @@
+Items in this folder are used as a part of the build for HaKafkaNet itself.
