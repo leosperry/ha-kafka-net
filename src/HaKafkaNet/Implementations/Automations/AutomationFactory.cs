@@ -98,9 +98,9 @@ internal class AutomationFactory : IAutomationFactory
              (sc, ct) =>{
                 if (sc.ToOnOff().IsOff())
                 {
-                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOff);
+                    return Task.FromResult<DateTimeOffset?>(sc.New.LastUpdated + timeToLeaveOff);
                 }
-                return Task.FromResult(default(DateTime?));
+                return Task.FromResult(default(DateTimeOffset?));
             },
             ct => _services.Api.TurnOn(entityId), true,false,false)
             {
@@ -118,9 +118,9 @@ internal class AutomationFactory : IAutomationFactory
              (sc, ct) =>{
                 if (sc.ToOnOff().IsOn())
                 {
-                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+                    return Task.FromResult<DateTimeOffset?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
-                return Task.FromResult(default(DateTime?));
+                return Task.FromResult(default(DateTimeOffset?));
             },ct => _services.Api.TurnOff(entityId), true)
             {
                 EventTimings = EventTiming.Durable
@@ -142,9 +142,9 @@ internal class AutomationFactory : IAutomationFactory
              (sc, ct) =>{
                 if (sc.ToOnOff().IsOff())
                 {
-                    return Task.FromResult<DateTime?>(sc.New.LastUpdated + timeToLeaveOn);
+                    return Task.FromResult<DateTimeOffset?>(sc.New.LastUpdated + timeToLeaveOn);
                 }
-                return Task.FromResult<DateTime?>(null);
+                return Task.FromResult<DateTimeOffset?>(null);
             },ct => _services.Api.TurnOff(entitiesToTurnOff), true)
             {
                 EventTimings = EventTiming.Durable,

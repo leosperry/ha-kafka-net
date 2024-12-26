@@ -10,22 +10,25 @@ namespace HaKafkaNet.Testing
 {
     public static class ServicesTestExtensions
     {
-        public static IServiceCollection ConfigureForIntegrationTests(this IServiceCollection services, IHaApiProvider apiProvider)
+        public static IServiceCollection ConfigureForIntegrationTests(this IServiceCollection services, 
+            IHaApiProvider apiProvider, IDistributedCache? cache = null)
         {
-            IOptions<MemoryDistributedCacheOptions> options = Options.Create(new MemoryDistributedCacheOptions());
-            var cache = new MemoryDistributedCache(options);
-
             services
-                .AddTransient<TestMode>()
+                .AddSingleton<TestHelper>()
                 .RemoveAll<TimeProvider>()
                 .AddSingleton<TimeProvider, FakeTimeProvider>()
                 .RemoveAll<IDistributedCache>()
-                .AddSingleton<IDistributedCache>(cache)
+                .AddSingleton<IDistributedCache>(cache ?? MakeCache())
                 .RemoveAll<IHaApiProvider>()
                 .AddSingleton<IHaApiProvider>(apiProvider)
                 .AddSingleton<IMessageHandler<HaEntityState>, HaStateHandler>(); return services;
         }
-    }
 
-    internal record TestMode;
+        static IDistributedCache MakeCache()
+        {
+            IOptions<MemoryDistributedCacheOptions> options = Options.Create(new MemoryDistributedCacheOptions());
+            var cache = new MemoryDistributedCache(options);
+            return cache;
+        }
+    }
 }

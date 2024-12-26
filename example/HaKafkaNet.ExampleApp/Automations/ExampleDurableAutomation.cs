@@ -8,7 +8,7 @@ namespace MyHome.Dev;
 [ExcludeFromDiscovery] //remove this line in your implementation
 public class ExampleDurableAutomation : ISchedulableAutomation
 {
-    private DateTime? _nextScheduled;
+    private DateTimeOffset? _nextScheduled;
 
     public bool IsReschedulable => true;
 
@@ -57,7 +57,7 @@ public class ExampleDurableAutomation : ISchedulableAutomation
         return Task.CompletedTask;
     }
 
-    public DateTime? GetNextScheduled()
+    public DateTimeOffset? GetNextScheduled()
     {
         /*
         the framework will call this method to get the next scheduled time

@@ -44,7 +44,7 @@ public class TemplateRegistry : IAutomationRegistry, IInitializeOnStartup
 
     IAutomation Simple2()
     {
-        return _helpers.Factory.LightOnMotion("motionid", "lightid");
+        return _helpers.Factory.LightOnMotion("binary_sensor.motion_id", "light.light_id");
     }
 
     IDelayableAutomation Delay1()

@@ -16,9 +16,9 @@ public abstract class SunAutomation : SchedulableAutomationBase, ISetAutomationM
         _offset = offset ?? TimeSpan.Zero;
     }
 
-    public override Task<DateTime?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    public override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
-        DateTime? next = base.GetNextScheduled();
+        DateTimeOffset? next = base.GetNextScheduled();
         if (next is null || next < _timeProvider.GetLocalNow().LocalDateTime)
         {
             var sunAttributes = stateChange.New.GetAttributes<SunAttributes>()!;
