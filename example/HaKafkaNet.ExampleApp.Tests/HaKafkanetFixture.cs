@@ -19,6 +19,8 @@ public class HaKafkaNetFixture : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Test"); // add an appsettings.Test.json file to your application
+        
         builder.ConfigureServices(services => {
             // call this method with the fake or mock of your choice
             // optionally pass an IDistributed cache. 
