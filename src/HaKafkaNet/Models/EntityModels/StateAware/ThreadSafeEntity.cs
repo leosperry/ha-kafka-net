@@ -112,7 +112,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
         }
     }
 
-    Tatt? _atts;
+    Tatt? _attributes;
     public Tatt? Attributes
     {
         get
@@ -120,7 +120,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
             _loc.EnterReadLock();
             try
             {
-                return _badAttributes ? throw new HaKafkaNetException("auto updating entity has bad attributes") : _atts;
+                return _badAttributes ? throw new HaKafkaNetException("auto updating entity has bad attributes") : _attributes;
             }
             finally
             {
@@ -134,36 +134,26 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
     private bool _badState = true;
     private bool _badAttributes = true;
 
-    internal void Set(HaEntityState raw)
+    internal void Set(Func<HaEntityState<Tstate, Tatt>> getIt)
     {
-        _loc.EnterWriteLock();
+         _loc.EnterWriteLock();
         try
         {
+            var raw = getIt();
             this._context = raw.Context;
             this._lastChanged = raw.LastChanged;
             this._lastUpdated = raw.LastUpdated;
-            
-            try
-            {
-                this._state = raw.GetState<Tstate>();
-                this._badState = false;
-            }
-            catch (System.Exception)
-            {
-                this._badState = true;
-                this._state = default;
-            }
 
-            try
-            {
-                this._atts = raw.GetAttributes<Tatt>();
-                this._badAttributes = false;
-            }
-            catch (System.Exception)
-            {
-                this._badAttributes = true;
-                this._atts = default;
-            }
+            this._state = raw.State;
+            this._attributes = raw.Attributes;
+
+            this._badState = false;
+            this._badAttributes = false;
+        }
+        catch
+        {
+            this._badState = true;
+            this._badAttributes = true;
         }
         finally
         {

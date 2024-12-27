@@ -66,7 +66,7 @@ internal class SystemObserver : ISystemObserver
     internal event Action<HaNotification, CancellationToken>? Notify;
     internal event Action<StartUpShutDownEvent, CancellationToken>? HaStartUpShutdown;
     internal event Action<HaServiceResponseArgs, CancellationToken>? HaApiResponse;
-    internal event Action<InitializationError[]>? InitializatinFailure;
+    internal event Action<InitializationError[]>? InitializationFailure;
     internal event Action<IAutomationBase, HaEntityStateChange, Exception, CancellationToken>? AutomationTypeConversionFailure;
 
     // used for auto-updating entities
@@ -144,11 +144,11 @@ internal class SystemObserver : ISystemObserver
 
     public bool OnInitializationFailure(List<InitializationError> errors)
     {
-        if (InitializatinFailure is not null)
+        if (InitializationFailure is not null)
         {
             try
             {
-                InitializatinFailure?.Invoke(errors.ToArray());
+                InitializationFailure?.Invoke(errors.ToArray());
                 return true;
             }
             catch (System.Exception ex)
@@ -170,7 +170,7 @@ internal class SystemObserver : ISystemObserver
             Notify += (note, ct) =>             _ = WrapTask("HA Notification", () => monitor.HaNotificationUpdate(note, ct));
             HaStartUpShutdown += (evt, ct) =>   _ = WrapTask("HA StartupShutDown", () => monitor.HaStartUpShutDown(evt, ct));
             HaApiResponse += (args, ct) =>      _ = WrapTask("HA API Response", () => monitor.HaApiResponse(args, ct));
-            InitializatinFailure += (errors) => _ = monitor.InitializationFailure(errors); // don't wrap this one, we want exceptions to bubble up
+            InitializationFailure += (errors) => _ = monitor.InitializationFailure(errors); // don't wrap this one, we want exceptions to bubble up
             AutomationTypeConversionFailure += (auto, sc, ex, ct) => _ = WrapTask("Automation Type Conversion Failure", () => monitor.AutomationTypeConversionFailure(auto, sc, ex, ct));
         }    
     }
