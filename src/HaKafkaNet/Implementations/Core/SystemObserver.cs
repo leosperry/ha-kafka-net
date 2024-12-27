@@ -46,7 +46,7 @@ public record HaServiceResponseArgs(string Domain, string Service, object Data, 
 
 /// <summary>
 /// Kafka handlers should be initialized by kafka flow and not other classes via DI.
-/// Therefore, we need an observer to report on thier state.
+/// Therefore, we need an observer to report on their state.
 /// </summary>
 internal class SystemObserver : ISystemObserver
 {
