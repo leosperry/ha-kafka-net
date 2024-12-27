@@ -2,9 +2,6 @@ using System;
 using System.Net.Http.Json;
 using HaKafkaNet.ExampleApp.Models;
 using HaKafkaNet.Testing;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace HaKafkaNet.ExampleApp.Tests.IntegrationTests;
@@ -26,7 +23,7 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
     {
         // arrange 
         _fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSimple, OnOff.On, _fixture.Time.GetLocalNow());
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSimple, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
@@ -40,7 +37,7 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
     {
         // arrange 
         _fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSimpleTyped, OnOff.On, _fixture.Time.GetLocalNow());
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSimpleTyped, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
@@ -54,12 +51,11 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
     {
         // arrange 
         _fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForConditional, OnOff.On, _fixture.Time.GetLocalNow());
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForConditional, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
-        _fixture.Time.Advance(TimeSpan.FromSeconds(2));
-        //await Task.Delay(100);
+        await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
 
         // assert
         _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForConditional, It.IsAny<CancellationToken>()));
@@ -71,13 +67,12 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
         // arrange 
 
         // clears setup and invocations
-        //_fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForConditionalTyped, OnOff.On, _fixture.Time.GetLocalNow());
+        _fixture.API.Reset();
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForConditionalTyped, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
-        _fixture.Time.Advance(TimeSpan.FromSeconds(2));
-        await Task.Delay(100);
+        await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
 
         // assert
         _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForConditionalTyped, It.IsAny<CancellationToken>()));
@@ -89,13 +84,12 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
         // arrange 
 
         // clears setup and invocations
-        //_fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulable, OnOff.On, _fixture.Time.GetLocalNow());
+        _fixture.API.Reset();
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulable, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
-        _fixture.Time.Advance(TimeSpan.FromSeconds(2));
-        await Task.Delay(100);
+        await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
 
         // assert
         _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForSchedulable, It.IsAny<CancellationToken>()));
@@ -107,13 +101,12 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
         // arrange 
 
         // clears setup and invocations
-        //_fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulableTyped, OnOff.On, _fixture.Time.GetLocalNow());
+        _fixture.API.Reset();
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulableTyped, OnOff.On, _testHelper.Time.GetLocalNow());
 
         // act
         await _testHelper.SendState(motionState);
-        _fixture.Time.Advance(TimeSpan.FromSeconds(2));
-        await Task.Delay(100);
+        await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
 
         // assert
         _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForSchedulableTyped, It.IsAny<CancellationToken>()));

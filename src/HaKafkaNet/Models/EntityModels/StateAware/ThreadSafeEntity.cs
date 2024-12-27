@@ -102,7 +102,7 @@ internal record ThreadSafeEntity<Tstate, Tatt> : IUpdatingEntity<Tstate,Tatt>
             _loc.EnterReadLock();
             try
             {
-                // throw exception only if non-nullalble and bad
+                // throw exception only if non-nullable and bad
                 return (_nonNullableValueType && _badState) ? throw new HaKafkaNetException("non nullable state has bad value") : _state!;
             }
             finally

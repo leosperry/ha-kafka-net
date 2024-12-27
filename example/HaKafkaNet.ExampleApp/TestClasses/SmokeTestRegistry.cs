@@ -58,7 +58,7 @@ public class TestRegistry : IAutomationRegistry
             .WithName($"{nameof(TestRegistry)}.{nameof(Conditional)}")
             .WithTriggers(Binary_Sensor.MotionForConditional)
             .When(sc => true )
-            .For(TimeSpan.Zero)
+            .For(TimeSpan.FromHours(1))
             .Then(async ct => {
                 await _api.ButtonPress(Input_Button.HelperButtonForConditional, ct);
             })
@@ -71,7 +71,7 @@ public class TestRegistry : IAutomationRegistry
             .WithName($"{nameof(TestRegistry)}.{nameof(ConditionalTyped)}")
             .WithTriggers(Binary_Sensor.MotionForConditionalTyped)
             .When((sc, ct) => Task.FromResult(true))
-            .For(TimeSpan.Zero)
+            .For(TimeSpan.FromHours(1))
             .Then(async ct => {
                 await _api.ButtonPress(Input_Button.HelperButtonForConditionalTyped, ct);
             })
@@ -85,7 +85,7 @@ public class TestRegistry : IAutomationRegistry
             .WithTriggers(Binary_Sensor.MotionForSchedulable)
             .GetNextScheduled((sc, ct) => 
             { 
-                return Task.FromResult<DateTimeOffset?>(_time.GetLocalNow().AddSeconds(1));
+                return Task.FromResult<DateTimeOffset?>(_time.GetLocalNow().AddHours(1));
             })
             .WithExecution(ct =>
             {
@@ -100,7 +100,7 @@ public class TestRegistry : IAutomationRegistry
             .WithName($"{nameof(TestRegistry)}.{nameof(SchedulableTyped)}")
             .WithTriggers(Binary_Sensor.MotionForSchedulableTyped)
             .While(sc => true)
-            .ForSeconds(1)
+            .ForHours(1)
             .WithExecution(ct => _api.ButtonPress(Input_Button.HelperButtonForSchedulableTyped, ct))
             .Build();
     }

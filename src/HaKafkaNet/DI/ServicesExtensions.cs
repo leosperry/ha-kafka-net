@@ -23,6 +23,7 @@ namespace HaKafkaNet;
 
 public static class ServicesExtensions
 {
+    internal static bool _isTestMode = false;
     public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         HaKafkaNetConfig config = new();
@@ -35,23 +36,29 @@ public static class ServicesExtensions
     public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         services.AddSingleton(config);
-        services.AddKafka(kafka => 
+
+        if (!_isTestMode)
         {
-            kafka
-                .AddCluster(cluster =>
-                {
-                    cluster.WithBrokers(config.KafkaBrokerAddresses);
+            services.AddKafka(kafka => 
+            {
+                kafka
+                    .AddCluster(cluster =>
+                    {
+                        cluster.WithBrokers(config.KafkaBrokerAddresses);
 
-                    WireState(services, cluster, config);
+                        WireKafka(cluster, config);
 
-                    cluster
-                        .EnableAdminMessages("kafka-flow.admin")
-                        .EnableTelemetry("kafka-flow.admin");
-                    
-                    kafkaBuilder?.Invoke(kafka, cluster);
-                }
-            );
-        });
+                        cluster
+                            .EnableAdminMessages("kafka-flow.admin")
+                            .EnableTelemetry("kafka-flow.admin");
+                        
+                        kafkaBuilder?.Invoke(kafka, cluster);
+                    }
+                );
+            });   
+        }
+
+        WireHaKafkaNet(services, config);
 
         services.AddHttpClient("HaKafkaNet");
         services.AddSingleton(config.HaConnectionInfo);
@@ -71,11 +78,6 @@ public static class ServicesExtensions
     public static async Task StartHaKafkaNet(this WebApplication app)
     {
         var config = app.Services.GetRequiredService<HaKafkaNetConfig>();
-
-        if (config.ExposeKafkaFlowDashboard)
-        {
-            app.UseKafkaFlowDashboard();
-        }
 
         //wire up logging before any user code executes
         try
@@ -108,16 +110,21 @@ public static class ServicesExtensions
         }
 
         // don't wire up if running integration tests
-        var testHelper = app.Services.GetService<TestHelper>();
-        if (testHelper is null)
+        //var testHelper = app.Services.GetService<TestHelper>();
+        if (!_isTestMode)
         {
+            if (config.ExposeKafkaFlowDashboard)
+            {
+                app.UseKafkaFlowDashboard();
+            }
+
             // kafka handler requires automation manager and in turn user automations
             var kafkaBus = app.Services.CreateKafkaBus();
             await kafkaBus.StartAsync();
         }
     }
 
-    private static void WireState(IServiceCollection services, IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
+    public static void WireKafka(IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
     {
         cluster
             .AddConsumer(consumer => consumer
@@ -131,8 +138,11 @@ public static class ServicesExtensions
                     .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
                     .AddTypedHandlers(h => h.AddHandler<HaStateHandler>())
                 )
-            );
-        
+            );    
+    }
+
+    private static void WireHaKafkaNet(IServiceCollection services, HaKafkaNetConfig config)
+    {
         services.TryAddSingleton(TimeProvider.System);
 
         services
@@ -200,7 +210,6 @@ public static class ServicesExtensions
             }
         }
     }
-
 
     private static bool HandleIAutomationBase(IServiceCollection services, Type type, List<InitializationError> errors)
     {
@@ -293,8 +302,6 @@ public static class ServicesExtensions
         errors.Add(new("could not determine appropriate wrapper type", null, concrete));
         return null;
     }
-
-    
 
     private static void InitializeUserCode(
         IServiceProvider services,
@@ -554,7 +561,6 @@ public static class ServicesExtensions
         }
         return sb.ToString();
     }
-
 
     private static void InitializeMonitors(IServiceProvider services, ISystemObserver observer, List<InitializationError> errors)
     {
