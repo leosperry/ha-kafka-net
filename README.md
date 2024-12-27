@@ -7,7 +7,7 @@ A library for easily creating Home Assistant automations in .NET and C#.
 Kafka ensures automations are durable and state is restored between restarts.
 
 ***
-Version 11, soon to be released will use .NET 9 and will introduce integration testing. See [special release statemtne](https://github.com/leosperry/ha-kafka-net/wiki/Updating-to-Version-11) for details.
+Version 11, soon to be released will use .NET 9 and will introduce integration testing. See [special release statement](https://github.com/leosperry/ha-kafka-net/wiki/Updating-to-Version-11) for details.
 ***
 Featured on an episode of [On .NET Live](https://www.youtube.com/live/rEY9Bi0jOiE) !
 
@@ -51,15 +51,15 @@ registrar.TryRegister(
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
-  * Create your own automamtions from scratch
+  * Create your own automations from scratch
 * [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Builder) with fluent syntax for quickly creating automations.
-* Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
+* Full unit testability for custom automations and integration testing for all registered integrations.
 * MIT license
 
 ## What others have said:
 > All in all, I'm really happy HaKafkaNet is a thing! It's a really ergonomic way of writing automations that make sense.
 
->   I converted the automations for 3 rooms from Home Assistant automations to C#, and those works good! So I'm really satisfied with the project.
+> I converted the automations for 3 rooms from Home Assistant automations to C#, and those work good! So I'm really satisfied with the project.
 
 ### Dashboard
 ![Image of dashboard](https://raw.githubusercontent.com/leosperry/ha-kafka-net/main/images/UI%20Examples/Dashboard-V5_5.PNG)
@@ -68,11 +68,11 @@ This is an image of the dashboard from the example app. See [UI](https://github.
 ## How it works
 * State changes are sent from Home Assistant to a Kafka topic
 * HaKafkaNet reads all state changes
-* States for every entitiy are cached allowing for faster retrieval later.
+* States for every entity are cached allowing for faster retrieval later.
   - It also allows us to have some knowledge about which events were not handled between restarts and which ones were. The framework will tell your automation about such timings to allow you to handle messages appropriately.
 * It then looks for automations which want to be notified.
   - If the entity id of the state change matches any of the `TriggerEntityIds` exposed by your automation, and the timing of the event matches your specified timings, then the `Execute` method of your automation will be called with a new `Task`.
-  - All of your automations will be called asynchronously and in parlellel. 
+  - All of your automations will be called asynchronously and in parallel. 
 
 ## More examples
 I have made [my personal repository](https://github.com/leosperry/MyHome) public so that users can see working examples of some moderately complex automations.

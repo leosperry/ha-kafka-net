@@ -8,10 +8,11 @@ It was created with the following goals:
   * track/retrieve states of all entities in Home Assistant
   * respond to Home Assistant state changes
   * call Home Assistant RESTful services
-* Enable all automation code to be fully unit testable
+* Enable all automation code to be fully testable with automated tests
 
 ## Why ha-kafka-net ? 
-* [Strongly typed](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods) access to entities
+* Strongly typed [access to entities](https://github.com/leosperry/ha-kafka-net/wiki/State-Extension-Methods)
+* Strongly typed [automations](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Types#generic-automations)
 * Durable - Automations that [survive restarts](https://github.com/leosperry/ha-kafka-net/wiki/Durable-Automations). See also [Event Timings](https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings)
 * Fast - Automations run in parallel and asynchronously.
 * [UI](https://github.com/leosperry/ha-kafka-net/wiki/UI) to manage your automations and inspect Kafka consumers. 
@@ -22,9 +23,9 @@ It was created with the following goals:
 * [Pre-built automations](https://github.com/leosperry/ha-kafka-net/wiki/Factory-Automations)
 * Extensible framework - [create your own reusable automations](https://github.com/leosperry/ha-kafka-net/wiki/Tutorial:-Creating-Automations)
   * Extend automation factory with extension methods
-  * Create your own automamtions from scratch
-* [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Registry#iautomationbuilder-interface) with fluent syntax for quickly creating automations.
-* Full unit testability and componet level testing with [Test Harness](https://github.com/leosperry/ha-kafka-net/wiki/Automated-Testing)
+  * Create your own automations from scratch
+* [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Builder) with fluent syntax for quickly creating automations.
+* Full unit testability for custom automations and integration testing for all registered integrations.
 * MIT license
 
 ## Example
