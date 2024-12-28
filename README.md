@@ -53,7 +53,7 @@ registrar.TryRegister(
   * Extend automation factory with extension methods
   * Create your own automations from scratch
 * [Automation builder](https://github.com/leosperry/ha-kafka-net/wiki/Automation-Builder) with fluent syntax for quickly creating automations.
-* Full unit testability for custom automations and integration testing for all registered integrations.
+* Full unit testability for custom automations and integration testing for all registered automations.
 * MIT license
 
 ## What others have said:
