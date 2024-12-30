@@ -81,7 +81,7 @@ internal class HaApiProvider : IHaApiProvider
             }
             catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException) 
             {
-                _logger.LogDebug(ex, "Task wass canceled while calling Home Assistant API");
+                _logger.LogDebug(ex, "Task was canceled while calling Home Assistant API");
                 throw;
             }
             catch (System.Exception ex)
@@ -153,7 +153,7 @@ internal class HaApiProvider : IHaApiProvider
             }
             catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
             {
-                _logger.LogDebug(ex, "Task wass canceled while calling Home Assistant API");
+                _logger.LogDebug(ex, "Task was canceled while calling Home Assistant API");
                 throw;
             }
             catch (System.Exception ex)

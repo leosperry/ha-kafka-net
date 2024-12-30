@@ -30,9 +30,4 @@
    <ItemGroup>
     <ProjectReference Include="..\HaKafkaNet.ExampleApp\HaKafkaNet.ExampleApp.csproj" />
   </ItemGroup>
-
-  <!-- <ItemGroup>
-    <ProjectReference Include="..\..\src\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj" />
-  </ItemGroup> -->
-
 </Project>

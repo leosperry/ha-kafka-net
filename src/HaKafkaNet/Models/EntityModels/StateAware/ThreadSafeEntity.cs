@@ -9,8 +9,14 @@ public interface IHaEntity<Tstate, Tatt>
 {
     string EntityId { get; }
 
+    /// <summary>
+    /// only updates on state changes
+    /// </summary>
     DateTime LastChanged { get; }
     
+    /// <summary>
+    /// updates when attributes or state changes
+    /// </summary>
     DateTime LastUpdated { get; }
     
     HaEventContext? Context { get; }

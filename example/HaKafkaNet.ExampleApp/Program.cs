@@ -31,7 +31,7 @@ HaKafkaNetConfig config = new HaKafkaNetConfig();
 builder.Configuration.GetSection("HaKafkaNet").Bind(config);
 services.AddHaKafkaNet(config);
 
-// programatic example of configuration
+// programmatic example of configuration
 // services.AddHaKafkaNet(options =>{
 //     //minimum amount of config
 //     options.KafkaBrokerAddresses = ["your kafka instance"];

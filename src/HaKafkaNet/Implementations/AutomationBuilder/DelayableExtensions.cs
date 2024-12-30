@@ -104,7 +104,8 @@ public partial class AutomationBuilderExtensions
         return info;
     }
 
-    public static SchedulableAutomationBuildingInfo SetReschedulable(this SchedulableAutomationBuildingInfo info,  bool isReschedulable)
+    public static T SetReschedulable<T>(this T info,  bool isReschedulable = true)
+        where T : SchedulableAutomationBuildingInfoBase
     {
         info.IsReschedulable = isReschedulable;
         return info;
@@ -125,7 +126,7 @@ public partial class AutomationBuilderExtensions
     public static TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> GetNextScheduled<Tstate, Tatt>(
         this TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> info, GetNextEventFromEntityState<Tstate, Tatt> getNextFromState)
     {
-        info.GetNextScheduled = getNextFromState;
+        info.GetNextScheduledInternal = getNextFromState;
         return info;
     }
 

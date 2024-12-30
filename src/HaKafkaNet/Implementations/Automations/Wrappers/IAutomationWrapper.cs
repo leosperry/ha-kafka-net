@@ -23,5 +23,8 @@ internal interface IAutomationWrapperBase : IInitializeOnStartup
     }
 }
 
+/// <summary>
+/// This is the one all automations come back to
+/// </summary>
 internal interface IAutomationWrapper : IAutomation, IAutomationWrapperBase, IAutomationMeta;
 

@@ -95,22 +95,23 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
         _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForSchedulable, It.IsAny<CancellationToken>()));
     }
 
-    [Fact]
-    public async Task SchedulableTyped()
-    {
-        // arrange 
+[Fact]
+public async Task SchedulableTyped()
+{
+    // arrange 
 
-        // clears setup and invocations
-        _fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulableTyped, OnOff.On, _testHelper.Time.GetLocalNow());
+    _fixture.API.Reset();
+    var motionState = _testHelper.Make<OnOff>(
+        Binary_Sensor.MotionForSchedulableTyped, OnOff.On, _testHelper.Time.GetLocalNow());
 
-        // act
-        await _testHelper.SendState(motionState);
-        await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
+    // act
+    await _testHelper.SendState(motionState);
+    await _testHelper.AdvanceTime(TimeSpan.FromMinutes(61));
 
-        // assert
-        _fixture.API.Verify(api => api.ButtonPress(Input_Button.HelperButtonForSchedulableTyped, It.IsAny<CancellationToken>()));
-    }
+    // assert
+    _fixture.API.Verify(api => api.ButtonPress(
+        Input_Button.HelperButtonForSchedulableTyped, It.IsAny<CancellationToken>()));
+}
 
     [Fact]
     public async Task VerifyMetaData()
@@ -137,5 +138,4 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
             Assert.Contains(auto, hashedNames);
         }
     }
-
 }

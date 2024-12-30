@@ -16,4 +16,3 @@ public interface ISetAutomationMeta
 {
     void SetMeta(AutomationMetaData meta);
 }
-

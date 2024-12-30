@@ -11,7 +11,7 @@ public record HaEntityStateChange<T>
     public required string EntityId { get; set; }
     
     /// <summary>
-    /// The most recent item from the cach
+    /// The most recent item from the cache
     /// </summary>
     public T? Old { get ; set; }
 

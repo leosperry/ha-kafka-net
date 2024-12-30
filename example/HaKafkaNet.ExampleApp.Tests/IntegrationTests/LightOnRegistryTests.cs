@@ -19,13 +19,10 @@ public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
     public async Task LightOnRegistry_TurnsOnLights()
     {
         // Given
-
         _fixture.API.Setup(api => api.GetEntity<HaEntityState<OnOff, JsonElement>>(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_fixture.Helpers.Api_GetEntity_Response<OnOff>(OnOff.Off));
 
-
         // When
-
         var motionOnState = new HaEntityState<OnOff, object>()
         {
             EntityId = LightOnRegistry.OFFICE_MOTION,
@@ -35,9 +32,7 @@ public class LightOnRegistryTests : IClassFixture<HaKafkaNetFixture>
             LastUpdated = DateTime.UtcNow.AddMinutes(1),
         };
 
-        await _fixture.Helpers.SendState(motionOnState);
-
-        await Task.Delay(300); // conditional automation execute on another thread and need to be scheduled
+        await _fixture.Helpers.SendState(motionOnState, 300);
 
         // Then
         _fixture.API.Verify(api => api.TurnOn(LightOnRegistry.OFFICE_LIGHT, It.IsAny<CancellationToken>()), Times.Exactly(5));
