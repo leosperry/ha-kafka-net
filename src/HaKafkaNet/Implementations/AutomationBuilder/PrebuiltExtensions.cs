@@ -13,7 +13,7 @@ public static class PrebuiltExtensions
     /// <param name="helperId">ID of your Time Only Helper entity</param>
     /// <returns></returns>
     public static TypedSchedulableAutomationBuildingInfo<TimeSpan, JsonElement> 
-        CreateFromDailyTimeHelper(this IAutomationBuilder builder, string helperId)
+        CreateDailyFromTimeHelper(this IAutomationBuilder builder, string helperId)
     {
         var info = builder.CreateSchedulable<TimeSpan>()
             .WithTriggers(helperId)

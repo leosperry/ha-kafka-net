@@ -74,17 +74,6 @@ internal class AutomationRegistrar : IInternalRegistrar
         }
     }
 
-    public void RegisterWithDelayEvaluator<T>(T automation, DelayEvaluator<T> delayEvaluator) where T : IDelayableAutomation
-    {
-        throw new NotImplementedException("deprecated");
-    }
-
-    public void RegisterMultipleWithDelayEvaluator<T>(IEnumerable<T> automations, DelayEvaluator<T> delayEvaluator) 
-        where T : IDelayableAutomation
-    {
-        throw new NotImplementedException("deprecated");
-    }
-
     public bool TryRegister(params Func<IAutomationBase>[] activators)
     {
         bool success = true;

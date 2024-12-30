@@ -16,9 +16,10 @@ public class ActiveTests : IClassFixture<HaKafkaNetFixture>
     }
     
     [Fact]
-    public void ActiveFiresOnStartup()
+    public Task ActiveFiresOnStartup()
     {
         _fixture.API.Verify(api => api.ButtonPress("my.button", default));
+        return Task.CompletedTask;
     }
 }
 
