@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HaKafkaNet.Implementations.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 
@@ -11,6 +12,7 @@ namespace HaKafkaNet.Tests;
 public class SunComponentTests
 {
     FakeTimeProvider _timeProvider = new();
+    Mock<IAutomationActivator> _activator = new();
 
     [Fact]
     public async Task WhenStartup_ShouldScheduleAndExecute()
@@ -26,7 +28,7 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, _activator.Object, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object, _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
@@ -57,7 +59,7 @@ public class SunComponentTests
 
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
 
-        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, _activator.Object, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();
@@ -89,7 +91,7 @@ public class SunComponentTests
         SunRiseAutomation sut = new SunRiseAutomation(_timeProvider, execution);
         sut.ShouldExecutePastEvents = false;
 
-        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<SunRiseAutomation> wrapper = new(sut, trace.Object, _timeProvider, _activator.Object, logger.Object);
         AutomationWrapper autoWrapper = new(wrapper, trace.Object,  _timeProvider, "test");
 
         Mock<IInternalRegistrar> registrar = new();

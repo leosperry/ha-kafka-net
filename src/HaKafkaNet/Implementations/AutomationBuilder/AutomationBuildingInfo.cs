@@ -7,6 +7,7 @@ public abstract class AutomationBuildingInfo
     internal string? Description { get; set; }
     internal bool EnabledAtStartup { get; set; }
     internal EventTiming? EventTimings { get; set; }
+    internal bool IsActive { get; set; }
     internal bool TriggerOnBadState { get; set; } = false;
     internal AutomationMode Mode { get; set; }
     public required TimeProvider TimeProvider { get; set; }
@@ -65,7 +66,7 @@ public class SchedulableAutomationBuildingInfo : SchedulableAutomationBuildingIn
 
 public class TypedSchedulableAutomationBuildingInfo<Tstate, Tatt> : SchedulableAutomationBuildingInfoBase
 {
-    internal GetNextEventFromEntityState<Tstate, Tatt>? GetNextScheduled { get; set; }
+    internal GetNextEventFromEntityState<Tstate, Tatt>? GetNextScheduledInternal { get; set; }
 
     internal Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, bool>? WhileCondition { get; set; }
 }

@@ -1,13 +1,34 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using HaKafkaNet.Implementations.Core;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
+internal interface IStateHandler
+{
+    Task Handle(HaEntityState message, CancellationToken cancellationToken = default);
+}
+
 internal class HaStateHandler : IMessageHandler<HaEntityState>
+{
+    private readonly IStateHandler _handler;
+
+    public HaStateHandler(IStateHandler handler)
+    {
+        this._handler = handler;
+    }
+
+    public async Task Handle(IMessageContext context, HaEntityState message)
+    {
+        await _handler.Handle(message, context.ConsumerContext.WorkerStopped);
+    }
+}
+
+class StateHandler : IStateHandler
 {
     readonly IDistributedCache _cache;
     readonly IAutomationManager _autoMgr;
@@ -25,9 +46,9 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
     Counter<int> _counter;
     
-    public HaStateHandler(
+    public StateHandler(
         IDistributedCache cache, IAutomationManager automationMgr,
-        ISystemObserver observer, TimeProvider timeProvider, ILogger<HaStateHandler> logger)
+        ISystemObserver observer, TimeProvider timeProvider, IAutomationActivator activator, ILogger<HaStateHandler> logger)
     {
         _cache = cache;
         _autoMgr = automationMgr;
@@ -42,16 +63,18 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 
         Meter m = new Meter(Telemetry.MeterStateHandler);
         _counter = m.CreateCounter<int>("ha_kafka_net.message_received_count");
+
+        activator.Activated += new Action<HaEntityState>(state => Task.Run(() => Handle(state, default)));
         
         observer.OnStateHandlerInitialized();
     }
 
-    public async Task Handle(IMessageContext context, HaEntityState message)
+    public async Task Handle(HaEntityState message, CancellationToken cancellationToken = default)
     {
         HaEntityState? cached = default;
         
         await Task.WhenAll(
-            Task.Run(async () => cached = await HandleCacheAndPrevious(context, message)),
+            Task.Run(async () => cached = await HandleCacheAndPrevious(message, cancellationToken)),
             Task.Run(() => _observer.OnEntityStateUpdate(message)),
             Task.Run(() => {
                 _counter.Add(1, new KeyValuePair<string, object?>("entity_id", message.EntityId));
@@ -78,10 +101,10 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
             Old = timing == EventTiming.PreStartupSameAsLastCached ? cached?.Previous: cached
         };
 
-        _ = Task.Run(() => _autoMgr.TriggerAutomations(stateChange, context.ConsumerContext.WorkerStopped));
+        _ = Task.Run(() => _autoMgr.TriggerAutomations(stateChange, cancellationToken));
     }
 
-    private async Task<HaEntityState?> HandleCacheAndPrevious(IMessageContext context, HaEntityState message)
+    private async Task<HaEntityState?> HandleCacheAndPrevious(HaEntityState message, CancellationToken cancellationToken)
     {
         var cachedBytes = await _cache.GetAsync(message.EntityId);
         HaEntityState? cached = null;
@@ -96,7 +119,7 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         {
             // at startup, message could be older than cached
             var value = JsonSerializer.SerializeToUtf8Bytes(message);
-            _ = _cache.SetAsync(message.EntityId, value, _cacheOptions, context.ConsumerContext.WorkerStopped);
+            _ = _cache.SetAsync(message.EntityId, value, _cacheOptions, cancellationToken);
         }
 
         return cached;
@@ -121,3 +144,6 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
         };
     }
 }
+
+
+

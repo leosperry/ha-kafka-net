@@ -4,6 +4,8 @@ namespace HaKafkaNet;
 
 public interface IAutomationBase
 {
+    public bool IsActive { get => false; }
+
     /// <summary>
     /// At startup, depending on the specifics of when events fired, timing of events relative to the cache can vary
     /// Use this setting to tell HaKafkaNet which events you care about
@@ -67,9 +69,6 @@ public interface IDelayableAutomation<Tstate, Tatt> :
     IDelayableAutomation<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, HaEntityState<Tstate, Tatt> ,Tstate, Tatt>;
 
 public interface IDelayableAutomation : IDelayableAutomation<HaEntityStateChange, HaEntityState, string, JsonElement>;
-
-
-
 
 public interface IConditionalAutomationBase
 {

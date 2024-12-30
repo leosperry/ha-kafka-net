@@ -14,7 +14,6 @@ namespace HaKafkaNet.Testing
     public class TestHelper
     {
         private int _delay = 100;
-        static FakeMessageContext _fakeMessageContext = new();
         private readonly IServiceProvider _services;
 
         public FakeTimeProvider Time { get; private set;} 
@@ -126,8 +125,8 @@ namespace HaKafkaNet.Testing
         /// <returns></returns>
         public async Task SendState(HaEntityState state, int delay = default)
         {
-            var handler = _services.GetRequiredService<IMessageHandler<HaEntityState>>();
-            await handler.Handle(_fakeMessageContext, state);
+            var handler = _services.GetRequiredService<IStateHandler>();
+            await handler.Handle(state);
             await Task.Delay(delay == default ? _delay : delay);
         }
 

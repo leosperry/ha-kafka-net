@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HaKafkaNet.Implementations.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 
 namespace HaKafkaNet.Tests;
@@ -6,6 +7,7 @@ namespace HaKafkaNet.Tests;
 public class ConditionalAutomationWrapperTests
 {
     TimeProvider _timeProvider = TimeProvider.System;
+    Mock<IAutomationActivator> _activator = new();
 
     [Fact]
     public async Task When1EventTrue_ShouldTrigger()
@@ -24,7 +26,8 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, TimeProvider.System, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, TimeProvider.System, _activator.Object
+        , logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -53,7 +56,8 @@ public class ConditionalAutomationWrapperTests
         trace.Setup(t => t.Trace(It.IsAny<TraceEvent>(), It.IsAny<AutomationMetaData>(), It.IsAny<Func<Task>>()))
             .Callback<TraceEvent, AutomationMetaData, Func<Task>>((_, _, f) => f());
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object
+        , logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -85,7 +89,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider,_activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -118,7 +122,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -151,7 +155,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -184,7 +188,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider,_activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -221,7 +225,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -260,7 +264,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
         // When
         await Task.WhenAll(
             sut.Execute(stateChange, default),
@@ -293,7 +297,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
     
         // When
         await sut.Execute(stateChange, default);
@@ -321,7 +325,7 @@ public class ConditionalAutomationWrapperTests
 
         var stateChange = TestHelpers.GetStateChange();
     
-        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, logger.Object);
+        DelayableAutomationWrapper<IConditionalAutomation> sut = new DelayableAutomationWrapper<IConditionalAutomation>(auto.Object, trace.Object, _timeProvider, _activator.Object, logger.Object);
         // When
         await sut.Execute(stateChange, default);
     

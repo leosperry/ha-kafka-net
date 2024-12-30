@@ -11,6 +11,8 @@ abstract class TypedAutomationWrapper
 internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrapper, IAutomationWrapper where Tauto: IAutomation<Tstate, Tatt> 
 {
     public EventTiming EventTimings { get => _automation.EventTimings; }
+    public bool IsActive { get => _automation.IsActive; }
+
     internal readonly IAutomation<Tstate, Tatt> _automation;
     private readonly ISystemObserver _observer;
 
@@ -58,15 +60,15 @@ internal class TypedAutomationWrapper<Tauto, Tstate, Tatt> : TypedAutomationWrap
 
     private AutomationMetaData GetOrMakeMetaData()
     {
-        IAutomationMeta? autoImplementingmeta = _automation as IAutomationMeta;
+        IAutomationMeta? autoImplementingMeta = _automation as IAutomationMeta;
         IAutomationBase target = _automation;
-        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
+        while(autoImplementingMeta is null && target is IAutomationWrapperBase targetWrapper)
         {
             target = targetWrapper.WrappedAutomation;
-            autoImplementingmeta = target as IAutomationMeta;
+            autoImplementingMeta = target as IAutomationMeta;
         }
 
-        return autoImplementingmeta is null ? AutomationMetaData.Create(target) : autoImplementingmeta.GetMetaData();
+        return autoImplementingMeta is null ? AutomationMetaData.Create(target) : autoImplementingMeta.GetMetaData();
     }
 }
 

@@ -5,16 +5,16 @@ namespace HaKafkaNet;
 public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta, ISetAutomationMeta
 {
     private readonly IEnumerable<string> _triggerEntities;
-    private readonly EventTiming _eventTimings;
     private AutomationMetaData? _meta;
 
     public SimpleAutomationBase(IEnumerable<string> triggerEntities, EventTiming eventTimings)
     {
         this._triggerEntities = triggerEntities;
-        this._eventTimings = eventTimings;
+        this.EventTimings = eventTimings;
     }
 
-    public EventTiming EventTimings { get => _eventTimings; }
+    public EventTiming EventTimings { get; protected internal set; }
+    public bool IsActive { get; protected internal set; }
 
     public abstract Task Execute(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
@@ -38,7 +38,7 @@ public abstract class SimpleAutomationBase : IAutomation, IAutomationMeta, ISetA
     public void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
-    }
+    } 
 }
 
 [ExcludeFromDiscovery]

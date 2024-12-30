@@ -5,6 +5,8 @@ namespace HaKafkaNet;
 public abstract class TypedDelayedAutomationWrapper : IAutomationWrapperBase
 {
     public EventTiming EventTimings { get => WrappedAutomation.EventTimings;}
+    public bool IsActive { get => WrappedAutomation.IsActive; }
+
     public abstract IAutomationBase WrappedAutomation { get; }
 }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HaKafkaNet.Implementations.Core;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
@@ -16,8 +17,11 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
     private readonly T _automation;
     public IAutomationBase WrappedAutomation { get => _automation; }
 
+    public bool IsActive => _automation.IsActive;
+
     readonly IAutomationTraceProvider _trace;
     private readonly TimeProvider _timeProvider;
+    private readonly IAutomationActivator _activator;
     private readonly ILogger _logger;
 
     private readonly SemaphoreSlim lockObj = new (1);
@@ -26,11 +30,12 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
     private Func<TimeSpan> _getDelay;
     private DateTimeOffset? _timeForScheduled;
 
-    public DelayableAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, ILogger<T> logger)
+    public DelayableAutomationWrapper(T automation, IAutomationTraceProvider traceProvider, TimeProvider timeProvider, IAutomationActivator activator, ILogger<T> logger)
     {
         this._automation = automation;
         this._trace = traceProvider;
         this._timeProvider = timeProvider;
+        this._activator = activator;
         _logger = logger;
 
         IAutomationBase target = ((IAutomationWrapperBase)this).GetRoot();
@@ -214,6 +219,10 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
         try
         {
             await _trace.Trace(evt, meta, () => _automation.Execute(token));
+            if (this.IsActive)
+            {
+                await _activator.Activate(this, token);
+            }
         }
         finally
         {

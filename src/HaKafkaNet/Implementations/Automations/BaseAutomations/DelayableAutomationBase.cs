@@ -3,12 +3,9 @@ namespace HaKafkaNet;
 
 public abstract class DelayableAutomationBase : IDelayableAutomation
 {
-    EventTiming _timings = EventTiming.PostStartup;
-    public EventTiming EventTimings 
-    { 
-        get => _timings;
-        set => _timings = value; 
-    }
+    public EventTiming EventTimings { get; protected internal set; } = EventTiming.PostStartup;
+    public bool IsActive { get; protected internal set;}
+
     public bool ShouldExecutePastEvents { get; set; }
     public bool ShouldExecuteOnContinueError { get; set; }
 
@@ -33,7 +30,8 @@ public abstract class DelayableAutomationBase : IDelayableAutomation
 public abstract class DelayableAutomationBase<Tstate, Tatt> : IDelayableAutomation<Tstate, Tatt> , IAutomationMeta, ISetAutomationMeta
 {
     readonly IEnumerable<string> _triggers;
-    public EventTiming EventTimings { get; set; } = EventTiming.PostStartup;
+    public EventTiming EventTimings { get; protected internal set; } = EventTiming.PostStartup;
+    public bool IsActive { get; protected internal set;}
     public bool ShouldExecutePastEvents { get; set; } = false;
     public bool ShouldExecuteOnContinueError { get; set; } = false;
 
@@ -57,5 +55,5 @@ public abstract class DelayableAutomationBase<Tstate, Tatt> : IDelayableAutomati
     public void SetMeta(AutomationMetaData meta)
     {
         _meta = meta;
-    }
+    }  
 }

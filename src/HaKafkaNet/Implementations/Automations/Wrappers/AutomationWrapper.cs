@@ -9,12 +9,12 @@ internal class AutomationWrapper : IAutomationWrapper
     readonly IAutomationTraceProvider _trace;
     private readonly TimeProvider _timeProvider;
     readonly IAutomationExecutor _executor;
-    EventTiming _eventTimings;
 
     AutomationMetaData _meta;
     IEnumerable<string> _triggers;
    
-    public EventTiming EventTimings { get => _eventTimings; }
+    public EventTiming EventTimings { get => _auto.EventTimings; }
+    public bool IsActive { get => _auto.IsActive; }
 
     public IAutomationBase WrappedAutomation
     {
@@ -41,9 +41,6 @@ internal class AutomationWrapper : IAutomationWrapper
         _meta = GetOrMakeMeta(source);
         _meta.UserTriggerError = hasTriggerError;
 
-        
-        _eventTimings = automation.EventTimings;
-
         _executor = executorFactory?.GetExecutor(_meta.Mode) ?? new ParallelExecutor();    
     }
 
@@ -53,31 +50,31 @@ internal class AutomationWrapper : IAutomationWrapper
 
         var auto = _auto is IAutomationWrapperBase wrapperBase ? wrapperBase.GetRoot() : _auto;
         
-        IAutomationMeta? autoImplementingmeta = _auto as IAutomationMeta;
+        IAutomationMeta? autoImplementingMeta = _auto as IAutomationMeta;
         
         IAutomationBase target = _auto;
-        while(autoImplementingmeta is null && target is IAutomationWrapperBase targetWrapper)
+        while(autoImplementingMeta is null && target is IAutomationWrapperBase targetWrapper)
         {
             target = targetWrapper.WrappedAutomation;
-            autoImplementingmeta = target as IAutomationMeta;
+            autoImplementingMeta = target as IAutomationMeta;
         }
 
         var underlyingType = auto.GetType();
 
-        if(autoImplementingmeta is not null)
+        if(autoImplementingMeta is not null)
         {
             // use it's data
             try
             {
                 // user implemented, could throw an exception
-                meta = autoImplementingmeta.GetMetaData();
+                meta = autoImplementingMeta.GetMetaData();
             }
             catch
             {
                 meta = new AutomationMetaData()
                 {
                     Name = "unknown",
-                    Description = $"GetMetaData threw excption from automation created via {source}",
+                    Description = $"GetMetaData threw exception from automation created via {source}",
                     Enabled = true,
                     KeyRequest = GenerateKey(source, underlyingType.Name),
                     UserMetaError = true
@@ -115,7 +112,7 @@ internal class AutomationWrapper : IAutomationWrapper
     }
 
     /// <summary>
-    /// this one is asyc becase we want to capture that log scope
+    /// this one is async because we want to capture that log scope
     /// </summary>
     /// <param name="stateChange"></param>
     /// <param name="cancellationToken"></param>

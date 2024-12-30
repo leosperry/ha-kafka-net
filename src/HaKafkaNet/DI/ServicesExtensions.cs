@@ -138,7 +138,7 @@ public static class ServicesExtensions
                     .AddDeserializer<JsonCoreDeserializer, HaMessageResolver>()
                     .AddTypedHandlers(h => h.AddHandler<HaStateHandler>())
                 )
-            );    
+            );
     }
 
     private static void WireHaKafkaNet(IServiceCollection services, HaKafkaNetConfig config)
@@ -146,6 +146,8 @@ public static class ServicesExtensions
         services.TryAddSingleton(TimeProvider.System);
 
         services
+            .AddSingleton<IStateHandler, StateHandler>()
+            .AddSingleton<IAutomationActivator, AutomationActivator>()
             .AddSingleton<IHaServices, HaServices>()
             .AddSingleton<IStartupHelpers, StartupHelpers>()
             .AddSingleton<IHaStateCache, HaStateCache>()
@@ -350,7 +352,10 @@ public static class ServicesExtensions
             // automation builder exceptions are caught
             automationManager.Initialize(errors);
 
-            InitializeAutomations(automationManager, errors);
+            var activator = services.GetRequiredService<IAutomationActivator>();
+            var stateHandler = services.GetRequiredService<IStateHandler>(); // wire up that activator
+
+            InitializeAutomations(automationManager, errors, activator);
 
             InitializeUpdatingEntities(services, observer, errors);
         }
@@ -626,19 +631,26 @@ public static class ServicesExtensions
         }
     }
 
-    private static void InitializeAutomations(IAutomationManager automationManager, List<InitializationError> errors)
+    private static void InitializeAutomations(IAutomationManager automationManager, List<InitializationError> errors, IAutomationActivator activator)
     {
         List<Task> tasks = new();
+        
         foreach (var auto in automationManager.GetAll())
         {
             tasks.Add(Task.Run(() => auto.Initialize())
-                .ContinueWith(t =>
+                .ContinueWith(async t =>
                 {
                     if (t.IsFaulted)
                     {
                         var meta = auto.GetMetaData();
                         errors.Add(new($"Error initializing {meta.Name} of type {meta.UnderlyingType}", t.Exception, auto.WrappedAutomation));
                     }
+                    
+                    if (auto.IsActive)
+                    {
+                        await activator.Activate(auto, default);
+                    }
+                        
                 }));
         }
 

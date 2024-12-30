@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HaKafkaNet.Implementations.Core;
 using KafkaFlow;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,8 @@ namespace HaKafkaNet.Tests;
 
 public class HaStateHandlerComponentTests
 {
+    Mock<IAutomationActivator> _activator = new();
+
     const int DELAY = 300;
 
     [Fact]
@@ -27,19 +30,13 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        Mock<IMessageContext> context = new();
-        var cancellationToken = new CancellationToken();
-        Mock<IConsumerContext> consumerContext = new();
-        consumerContext.SetupGet(cc => cc.WorkerStopped).Returns(cancellationToken);
-
-        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
         var fakeState = TestHelpers.GetState();
         //act
-        HaStateHandler sut = new HaStateHandler(cache.Object, manager, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, manager, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         
         observer.Verify(o => o.OnStateHandlerInitialized(), Times.Once);
 
-        await sut.Handle(context.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
@@ -49,7 +46,7 @@ public class HaStateHandlerComponentTests
     }
 
     [Fact]
-    public async Task WhenOlderThanCach_ShouldNotOverrideCache()
+    public async Task WhenOlderThanCache_ShouldNotOverrideCache()
     {
         //arrange
         Mock<IDistributedCache> cache = new Mock<IDistributedCache>(MockBehavior.Strict);
@@ -71,10 +68,10 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object,collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object,collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         
         //act
-        await sut.Handle(null!, newState);
+        await sut.Handle(newState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
@@ -84,7 +81,7 @@ public class HaStateHandlerComponentTests
     }
 
     [Fact]
-    public async Task WhenNewerThanCach_ShouldOverrideCache()
+    public async Task WhenNewerThanCache_ShouldOverrideCache()
     {
         //arrange
         Mock<IDistributedCache> cache = new Mock<IDistributedCache>();
@@ -107,17 +104,10 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         
-        Mock<IMessageContext> context = new();
-        var cancellationToken = new CancellationToken();
-        Mock<IConsumerContext> consumerContext = new();
-        consumerContext.SetupGet(cc => cc.WorkerStopped).Returns(cancellationToken);
-
-        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
-
         //act
-        await sut.Handle(context.Object, newState);
+        await sut.Handle(newState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         //assert
@@ -133,11 +123,6 @@ public class HaStateHandlerComponentTests
         Mock<IDistributedCache> cache = new Mock<IDistributedCache>();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(default(byte[])));
-
-        Mock<IMessageContext> context = new();
-        Mock<IConsumerContext> consumerContext = new();
-
-        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<IAutomationWrapper> auto1 = new ();
         auto1.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
@@ -155,11 +140,11 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
-        await sut.Handle(context.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
 
         //assert
@@ -182,13 +167,6 @@ public class HaStateHandlerComponentTests
         cache.Setup(c => c.GetAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(default(byte[])));
 
-        Mock<IMessageContext> context = new();
-        var cancellationToken = new CancellationToken();
-        Mock<IConsumerContext> consumerContext = new();
-        consumerContext.SetupGet(cc => cc.WorkerStopped).Returns(cancellationToken);
-
-        context.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
-
         Mock<IAutomationWrapper> auto1 = new Mock<IAutomationWrapper>();
         auto1.Setup(a => a.TriggerEntityIds()).Returns(["excelsior"]);
         auto1.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
@@ -202,11 +180,11 @@ public class HaStateHandlerComponentTests
 
         Mock<ILogger<HaStateHandler>> logger = new();
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
 
         var fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now + TimeSpan.FromHours(1));
         //act
-        await sut.Handle(context.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(200); //sometimes the verification can run before the task is scheduled
 
         //assert
@@ -218,7 +196,7 @@ public class HaStateHandlerComponentTests
         await Task.Delay(1000);
         auto1.Verify(a => a.Execute(It.Is<HaEntityStateChange>(sc => sc.EntityId == "enterprise" 
                 && sc.New == fakeState)
-            ,cancellationToken), Times.Never);
+            ,default), Times.Never);
     }
 
     [Fact]
@@ -231,10 +209,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
 
@@ -249,9 +223,9 @@ public class HaStateHandlerComponentTests
         collector.Initialize(new List<InitializationError>());
 
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -269,15 +243,12 @@ public class HaStateHandlerComponentTests
         autoWithMeta.Setup(a => a.GetMetaData())
             .Returns(new AutomationMetaData()
             {
-                Name = "fire photon torpedos",
+                Name = "fire photon torpedoes",
                 Enabled = false
             });
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup);
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name="", Enabled=false});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(10));
 
@@ -289,9 +260,9 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -307,9 +278,6 @@ public class HaStateHandlerComponentTests
         Mock<IAutomationWrapper> auto = new();
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddMinutes(-1));
 
@@ -321,9 +289,9 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -339,9 +307,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PreStartupNotCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
@@ -355,9 +320,9 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -374,9 +339,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
@@ -390,9 +352,9 @@ public class HaStateHandlerComponentTests
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
         collector.Initialize(new List<InitializationError>());
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -400,7 +362,7 @@ public class HaStateHandlerComponentTests
     }
 
     [Fact]
-    public async Task WhenPostStartupOrPreStartupPostCacheSpecified_AndEventPostnStartup_ShouldTriggerAutomation()
+    public async Task WhenPostStartupOrPreStartupPostCacheSpecified_AndEventPostStartup_ShouldTriggerAutomation()
     {
         Mock<IDistributedCache> cache= new();
         cache.Setup(c => c.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(
@@ -409,9 +371,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
@@ -425,9 +384,9 @@ public class HaStateHandlerComponentTests
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
         collector.Initialize(new List<InitializationError>());
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         // Then
@@ -445,9 +404,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
@@ -460,9 +416,9 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -478,9 +434,6 @@ public class HaStateHandlerComponentTests
         auto.Setup(a => a.TriggerEntityIds()).Returns(["enterprise"]);
         auto.Setup(a => a.EventTimings).Returns(EventTiming.PostStartup | EventTiming.PreStartupPostLastCached);
         auto.Setup(a => a.GetMetaData()).Returns(new AutomationMetaData(){Name=""});
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
 
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
@@ -494,9 +447,9 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         // When
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
     
         // Then
@@ -521,19 +474,15 @@ public class HaStateHandlerComponentTests
         AutomationManager collector = new(
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
 
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
-
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(1), state:"unknown");
 
         // act
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
 
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         // assert
@@ -561,19 +510,15 @@ public class HaStateHandlerComponentTests
             Enumerable.Empty<IAutomationRegistry>(), registrar.Object);
         collector.Initialize(new List<InitializationError>());
 
-        Mock<IMessageContext> fakeContext = new();
-        Mock<IConsumerContext> consumerContext = new();
-        fakeContext.Setup(c => c.ConsumerContext).Returns(consumerContext.Object);
-
         Mock<ISystemObserver> observer = new();
         Mock<ILogger<HaStateHandler>> logger = new();
 
         HaEntityState fakeState = TestHelpers.GetState(lastUpdated: DateTime.Now.AddDays(1), state:"unknown");
 
         // act
-        HaStateHandler sut = new HaStateHandler(cache.Object, collector, observer.Object, TimeProvider.System, logger.Object);
+        StateHandler sut = new StateHandler(cache.Object, collector, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
 
-        await sut.Handle(fakeContext.Object, fakeState);
+        await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
         // assert
