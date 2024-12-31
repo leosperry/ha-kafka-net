@@ -17,9 +17,10 @@ internal class HaStateHandler : IMessageHandler<HaEntityState>
 {
     private readonly IStateHandler _handler;
 
-    public HaStateHandler(IStateHandler handler)
+    public HaStateHandler(IStateHandler handler, ISystemObserver observer)
     {
         this._handler = handler;
+        observer.OnStateHandlerInitialized();
     }
 
     public async Task Handle(IMessageContext context, HaEntityState message)
@@ -66,7 +67,7 @@ class StateHandler : IStateHandler
 
         activator.Activated += new Action<HaEntityState>(state => Task.Run(() => Handle(state, default)));
         
-        observer.OnStateHandlerInitialized();
+        
     }
 
     public async Task Handle(HaEntityState message, CancellationToken cancellationToken = default)
