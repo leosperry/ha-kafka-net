@@ -26,15 +26,15 @@ public static class PrebuiltExtensions
         info
             .GetNextScheduled((sc, ct) => {
                 var helperTime = sc.New.State;
-                var now = info.TimeProvider.GetLocalNow();
+                var now = info.TimeProvider.GetLocalNow().LocalDateTime;
                     
-                var executeTime = new DateTimeOffset(now.Date.Add(helperTime));
+                var executeTime = now.Date + helperTime;
 
                 if(executeTime < now)
                 {
                     executeTime += TimeSpan.FromDays(1);
                 }
-                return Task.FromResult<DateTimeOffset?>(executeTime);;
+                return Task.FromResult<DateTimeOffset?>(executeTime);
             });
         
         return info;

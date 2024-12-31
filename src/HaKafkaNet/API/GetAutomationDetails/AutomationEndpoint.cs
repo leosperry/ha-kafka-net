@@ -7,7 +7,6 @@ namespace HaKafkaNet;
 internal record AutomationDetailRequest(string Key);
 
 internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<Ok<ApiResponse<AutomationDetailResponse>>,NotFound>> 
-//Endpoint<AutomationDetailRequest, ApiResponse<AutomationDetailResponse>>
 {
     readonly IAutomationManager _autoMgr;
     readonly IAutomationTraceProvider _trace;
@@ -39,7 +38,7 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
         var autoResponse = new AutomationDetailResponse(
             meta.Name,
             meta.Description,
-            meta.KeyRequest ??  "none",
+            meta.KeyRequest ?? "none",
             meta.GivenKey,
             auto.EventTimings.ToString(),
             meta.Mode.ToString(),
@@ -48,8 +47,8 @@ internal class AutomationEndpoint : Endpoint< AutomationDetailRequest, Results<O
             meta.UnderlyingType!,
             meta.Source ?? "source error",
             meta.IsDelayable,
-            meta.LastTriggered?.ToString() ?? "never",
-            meta.LastExecuted.ToString(),
+            meta.LastTriggered?.ToLocalTime().ToString() ?? "never",
+            meta.LastExecuted?.ToLocalTime().ToString(),
             traces
         );
 
