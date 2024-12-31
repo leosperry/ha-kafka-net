@@ -1,4 +1,5 @@
-﻿using HaKafkaNet;
+﻿using System.Text.Json;
+using HaKafkaNet;
 using HaKafkaNet.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -20,9 +21,20 @@ public class HaKafkaNetFixture : WebApplicationFactory<Program>
     public HaKafkaNetFixture()
     {
         // todo: find a better setup
+        // calling helpers here will cause an infinite loop at startup
+        // when active automations are used or anything needing IHaApiProvider or FakeTimeProvider at startup
         this.API.Setup(api => api.GetEntity<HaEntityState>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
              .ReturnsAsync(new Func<string, CancellationToken, (HttpResponseMessage, HaEntityState?)>(
-              (id, ct) => (Helpers.OkResponse(), Helpers.Make(id, "0"))));
+              (id, ct) => (
+                new HttpResponseMessage(System.Net.HttpStatusCode.OK),
+                new HaEntityState()
+                {
+                    EntityId = id,
+                    State = "0",
+                    Attributes = JsonSerializer.SerializeToElement("{}"),
+                    LastChanged = DateTime.Now,
+                    LastUpdated = DateTime.Now
+                })));
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
