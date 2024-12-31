@@ -3,6 +3,9 @@ using System.Text.Json;
 
 namespace HaKafkaNet.Implementations.AutomationBuilder;
 
+/// <summary>
+/// 
+/// </summary>
 public static class PrebuiltExtensions
 {
     /// <summary>

@@ -1,5 +1,8 @@
 ﻿namespace HaKafkaNet;
 
+/// <summary>
+/// Methods for working with the user provided IDistributedCache
+/// </summary>
 public interface IHaStateCache : IEntityStateProvider
 {
     /// <summary>

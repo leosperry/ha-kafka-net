@@ -1,5 +1,13 @@
-﻿namespace HaKafkaNet;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+namespace HaKafkaNet;
+
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#light-models
+/// </summary>
+/// <param name="Red"></param>
+/// <param name="Green"></param>
+/// <param name="Blue"></param>
 public record RgbTuple(byte Red,byte Green, byte Blue)
 {
     public static implicit operator RgbTuple((byte red, byte green, byte blue) tuple)
@@ -8,6 +16,13 @@ public record RgbTuple(byte Red,byte Green, byte Blue)
     }
 }
 
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#light-models
+/// </summary>
+/// <param name="Red"></param>
+/// <param name="Green"></param>
+/// <param name="Blue"></param>
+/// <param name="White"></param>
 public record RgbwTuple(byte Red,byte Green, byte Blue, byte White)
 {
     public static implicit operator RgbwTuple((byte red, byte green, byte blue, byte white) tuple)
@@ -16,6 +31,14 @@ public record RgbwTuple(byte Red,byte Green, byte Blue, byte White)
     }
 }
 
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#light-models
+/// </summary>
+/// <param name="Red"></param>
+/// <param name="Green"></param>
+/// <param name="Blue"></param>
+/// <param name="White"></param>
+/// <param name="WarmWhite"></param>
 public record RgbwwTuple(byte Red,byte Green, byte Blue, byte White, byte WarmWhite)
 {
     public static implicit operator RgbwwTuple((byte red, byte green, byte blue, byte white, byte warmWhite) tuple)
@@ -24,6 +47,11 @@ public record RgbwwTuple(byte Red,byte Green, byte Blue, byte White, byte WarmWh
     }
 }
 
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#light-models
+/// </summary>
+/// <param name="X"></param>
+/// <param name="Y"></param>
 public record XyColor(float X, float Y)
 {
     public static implicit operator XyColor((float x, float y) tuple)
@@ -32,6 +60,11 @@ public record XyColor(float X, float Y)
     }
 }
 
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#light-models
+/// </summary>
+/// <param name="Hue"></param>
+/// <param name="Saturation"></param>
 public record HsColor(float Hue, float Saturation)
 {
     public static implicit operator HsColor((float hue, float saturation) tuple)

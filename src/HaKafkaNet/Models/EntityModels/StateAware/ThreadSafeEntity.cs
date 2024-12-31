@@ -2,11 +2,27 @@ using System.Text.Json;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// represents an entity state in HA
+/// </summary>
 public interface IHaEntity : IHaEntity<string, JsonElement>;
+
+/// <summary>
+/// represents an entity state in HA
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IHaEntity<T> : IHaEntity<T, JsonElement>;
 
+/// <summary>
+/// represents an entity state in HA
+/// </summary>
+/// <typeparam name="Tstate"></typeparam>
+/// <typeparam name="Tatt"></typeparam>
 public interface IHaEntity<Tstate, Tatt>
 {
+    /// <summary>
+    /// the ID of an entity in HA
+    /// </summary>
     string EntityId { get; }
 
     /// <summary>
@@ -19,15 +35,33 @@ public interface IHaEntity<Tstate, Tatt>
     /// </summary>
     DateTime LastUpdated { get; }
     
+    /// <summary>
+    /// used by HA
+    /// </summary>
     HaEventContext? Context { get; }
 
+    /// <summary>
+    /// The entity's state
+    /// </summary>
     Tstate State { get; }
 
+    /// <summary>
+    /// attributes defined by an integration in HA
+    /// </summary>
     Tatt? Attributes { get; }
 }
 
+/// <summary>
+/// a representation of an entity that updates automatically
+/// </summary>
+/// <typeparam name="Tstate"></typeparam>
+/// <typeparam name="Tatt"></typeparam>
 public interface IUpdatingEntity<Tstate,Tatt> : IHaEntity<Tstate, Tatt>
 {
+    /// <summary>
+    /// creates a snapshot of an entity to avoid thread sync issues
+    /// </summary>
+    /// <returns></returns>
     IHaEntity<Tstate,Tatt> Snapshot();
 }
 

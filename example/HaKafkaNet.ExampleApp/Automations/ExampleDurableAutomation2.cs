@@ -25,7 +25,7 @@ public class ExampleDurableAutomation2 : SchedulableAutomationBase
     /// <param name="stateChange"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    protected override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         // returning null is the same as ContinuesToBeTrue returning false
         // if you want the automation to continue, you must return a non-null value

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using System.Text.Json.Serialization;
 
 namespace HaKafkaNet;
 

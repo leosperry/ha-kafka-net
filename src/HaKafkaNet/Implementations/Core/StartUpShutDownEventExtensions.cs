@@ -3,11 +3,23 @@ using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// helper methods for starup/shutdown
+/// </summary>
 public static class StartUpShutDownEventExtensions
 {
     static SemaphoreSlim _sem = new (1,1);
     static CancellationTokenSource _source = new();
 
+    /// <summary>
+    /// for use in an ISystemMonitor
+    /// </summary>
+    /// <param name="evt"></param>
+    /// <param name="shutdown"></param>
+    /// <param name="startup"></param>
+    /// <param name="timeout"></param>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     public static async Task ShutdownStartupActionsAsync(this StartUpShutDownEvent evt, Func<Task> shutdown, Func<Task> startup, int timeout, ILogger? logger = default)
     {
         logger?.LogInformation("Home Assistant {HaEvent}", evt.Event);
@@ -23,6 +35,15 @@ public static class StartUpShutDownEventExtensions
         }
     }
 
+    /// <summary>
+    /// for use in an ISystemMonitor
+    /// </summary>
+    /// <param name="evt"></param>
+    /// <param name="shutdown"></param>
+    /// <param name="startup"></param>
+    /// <param name="timeout"></param>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     public static async Task ShutdownStartupActions(this StartUpShutDownEvent evt, Action shutdown, Action startup, int timeout, ILogger? logger = default)
     {
         logger?.LogInformation("Home Assistant {HaEvent}", evt.Event);
@@ -38,6 +59,12 @@ public static class StartUpShutDownEventExtensions
         }       
     }
 
+    /// <summary>
+    /// for use in an ISystemMonitor
+    /// </summary>
+    /// <param name="shutDownAction"></param>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     private static async Task<CancellationToken> ExecuteShutdown(Action shutDownAction, ILogger? logger)
     {
         try
@@ -62,6 +89,12 @@ public static class StartUpShutDownEventExtensions
         }
     }
 
+    /// <summary>
+    /// for use in an ISystemMonitor
+    /// </summary>
+    /// <param name="shutDownAction"></param>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     private static async Task<CancellationToken> ExecuteShutdownAsync(Func<Task> shutDownAction, ILogger? logger)
     {
         try

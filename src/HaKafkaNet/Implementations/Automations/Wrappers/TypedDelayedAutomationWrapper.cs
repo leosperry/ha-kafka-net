@@ -2,7 +2,7 @@ using System;
 
 namespace HaKafkaNet;
 
-public abstract class TypedDelayedAutomationWrapper : IAutomationWrapperBase
+internal abstract class TypedDelayedAutomationWrapper : IAutomationWrapperBase
 {
     public EventTiming EventTimings { get => WrappedAutomation.EventTimings;}
     public bool IsActive { get => WrappedAutomation.IsActive; }

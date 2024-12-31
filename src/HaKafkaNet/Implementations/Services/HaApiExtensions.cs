@@ -4,6 +4,9 @@ using System.Text.Json;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// 
+/// </summary>
 public static class HaApiExtensions
 {
     /// <summary>

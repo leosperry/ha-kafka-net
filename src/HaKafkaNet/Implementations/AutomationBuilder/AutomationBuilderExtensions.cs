@@ -1,4 +1,8 @@
 ﻿namespace HaKafkaNet;
+
+/// <summary>
+/// Methods for adding functionality to automations
+/// </summary>
 public static partial class AutomationBuilderExtensions
 {
     /// <summary>

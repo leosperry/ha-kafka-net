@@ -1,8 +1,16 @@
 ﻿
 namespace HaKafkaNet;
 
+/// <summary>
+/// represents an entity changing state
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public record HaEntityStateChange<T>
 {
+    /// <summary>
+    /// The timing assigned by the framework
+    /// see: https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings
+    /// </summary>
     public required EventTiming EventTiming { get; set;}
 
     /// <summary>
@@ -21,5 +29,8 @@ public record HaEntityStateChange<T>
     public required T New { get ; set; }
 }
 
+/// <summary>
+/// represents an entity changing state in raw form
+/// </summary>
 public record HaEntityStateChange : HaEntityStateChange<HaEntityState>;
 

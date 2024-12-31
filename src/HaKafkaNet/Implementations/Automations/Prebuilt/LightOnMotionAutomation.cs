@@ -1,9 +1,14 @@
 ﻿
 namespace HaKafkaNet;
 
+/// <summary>
+/// A simple automation to turn on a light when motion is detected
+/// </summary>
 [ExcludeFromDiscovery]
 public class LightOnMotionAutomation : SimpleAutomationBase
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     private readonly List<string> _motionSensors = new();
     private readonly List<string> _lights = new();
     private readonly IHaServices _services;

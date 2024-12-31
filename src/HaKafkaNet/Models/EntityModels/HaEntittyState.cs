@@ -3,8 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// strongly typed version of HA state
+/// </summary>
+/// <typeparam name="Tstate"></typeparam>
+/// <typeparam name="Tattributes"></typeparam>
 public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes>
 {    
+    /// <summary>
+    /// id defined in HA
+    /// </summary>
     [JsonPropertyName("entity_id")]
     public required string EntityId { get; init; }
 
@@ -20,15 +28,28 @@ public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes
     [JsonPropertyName("last_updated")]
     public DateTime LastUpdated { get; init; }
     
+    /// <summary>
+    /// used by HA
+    /// </summary>
     [JsonPropertyName("context")]
     public HaEventContext? Context { get; init; }
 
+    /// <summary>
+    /// The state of the entity. Could be unknown or unavailable
+    /// </summary>
     [JsonPropertyName("state")]
     public required Tstate State { get; init; }
 
+    /// <summary>
+    /// Attributes defined by an integration in HA
+    /// </summary>
     [JsonPropertyName("attributes")]
     public Tattributes? Attributes { get; init; }
 
+    /// <summary>
+    /// used for converting raw HA state to strongly typed state
+    /// </summary>
+    /// <param name="state"></param>
     public static explicit operator HaEntityState<Tstate, Tattributes>(HaEntityState state)
     {
         var newState = GetState(state);
@@ -93,6 +114,9 @@ public record HaEntityState<Tstate, Tattributes> : IHaEntity<Tstate, Tattributes
     }
 }
 
+/// <summary>
+/// All state changes from HA come into the system as this model
+/// </summary>
 public record HaEntityState : HaEntityState<string, JsonElement>, IHaEntity
 {
     /// <summary>
@@ -104,6 +128,7 @@ public record HaEntityState : HaEntityState<string, JsonElement>, IHaEntity
     public HaEntityState? Previous{ get; internal set; }
 }
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 public record HaEventContext
 {

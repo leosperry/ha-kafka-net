@@ -4,8 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace HaKafkaNet.Models.JsonConverters;
 
+/// <summary>
+/// used throughout the framework for JSON serialization 
+/// </summary>
 public class GlobalConverters
 {
+    /// <summary>
+    /// used throughout the framework for JSON serialization
+    /// </summary>
     public static readonly JsonSerializerOptions StandardJsonOptions = new JsonSerializerOptions()
     {
         NumberHandling = JsonNumberHandling.AllowReadingFromString,

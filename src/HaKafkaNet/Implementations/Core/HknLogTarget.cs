@@ -1,4 +1,6 @@
-﻿using NLog;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using NLog;
 using NLog.Common;
 using NLog.Config;
 using NLog.Layouts;

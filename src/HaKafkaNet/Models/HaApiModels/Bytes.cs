@@ -1,10 +1,16 @@
 ﻿namespace HaKafkaNet;
 
+/// <summary>
+/// Utility class for working with Byte values
+/// see https://github.com/leosperry/ha-kafka-net/wiki/Utility-classes#bytes
+/// </summary>
 public static class Bytes
 {
-    public const byte 
+    public const byte
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         Zero = 0,
         One = 1,
+        _1pct = 3,
         _5pct = 12,
         _10pct = 25,
         _15pct = 38,
@@ -28,7 +34,8 @@ public static class Bytes
         _95pct = 242,
         _100pct = 255,
         Max = 255;
-    
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
     /// <summary>
     /// Converts a percentage to a byte
     /// </summary>

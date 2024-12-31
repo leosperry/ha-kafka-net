@@ -21,9 +21,20 @@ using NLog;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// Extension methods for adding HaKafkaNet
+/// </summary>
 public static class ServicesExtensions
 {
     internal static bool _isTestMode = false;
+
+    /// <summary>
+    /// Adds HaKafkaNet
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="options"></param>
+    /// <param name="kafkaBuilder"></param>
+    /// <returns></returns>
     public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, Action<HaKafkaNetConfig> options, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         HaKafkaNetConfig config = new();
@@ -33,7 +44,14 @@ public static class ServicesExtensions
         return services;
     }
 
-    public  static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
+    /// <summary>
+    /// Adds HaKafkaNet
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="config"></param>
+    /// <param name="kafkaBuilder"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddHaKafkaNet(this IServiceCollection services, HaKafkaNetConfig config, Action<IKafkaConfigurationBuilder, IClusterConfigurationBuilder>? kafkaBuilder = null)
     {
         services.AddSingleton(config);
 
@@ -75,6 +93,13 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Starts HaKafkaNet
+    /// see: https://github.com/leosperry/ha-kafka-net/wiki/Startup-Routines
+    /// for details
+    /// </summary>
+    /// <param name="app"></param>
+    /// <returns></returns>
     public static async Task StartHaKafkaNet(this WebApplication app)
     {
         var config = app.Services.GetRequiredService<HaKafkaNetConfig>();
@@ -124,7 +149,7 @@ public static class ServicesExtensions
         }
     }
 
-    public static void WireKafka(IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
+    static void WireKafka(IClusterConfigurationBuilder cluster, HaKafkaNetConfig config)
     {
         cluster
             .AddConsumer(consumer => consumer
@@ -668,5 +693,11 @@ public static class ServicesExtensions
     }
 }
 
+/// <summary>
+/// represents an error during initialization
+/// </summary>
+/// <param name="Message"></param>
+/// <param name="Exception"></param>
+/// <param name="Source"></param>
 public record InitializationError(string Message, Exception? Exception = null, object? Source = null);
 

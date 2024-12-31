@@ -11,6 +11,9 @@ namespace HaKafkaNet;
 /// </summary>
 public record LightTurnOnModel
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [JsonPropertyName("entity_id")]
     public IEnumerable<string> EntityId { get; set; } = Enumerable.Empty<string>();
 
@@ -91,7 +94,6 @@ public record LightTurnOnModel
     /// </summary>
     [JsonPropertyName("brightness_step_pct")]
     public int? BrightnessStepPct { get; set; }
-
     
     /// <summary>
     /// Tell light to flash, can be either value short or long.
@@ -100,12 +102,13 @@ public record LightTurnOnModel
     public Flash? Flash {get; set;}
 
     /// <summary>
-    /// Applies an effect such as colorloop or random
+    /// Applies an effect such random
     /// </summary>
     [JsonPropertyName("effect")]
     public string? Effect {get; set;}
 }
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public enum Flash
 {
     Long, Short

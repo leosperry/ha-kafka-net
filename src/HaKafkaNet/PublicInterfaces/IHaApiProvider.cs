@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// Provides methods for interacting with HA REST API
+/// </summary>
 public partial interface IHaApiProvider
 {
     /// <summary>
@@ -15,11 +18,34 @@ public partial interface IHaApiProvider
     /// <returns></returns>
     Task<HttpResponseMessage> CallService(string domain, string service, object data, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<HttpResponseMessage> GetErrorLog(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="entity_id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<(HttpResponseMessage response, HaEntityState? entityState)> GetEntity(string entity_id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="entity_id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task<(HttpResponseMessage response, T? entityState)> GetEntity<T>(string entity_id, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     Task<(HttpResponseMessage? response, bool ApiAvailable)> CheckApi();
 
     /// <summary>
@@ -34,10 +60,11 @@ public partial interface IHaApiProvider
     Task<(HttpResponseMessage response, IHaEntity<Tstate, Tatt>? returnedState)> SetState<Tstate, Tatt>(string entityId, Tstate state, Tatt attributes);
 
 
-/*
-Below this line is default implementations for various service calls
-These used to be extension methods, but having them here allow mocking frameworks to mock them.
-*/
+    /*
+    Below this line is default implementations for various service calls
+    These used to be extension methods, but having them here allow mocking frameworks to mock them.
+    */
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 
     #region Constants
@@ -61,7 +88,7 @@ These used to be extension methods, but having them here allow mocking framework
     public Task<HttpResponseMessage> ButtonPress(string entity_id, CancellationToken cancellationToken = default)
         => CallService("button", "press", new { entity_id }, cancellationToken);
 
-// Input Helpers
+    // Input Helpers
     public Task<HttpResponseMessage> InputButtonPress(string entity_id, CancellationToken cancellationToken = default)
         => CallService("input_button", "press", new { entity_id }, cancellationToken);
 
@@ -326,7 +353,4 @@ These used to be extension methods, but having them here allow mocking framework
 
     public Task<HttpResponseMessage> ZwaveJs_SetConfigParameter(object config, CancellationToken cancellationToken = default)
         => CallService("zwave_js", "set_config_parameter", config, cancellationToken);
-
-
 }
-

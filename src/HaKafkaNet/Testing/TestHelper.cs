@@ -11,20 +11,39 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace HaKafkaNet.Testing
 {
+    /// <summary>
+    /// utility class for working with integration tests
+    /// </summary>
     public class TestHelper
     {
         private int _delay = 100;
         private readonly IServiceProvider _services;
 
+        /// <summary>
+        /// A time provider for working with delayable automations
+        /// </summary>
         public FakeTimeProvider Time { get; private set;} 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
         public TestHelper(IServiceProvider services)
         {
             this._services = services;
             this.Time = (FakeTimeProvider)services.GetRequiredService<TimeProvider>();
         }
 
+        /// <summary>
+        /// for use with mocking state returns from api
+        /// </summary>
+        /// <returns></returns>
         public JsonElement EmptyAttributes() => JsonSerializer.SerializeToElement("{}");
+
+        /// <summary>
+        /// a basic ok response
+        /// </summary>
+        /// <returns></returns>
         public HttpResponseMessage OkResponse() => new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
         /// <summary>
@@ -48,6 +67,13 @@ namespace HaKafkaNet.Testing
             await Task.Delay(delay == -1 ? _delay : delay);
         }
 
+        /// <summary>
+        /// makes an entity state
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="state"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public HaEntityState Make(string entityId, string state, DateTimeOffset time = default)
         {
             return new HaEntityState()
@@ -60,6 +86,14 @@ namespace HaKafkaNet.Testing
             };
         }
 
+        /// <summary>
+        /// makes an entity state
+        /// </summary>
+        /// <typeparam name="Tstate"></typeparam>
+        /// <param name="entityId"></param>
+        /// <param name="state"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public HaEntityState<Tstate, JsonElement> Make<Tstate>(string entityId, Tstate state, DateTimeOffset time = default)
         {
             return new HaEntityState<Tstate, JsonElement>()
@@ -72,6 +106,16 @@ namespace HaKafkaNet.Testing
             };
         }
 
+        /// <summary>
+        /// makes an entity state
+        /// </summary>
+        /// <typeparam name="Tstate"></typeparam>
+        /// <typeparam name="Tatt"></typeparam>
+        /// <param name="entityId"></param>
+        /// <param name="state"></param>
+        /// <param name="attributes"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public HaEntityState<Tstate, Tatt> Make<Tstate, Tatt>(string entityId, Tstate state, Tatt attributes, DateTimeOffset time = default)
         {
             return new HaEntityState<Tstate, Tatt>()
@@ -110,7 +154,11 @@ namespace HaKafkaNet.Testing
             Tstate state, Tatt attributes)
             => (string entityId, CancellationToken ct) => (OkResponse(), Make<Tstate, Tatt>(entityId, state, attributes));
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetRegistry<T>() where T : IAutomationRegistry
         {
             return (T)_services.GetRequiredService<IEnumerable<IAutomationRegistry>>()

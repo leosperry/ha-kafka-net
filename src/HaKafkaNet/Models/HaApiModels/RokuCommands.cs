@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+namespace HaKafkaNet;
 
 /// <summary>
 /// https://www.home-assistant.io/integrations/roku/

@@ -10,6 +10,8 @@ namespace HaKafkaNet;
 /// </summary>
 public interface IUpdatingEntityProvider
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     IUpdatingEntity<string, JsonElement> GetEntity(string entityId);
 
     IUpdatingEntity<Tstate, JsonElement> GetEntity<Tstate>(string entityId) where Tstate: class;

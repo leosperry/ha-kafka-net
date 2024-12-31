@@ -3,9 +3,14 @@ using System.Text.Json;
 
 namespace HaKafkaNet;
 
+/// <summary>
+/// A conditional automation to turn lights off after a certain amount of time has passed with no motion
+/// </summary>
 [ExcludeFromDiscovery]
 public class LightOffOnNoMotion : ConditionalAutomationBase, IConditionalAutomation
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     private readonly List<string> _motionIds = new();
     private readonly List<string> _lightIds = new();
     private readonly IHaServices _services;

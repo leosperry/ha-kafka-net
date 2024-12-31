@@ -1,4 +1,6 @@
-﻿namespace HaKafkaNet;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+namespace HaKafkaNet;
 
 public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISchedulableAutomation, IAutomationMeta, ISetAutomationMeta
 {    
@@ -34,7 +36,7 @@ public abstract class SchedulableAutomationBase : DelayableAutomationBase, ISche
             
         }
 
-    public abstract Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken);
+    protected abstract Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken);
 
     /// <summary>
     /// Thread safe way of getting a copy of the currently next scheduled time
@@ -90,7 +92,7 @@ public class SchedulableAutomation : SchedulableAutomationBase
         IsReschedulable = reschedulable;
     }
 
-    public override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
+    protected override Task<DateTimeOffset?> CalculateNext(HaEntityStateChange stateChange, CancellationToken cancellationToken)
     {
         if (!cancellationToken.IsCancellationRequested)
         {

@@ -3,7 +3,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-public static class Telemetry
+static class Telemetry
 {
     public const string 
         TraceApiName = "ha_kafka_net.ha_api",
@@ -16,8 +16,16 @@ public static class Telemetry
         ;
 }
 
+/// <summary>
+/// Extension methods for adding OTEL instrumentation
+/// </summary>
 public static class OtelExtensions
 {
+    /// <summary>
+    /// Adds tracing for automations
+    /// </summary>
+    /// <param name="trace"></param>
+    /// <returns></returns>
     public static TracerProviderBuilder AddHaKafkaNetInstrumentation(this TracerProviderBuilder trace)
     {
         trace
@@ -28,6 +36,11 @@ public static class OtelExtensions
         return trace;
     }
 
+    /// <summary>
+    /// Adds metrics for things like entity states and automation triggers
+    /// </summary>
+    /// <param name="meter"></param>
+    /// <returns></returns>
     public static MeterProviderBuilder AddHaKafkaNetInstrumentation(this MeterProviderBuilder meter)
     {
         meter

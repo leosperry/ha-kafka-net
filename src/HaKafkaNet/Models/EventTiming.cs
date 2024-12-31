@@ -1,5 +1,8 @@
 ﻿namespace HaKafkaNet;
 
+/// <summary>
+/// see: https://github.com/leosperry/ha-kafka-net/wiki/Event-Timings
+/// </summary>
 [Flags]
 public enum EventTiming
 {

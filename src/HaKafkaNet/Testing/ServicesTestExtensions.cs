@@ -8,6 +8,9 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace HaKafkaNet.Testing
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ServicesTestExtensions
     {
         /// <summary>

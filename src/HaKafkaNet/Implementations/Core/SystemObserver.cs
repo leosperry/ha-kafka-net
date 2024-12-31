@@ -42,6 +42,14 @@ internal interface ISystemObserver
     void OnAutomationTypeConversionFailure(Exception ex, IAutomationBase automation, HaEntityStateChange stateChange, CancellationToken ct);
 }
 
+/// <summary>
+/// represents a failed api call. used in system monitor
+/// </summary>
+/// <param name="Domain"></param>
+/// <param name="Service"></param>
+/// <param name="Data"></param>
+/// <param name="Response"></param>
+/// <param name="Exception"></param>
 public record HaServiceResponseArgs(string Domain, string Service, object Data, HttpResponseMessage? Response, Exception? Exception);
 
 /// <summary>

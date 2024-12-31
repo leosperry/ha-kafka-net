@@ -9,6 +9,8 @@ using NLog;
 
 namespace HaKafkaNet;
 
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public interface IAutomationTraceProvider
 {
     Task Trace(TraceEvent evt, AutomationMetaData meta, Func<Task> traceFunction);
@@ -18,6 +20,8 @@ public interface IAutomationTraceProvider
     Task<IEnumerable<TraceData>> GetTraces(string automationKey);
     void AddLog(string renderedMessage, LogEventInfo logEvent, IDictionary<string, object> scopes);
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
 
 internal class TraceLogProvider : IAutomationTraceProvider
 {
