@@ -30,6 +30,6 @@ jobs:
       run: dotnet test ./HaKafkaNet.Tests
       working-directory: ./src
     - name: Integration Tests
-      run: dotnet test ./HaKafkaNet.ExampleApp.Tests -v:detailed
+      run: dotnet test ./HaKafkaNet.ExampleApp.Tests -v:normal
       working-directory: ./example
 
