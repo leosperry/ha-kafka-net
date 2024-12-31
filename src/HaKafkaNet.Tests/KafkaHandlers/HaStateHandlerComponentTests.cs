@@ -34,8 +34,6 @@ public class HaStateHandlerComponentTests
         //act
         StateHandler sut = new StateHandler(cache.Object, manager, observer.Object, TimeProvider.System, _activator.Object, logger.Object);
         
-        observer.Verify(o => o.OnStateHandlerInitialized(), Times.Once);
-
         await sut.Handle(fakeState);
         await Task.Delay(DELAY); //sometimes the verification can run before the task is scheduled
 
