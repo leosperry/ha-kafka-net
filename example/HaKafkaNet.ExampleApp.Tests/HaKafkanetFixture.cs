@@ -21,8 +21,8 @@ public class HaKafkaNetFixture : WebApplicationFactory<Program>
     public HaKafkaNetFixture()
     {
         // todo: find a better setup
-        // calling helpers here will cause an infinite loop at startup
-        // when active automations are used or anything needing IHaApiProvider or FakeTimeProvider at startup
+        // calling helpers here will cause an infinite loop at startup when active automations are used
+        // or anything needing IHaApiProvider or FakeTimeProvider at startup
         this.API.Setup(api => api.GetEntity<HaEntityState>(It.IsAny<string>(), It.IsAny<CancellationToken>()))
              .ReturnsAsync(new Func<string, CancellationToken, (HttpResponseMessage, HaEntityState?)>(
               (id, ct) => (

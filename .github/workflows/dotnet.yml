@@ -5,7 +5,7 @@ name: .NET
 
 on:
   push:
-    branches: [ "main", "V11" ]
+    branches: [ "main", "debug" ]
   pull_request:
     branches: [ "main" ]
 
@@ -30,6 +30,6 @@ jobs:
       run: dotnet test ./HaKafkaNet.Tests
       working-directory: ./src
     - name: Integration Tests
-      run: dotnet test ./HaKafkaNet.ExampleApp.Tests -v:normal
+      run: dotnet test ./HaKafkaNet.ExampleApp.Tests
       working-directory: ./example
 
