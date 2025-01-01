@@ -15,7 +15,7 @@ public interface IAutomationRegistry
 }
 
 /// <summary>
-/// provides methods for registering automatins
+/// provides methods for registering automations
 /// </summary>
 public interface IRegistrar
 {

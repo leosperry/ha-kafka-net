@@ -193,7 +193,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
                 {
                     _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                    return Task.Delay(delay, _timeProvider, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
+                    return CustomDelay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
                 }
             }
             finally
@@ -204,6 +204,33 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
         // if we haven't returned by now, another thread has already stared
         _logger.LogDebug("automation is already scheduled");
         return Task.CompletedTask;
+    }
+
+    static TimeSpan maxDelay = TimeSpan.FromDays(49); // ~ number of milliseconds in uint.MaxValue
+
+    private async Task CustomDelay(TimeSpan delay, CancellationToken ct)
+    {
+        if (delay > maxDelay)
+        {
+            var next = _timeProvider.GetLocalNow() + delay;
+
+            PeriodicTimer timer = new PeriodicTimer(maxDelay, _timeProvider);
+
+            while(await timer.WaitForNextTickAsync(ct))
+            {
+                var now = _timeProvider.GetLocalNow();
+                delay = next - now;
+
+                if (delay < maxDelay)
+                {
+                    timer.Dispose();
+                }
+            }
+        }
+        if (delay > TimeSpan.Zero)
+        {
+            await Task.Delay(delay, _timeProvider, ct);
+        }
     }
 
     private async Task ActualExecute(CancellationToken token, Action? postRun = null)

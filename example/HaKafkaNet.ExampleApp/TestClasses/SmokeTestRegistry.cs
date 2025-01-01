@@ -25,6 +25,7 @@ public class TestRegistry : IAutomationRegistry
             ConditionalTyped,
             Schedulable,
             SchedulableTyped
+            ,LongDelay
         );
     }
 
@@ -102,6 +103,16 @@ public class TestRegistry : IAutomationRegistry
             .While(sc => true)
             .ForHours(1)
             .WithExecution(ct => _api.ButtonPress(Input_Button.HelperButtonForSchedulableTyped, ct))
+            .Build();
+    }
+
+    IAutomationBase LongDelay()
+    {
+        return _builder.CreateSchedulable()
+            .WithName("Long Schedule")
+            .WithTriggers(Binary_Sensor.TriggerForLongDelay)
+            .GetNextScheduled((sc, ct) => Task.FromResult<DateTimeOffset?>(_time.GetLocalNow().AddDays(50)))
+            .WithExecution(ct => _api.ButtonPress(Input_Button.HelperButtonForLongDelay))
             .Build();
     }
 }

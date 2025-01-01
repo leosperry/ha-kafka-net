@@ -85,7 +85,7 @@ public class SmokeTests : IClassFixture<HaKafkaNetFixture>
 
         // clears setup and invocations
         _fixture.API.Reset();
-        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulable, OnOff.On, _testHelper.Time.GetLocalNow());
+        var motionState = _testHelper.Make<OnOff>(Binary_Sensor.MotionForSchedulable, OnOff.On);
 
         // act
         await _testHelper.SendState(motionState);
@@ -102,7 +102,7 @@ public async Task SchedulableTyped()
 
     _fixture.API.Reset();
     var motionState = _testHelper.Make<OnOff>(
-        Binary_Sensor.MotionForSchedulableTyped, OnOff.On, _testHelper.Time.GetLocalNow());
+        Binary_Sensor.MotionForSchedulableTyped, OnOff.On);
 
     // act
     await _testHelper.SendState(motionState);
@@ -137,5 +137,41 @@ public async Task SchedulableTyped()
         {
             Assert.Contains(auto, hashedNames);
         }
+    }
+
+    [Fact]
+    public async Task LongDelay()
+    {
+        // arrange 
+
+        _fixture.API.Reset();
+        var motionState = _testHelper.Make<OnOff>(
+            Binary_Sensor.TriggerForLongDelay, OnOff.On, _testHelper.Time.GetLocalNow());
+
+        // act
+        await _testHelper.SendState(motionState);
+        await _testHelper.AdvanceTime(TimeSpan.FromDays(51));
+
+        // assert
+        _fixture.API.Verify(api => api.ButtonPress(
+            Input_Button.HelperButtonForLongDelay, It.IsAny<CancellationToken>()));
+    }    
+    
+    [Fact]
+    public async Task LongDelay_NegativeCase()
+    {
+        // arrange 
+
+        _fixture.API.Reset();
+        var motionState = _testHelper.Make<OnOff>(
+            Binary_Sensor.TriggerForLongDelay, OnOff.On, _testHelper.Time.GetLocalNow());
+
+        // act
+        await _testHelper.SendState(motionState);
+        await _testHelper.AdvanceTime(TimeSpan.FromDays(49));
+
+        // assert
+        _fixture.API.Verify(api => api.ButtonPress(
+            Input_Button.HelperButtonForLongDelay, It.IsAny<CancellationToken>()), Times.Never);
     }
 }

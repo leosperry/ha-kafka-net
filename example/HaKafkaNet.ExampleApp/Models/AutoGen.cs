@@ -18,6 +18,8 @@ public class Binary_Sensor
     public const string MotionForConditionalTyped = "binary_sensor.motion_for_conditional_typed";
     public const string MotionForSchedulable = "binary_sensor.motion_for_schedulable";
     public const string MotionForSchedulableTyped = "binary_sensor.motion_for_schedulable_typed";
+    public const string TriggerForLongDelay = "binary_sensor.trigger_for_long_delay";
+    
     
 }
 
@@ -29,6 +31,8 @@ public class Input_Button
     public const string HelperButtonForConditionalTyped = "input_button.helper_button_for_conditional_typed"; 
     public const string HelperButtonForSchedulable = "input_button.helper_button_for_schedulable"; 
     public const string HelperButtonForSchedulableTyped = "input_button.helper_button_for_schedulable_typed"; 
+    public const string HelperButtonForLongDelay = "input_button.helper_button_for_long_delay"; 
+    
 }
 
 

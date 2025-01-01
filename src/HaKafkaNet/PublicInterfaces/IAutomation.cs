@@ -49,7 +49,7 @@ public interface IAutomation<in Tchange, Tentity, Tstate, Tatt> : IAutomationBas
 }
 
 /// <summary>
-/// Defines methods for stronly typed automations
+/// Defines methods for strongly typed automations
 /// </summary>
 public interface IFallbackExecution
 {
