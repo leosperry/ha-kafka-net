@@ -239,7 +239,7 @@ public static partial class AutomationBuilderExtensions
             Get_GetNextScheduled(info),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
             info.ShouldExecutePastEvents,
-            info.ShouldExecuteOnContinueError)
+            info.ShouldExecuteOnContinueError, info.IsReschedulable)
             .WithMeta(GetMeta(info));
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
@@ -263,6 +263,7 @@ public static partial class AutomationBuilderExtensions
             info.TriggerEntityIds ?? Enumerable.Empty<string>(),
             Get_GetNextScheduled(info),
             info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
+            info.IsReschedulable,
             info.ShouldExecutePastEvents,
             info.ShouldExecuteOnContinueError
         );

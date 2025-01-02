@@ -101,7 +101,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
 
             //we are either not running or running and we need to reschedule
             _timeForScheduled = schedulableAutomation.GetNextScheduled();
-            _logger.LogDebug("GetNextScheduled returned {scheduleTime}", _timeForScheduled);
+            _logger.LogDebug("GetNextScheduled returned {scheduleTime}", _timeForScheduled?.LocalDateTime);
             if (!alreadyScheduled)
             {
                 _ = StartIfNotStarted(cancellationToken);
@@ -173,11 +173,11 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
             }
         }
 
-        if (delay == TimeSpan.Zero)
-        {
-            _logger.LogDebug("automation scheduled now");
-            return ActualExecute(cancellationToken);
-        }
+        // if (delay == TimeSpan.Zero)
+        // {
+        //     _logger.LogDebug("automation scheduled now");
+        //     return ActualExecute(cancellationToken);
+        // }
 
         // run with delay
         if (_cts is null)

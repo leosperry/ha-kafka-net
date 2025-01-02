@@ -13,6 +13,8 @@ internal abstract class TypedDelayedAutomationWrapper : IAutomationWrapperBase
 [ExcludeFromDiscovery]
 internal class TypedDelayedAutomationWrapper<Tauto, Tstate, Tatt> : TypedDelayedAutomationWrapper, IDelayableAutomation where Tauto: IDelayableAutomation<Tstate, Tatt>
 {
+    public bool ShouldExecutePastEvents { get => _automation.ShouldExecutePastEvents; }
+    public bool ShouldExecuteOnContinueError { get => _automation.ShouldExecuteOnContinueError; }
     IDelayableAutomation<Tstate, Tatt> _automation;
     private readonly ISystemObserver _observer;
 

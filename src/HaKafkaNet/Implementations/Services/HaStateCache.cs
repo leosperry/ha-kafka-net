@@ -54,7 +54,15 @@ internal class HaStateCache : IHaStateCache
             if(cached is not null)
             {
                 _hitCount.Add(1, entityTag);
-                return JsonSerializer.Deserialize<T>(cached, _options);
+                try
+                {
+                    return JsonSerializer.Deserialize<T>(cached, _options);
+                }
+                catch (System.Exception ex)
+                {
+                    _logger.LogError(ex, "failed deserializing from cache: {cached_entity_id}", entityId);
+                    throw;
+                }    
             }
             _missCount.Add(1, entityTag);
             return null;
