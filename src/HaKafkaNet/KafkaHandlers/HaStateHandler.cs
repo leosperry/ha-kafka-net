@@ -65,9 +65,7 @@ class StateHandler : IStateHandler
         Meter m = new Meter(Telemetry.MeterStateHandler);
         _counter = m.CreateCounter<int>("ha_kafka_net.message_received_count");
 
-        activator.Activated += new Action<HaEntityState>(state => Task.Run(() => Handle(state, default)));
-        
-        
+        activator.Activated += state => _ = Task.Run(() => Handle(state, default)); 
     }
 
     public async Task Handle(HaEntityState message, CancellationToken cancellationToken = default)

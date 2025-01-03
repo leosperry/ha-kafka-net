@@ -173,12 +173,6 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
             }
         }
 
-        // if (delay == TimeSpan.Zero)
-        // {
-        //     _logger.LogDebug("automation scheduled now");
-        //     return ActualExecute(cancellationToken);
-        // }
-
         // run with delay
         if (_cts is null)
         {

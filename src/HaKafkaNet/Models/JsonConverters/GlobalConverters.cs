@@ -23,7 +23,10 @@ public class GlobalConverters
             new RgbwwConverter(),
             new XyConverter(),
             new HsConverter(),
-            new HaDateTimeConverter()
+            new HaDateTimeConverter(),
+            new HaNullableDateTimeConverter(),
+            new HaDateOnlyConverter(),
+            new HaNullableDateOnlyConverter()
         },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
