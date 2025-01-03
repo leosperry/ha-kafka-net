@@ -189,7 +189,9 @@ namespace HaKafkaNet.Testing
 
         private static HaEntityState Convert(object state)
         {
-            return JsonSerializer.Deserialize<HaEntityState>(JsonSerializer.Serialize(state, GlobalConverters.StandardJsonOptions))!;
+            return JsonSerializer.Deserialize<HaEntityState>(
+                JsonSerializer.Serialize(state, GlobalConverters.StandardJsonOptions), 
+            GlobalConverters.StandardJsonOptions)!;
         }    
     }
 }

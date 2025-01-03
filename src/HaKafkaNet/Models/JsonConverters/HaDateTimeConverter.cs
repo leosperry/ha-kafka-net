@@ -25,7 +25,7 @@ public class HaNullableDateTimeConverter : JsonConverter<DateTime?>
 
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value?.ToString("yyyy-MM-dd HH:mm:ss") ?? "");
     }
 }
 public class HaDateTimeConverter : JsonConverter<DateTime>
@@ -46,7 +46,7 @@ public class HaDateTimeConverter : JsonConverter<DateTime>
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value.ToString("yyyy-MM-dd HH:mm:ss"));
     }
 }
 
@@ -68,7 +68,7 @@ public class HaDateOnlyConverter : JsonConverter<DateOnly>
 
     public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value.ToString("yyyy-MM-dd"));
     }
 }
 
@@ -89,7 +89,7 @@ public class HaNullableDateOnlyConverter : JsonConverter<DateOnly?>
 
     public override void Write(Utf8JsonWriter writer, DateOnly? value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value?.ToString("yyyy-MM-dd") ?? "");
     }
 }
 
