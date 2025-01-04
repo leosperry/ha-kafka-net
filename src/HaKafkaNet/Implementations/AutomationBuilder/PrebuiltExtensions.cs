@@ -40,6 +40,16 @@ public static class PrebuiltExtensions
         return info;
     }
 
+    /// <summary>
+    /// For use with a Date and/or Time helper. Executes an action at a time after represented by the helper.
+    /// At a minimum, you must specify the "WithExecution" method
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="entityId">The Date and/or Time helper to use</param>
+    /// <param name="nagAfter">The amount of time after represented by the helper to start nagging</param>
+    /// <param name="nagInterval">How often to keep running the action until the helper is updated</param>
+    /// <param name="onClear">optional action to run after the helper is updated</param>
+    /// <returns></returns>
     public static TypedSchedulableAutomationBuildingInfo<DateTime, JsonElement> CreateNaggingReminder(this IAutomationBuilder builder, string entityId, TimeSpan nagAfter, TimeSpan nagInterval, 
         Func<HaEntityStateChange<HaEntityState<DateTime, JsonElement>>, CancellationToken, Task>? onClear = null)
     {

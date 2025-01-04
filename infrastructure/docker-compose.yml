@@ -53,7 +53,7 @@ services:
 # kafka ui is optional. It is provided here for your convenience
 # can be used to inspect and customize your kafka instance
   kafka-ui:
-    image: provectuslabs/kafka-ui
+    image: kafbat/kafka-ui
     container_name: kafka-ui
     depends_on:
       - kafka
