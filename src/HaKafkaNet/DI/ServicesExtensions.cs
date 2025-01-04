@@ -636,7 +636,6 @@ public static class ServicesExtensions
                             errors.Add(new($"Error initializing {reg.GetType().Name}", t.Exception, reg));
                         }
                     });
-
                 tasks.Add(t);
             }
         }
