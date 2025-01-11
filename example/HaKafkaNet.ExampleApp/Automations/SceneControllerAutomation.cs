@@ -5,15 +5,14 @@ namespace HaKafkaNet.ExampleApp;
 /// https://github.com/leosperry/ha-kafka-net/wiki/Scene-Controllers
 /// </summary>
 [ExcludeFromDiscovery] //remove this line in your implementation
-public class SceneControllerAutomation : IAutomation
+public class SceneControllerAutomation : IAutomation_SceneController
 {
-    public Task Execute(HaEntityStateChange stateChange, CancellationToken ct)
+    public Task Execute(HaEntityStateChange<HaEntityState<DateTime?, SceneControllerEvent>> stateChange, CancellationToken ct)
     {
-        var sceneState = stateChange.ToSceneControllerEvent();
-        if (!sceneState.New.StateAndLastUpdatedWithin1Second()) return Task.CompletedTask;
+        if (!stateChange.New.StateAndLastUpdatedWithin1Second()) return Task.CompletedTask;
 
-        var btn = sceneState.EntityId.Last();
-        var key = sceneState.New.Attributes?.GetKeyPress();
+        var btn = stateChange.EntityId.Last();
+        var key = stateChange.New.Attributes?.GetKeyPress();
 
         return (btn, key) switch
         {
