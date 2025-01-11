@@ -58,7 +58,8 @@ internal class AutomationActivator : IAutomationActivator
 
     private void OnActivated(HaEntityState state)
     {
-        _logger.LogDebug("Activated automation with state {state}", state);
+        using (_logger.BeginScope("{state}", state))
+            _logger.LogDebug("Activating {activated_entity}", state.EntityId);
         Activated?.Invoke(state);
     }
 }

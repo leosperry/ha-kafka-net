@@ -144,7 +144,7 @@ internal class HaApiProvider : IHaApiProvider
             }
             else
             {
-                _logger.LogInformation("Home Assistant api response {status_code}", response.StatusCode);
+                _logger.LogTrace("Home Assistant api response {status_code}", response.StatusCode);
             }
             try
             {
