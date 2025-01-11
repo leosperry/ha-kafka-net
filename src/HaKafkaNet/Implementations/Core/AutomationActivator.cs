@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace HaKafkaNet.Implementations.Core;
 
@@ -11,20 +12,19 @@ interface IAutomationActivator
 internal class AutomationActivator : IAutomationActivator
 {
     private readonly IHaEntityProvider _entityProvider;
+    private readonly ILogger<AutomationActivator> _logger;
 
-    public AutomationActivator(IHaEntityProvider entityProvider)
+    public AutomationActivator(IHaEntityProvider entityProvider, ILogger<AutomationActivator> logger)
     {
         this._entityProvider = entityProvider;
+        this._logger = logger;
     }
 
     public event Action<HaEntityState>? Activated;
 
     public async Task Activate(IAutomationWrapper automation, CancellationToken cancellationToken)
     {
-        // step 1 : get all the triggers
-        // step 2 : sort and get the most recent
-        // step 3 : call the state handler to re-handle
-
+        // Get the most recent state of the trigger entities
         HaEntityState? mostRecent = null;
         await foreach (var item in GetEntities(automation.TriggerEntityIds()))
         {
@@ -33,10 +33,10 @@ internal class AutomationActivator : IAutomationActivator
 
         if (mostRecent is null)
         {
-            throw new HaKafkaNetException("could not find state to activate automation with");
+            _logger.LogCritical("Could not find state to activate automation with");
+            return;
         }
 
-        //await _stateHandler.Handle(mostRecent, cancellationToken);
         OnActivated(mostRecent);
     }
 
@@ -49,11 +49,16 @@ internal class AutomationActivator : IAutomationActivator
             {
                 yield return entity;  
             }
+            else
+            {
+                _logger.LogWarning("Entity with id {id} not found", id);
+            }
         }
     }
 
     private void OnActivated(HaEntityState state)
     {
+        _logger.LogDebug("Activated automation with state {state}", state);
         Activated?.Invoke(state);
     }
 }

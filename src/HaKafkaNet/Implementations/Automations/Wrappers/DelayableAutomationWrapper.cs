@@ -142,6 +142,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
             .ContinueWith<bool>(t => {
                 if (t.IsFaulted)
                 {
+                    _logger.LogError(t.Exception, "Error in ContinuesToBeTrue. Returning {continueResult}", _automation.ShouldExecuteOnContinueError);
                     return _automation.ShouldExecuteOnContinueError;
                 }
                 else
@@ -187,7 +188,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
                 {
                     _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                    return CustomDelay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token, CleanUpTokenSource), _cts.Token);
+                    return CustomDelay(delay, _cts.Token).ContinueWith(t => ActualExecute(_cts.Token), _cts.Token);
                 }
             }
             finally
@@ -227,7 +228,7 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
         }
     }
 
-    private async Task ActualExecute(CancellationToken token, Action? postRun = null)
+    private async Task ActualExecute(CancellationToken token)
     {
         var meta = GetMetaData();
         meta.LastExecuted = _timeProvider.GetLocalNow().LocalDateTime;
@@ -239,15 +240,22 @@ internal class DelayableAutomationWrapper<T> : DelayableAutomationWrapper, IAuto
         };
         try
         {
+            // execute user code
             await _trace.Trace(evt, meta, () => _automation.Execute(token));
-            if (this.IsActive)
-            {
-                await _activator.Activate(this, token);
-            }
         }
         finally
         {
-            postRun?.Invoke();
+            try
+            {
+                CleanUpTokenSource();
+            }
+            finally
+            {
+                if (this.IsActive)
+                {
+                    _ = _activator.Activate(this, token);
+                }
+            }
         }
     }
 
