@@ -18,7 +18,7 @@
 apache_kafka:
   ip_address: 192.168.1.3 # <--- modify this line
   port: 9094
-  topic: home_assistant
+  topic: home_assistant_states
   filter:
     include_domains: # modify filters to your preference. See https://www.home-assistant.io/integrations/apache_kafka/ for details
         # common device types
