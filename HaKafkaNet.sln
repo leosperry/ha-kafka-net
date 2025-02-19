@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaKafkaNet.ExampleApp.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaKafkaNet.Tests", "src\HaKafkaNet.Tests\HaKafkaNet.Tests.csproj", "{698471FF-514B-46E3-B5D0-CF602AB1B4A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaKafkaNet.TestHarness", "src\HaKafkaNet.TestHarness\HaKafkaNet.TestHarness.csproj", "{7538ED3B-843C-4617-B98A-E1DD363F5373}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{698471FF-514B-46E3-B5D0-CF602AB1B4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{698471FF-514B-46E3-B5D0-CF602AB1B4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{698471FF-514B-46E3-B5D0-CF602AB1B4A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7538ED3B-843C-4617-B98A-E1DD363F5373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7538ED3B-843C-4617-B98A-E1DD363F5373}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7538ED3B-843C-4617-B98A-E1DD363F5373}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7538ED3B-843C-4617-B98A-E1DD363F5373}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,7 +46,6 @@ Global
 		{5A49C63C-01F4-47C0-8B1D-801B37EA77A9} = {97387C27-9CF9-45B9-9DC5-FE96DAB0A63F}
 		{F8D4457F-325A-4944-88BC-DF3E06063C76} = {97387C27-9CF9-45B9-9DC5-FE96DAB0A63F}
 		{698471FF-514B-46E3-B5D0-CF602AB1B4A1} = {84B25554-403E-456F-83CD-1A938C3BCE31}
-		{7538ED3B-843C-4617-B98A-E1DD363F5373} = {84B25554-403E-456F-83CD-1A938C3BCE31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5CB5E11-069A-415B-87C7-36EF1F8937F9}
