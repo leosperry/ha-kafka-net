@@ -206,7 +206,7 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     act.AddTag("trigger_entity_id", evt.StateChange?.New.EntityId ?? "na");
                 }
                 Task task;
-
+                _logger.LogDebug("Starting automation trace for {automationKey} with event {eventType}", meta.GivenKey, evt.EventType);
                 try
                 {
                     // this line will throw an exception
@@ -217,11 +217,12 @@ internal class TraceLogProvider : IAutomationTraceProvider
                     // this will also catch all exceptions from Task.WhenAll()
                     task.Wait();
                     await task;
+                    _logger.LogDebug("Completed automation trace for {automationKey} with event {eventType}", meta.GivenKey, evt.EventType);
                 }
                 catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException || 
                     (ex is AggregateException agg && agg.InnerExceptions.Any(e => e is TaskCanceledException || e is OperationCanceledException)))
                 {
-                    _logger.LogDebug(ex, "Task canceled during automation run");
+                    _logger.LogDebug("Automation canceled for {automationKey} with event {eventType}", meta.GivenKey, evt.EventType);
                 }
                 catch (Exception ex)
                 {
