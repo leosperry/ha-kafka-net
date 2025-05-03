@@ -69,6 +69,7 @@ public partial interface IHaApiProvider
 
     #region Constants
     const string
+        CLIMATE = "climate",
         HOME_ASSISTANT = "homeassistant",
         INPUT_DATETIME = "input_datetime",
         INPUT_NUMBER = "input_number",
@@ -85,10 +86,40 @@ public partial interface IHaApiProvider
         SWITCH = "switch";
     #endregion
 
+    
     public Task<HttpResponseMessage> ButtonPress(string entity_id, CancellationToken cancellationToken = default)
         => CallService("button", "press", new { entity_id }, cancellationToken);
 
-    // Input Helpers
+    #region Climate Helpers
+
+    public Task<HttpResponseMessage> Climate_SetAuxHeat(string entity_id, bool aux_heat, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_aux_heat", new { entity_id, aux_heat }, ct);
+
+    public Task<HttpResponseMessage> Climate_SetFanMode(string entity_id, string fan_mode, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_fan_mode", new { entity_id, fan_mode }, ct);
+
+    public Task<HttpResponseMessage> Climate_SetFanMode(string entity_id, CarrierFanMode fan_mode, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_fan_mode", new { entity_id, fan_mode }, ct);
+
+    public Task<HttpResponseMessage> Climate_SetHumidity(string entity_id, int humidity, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_humidity", new { entity_id, humidity }, ct);
+
+    public Task<HttpResponseMessage> Climate_SetHvacMode(string entity_id, HvacMode hvac_mode, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_hvac_mode", new { entity_id, hvac_mode }, ct);
+
+    public Task<HttpResponseMessage> Climate_PresetMode(string entity_id, string preset_mode, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_preset_mode", new { entity_id, preset_mode }, ct);
+    
+    public Task<HttpResponseMessage> Climate_PresetMode(string entity_id, CarrierPresetMode preset_mode, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_preset_mode", new { entity_id, preset_mode }, ct);
+    
+    public Task<HttpResponseMessage> Climate_SetTemperature(string entity_id, HvacMode? hvac_mode = null, 
+        float? target_temp_low = null, float? target_temp_high = null, float? temperature = null, CancellationToken ct = default)
+        => CallService(CLIMATE, "set_temperature", new { entity_id, hvac_mode, target_temp_low, target_temp_high, temperature }, ct);
+    
+    #endregion
+
+    #region Input Helpers
     public Task<HttpResponseMessage> InputButtonPress(string entity_id, CancellationToken cancellationToken = default)
         => CallService("input_button", "press", new { entity_id }, cancellationToken);
 
@@ -126,6 +157,8 @@ public partial interface IHaApiProvider
 
     public Task<HttpResponseMessage> InputTextSet(string entity_id, string value, CancellationToken cancellationToken = default)
         => CallService("input_text", SET_VALUE, new { entity_id, value }, cancellationToken);
+
+    #endregion
 
     public Task<HttpResponseMessage> HaAutomationTrigger(string entity_id, CancellationToken cancellationToken = default)
         => CallService("automation", "trigger", new{ entity_id}, cancellationToken);

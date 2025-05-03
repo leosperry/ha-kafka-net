@@ -14,10 +14,11 @@ public class GlobalConverters
     /// </summary>
     public static readonly JsonSerializerOptions StandardJsonOptions = new JsonSerializerOptions()
     {
+        
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
         Converters = 
         {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+            new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower),
             new RgbConverter(),
             new RgbwConverter(),
             new RgbwwConverter(),
