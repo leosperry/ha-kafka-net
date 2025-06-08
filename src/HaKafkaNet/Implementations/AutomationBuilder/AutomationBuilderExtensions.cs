@@ -12,7 +12,7 @@ public static partial class AutomationBuilderExtensions
     /// <param name="info"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static T WithName<T>(this T info, string name) where T: AutomationBuildingInfo
+    public static T WithName<T>(this T info, string name) where T : AutomationBuildingInfo
     {
         info.Name = name;
         return info;
@@ -25,7 +25,7 @@ public static partial class AutomationBuilderExtensions
     /// <param name="info"></param>
     /// <param name="description"></param>
     /// <returns></returns>
-    public static T WithDescription<T>(this T info, string description) where T: AutomationBuildingInfo
+    public static T WithDescription<T>(this T info, string description) where T : AutomationBuildingInfo
     {
         info.Description = description;
         return info;
@@ -50,7 +50,7 @@ public static partial class AutomationBuilderExtensions
     /// <param name="info"></param>
     /// <param name="triggerEntityIds"></param>
     /// <returns></returns>
-    public static T WithTriggers<T>(this T info, params string[] triggerEntityIds) where T: MostAutomationsBuildingInfo
+    public static T WithTriggers<T>(this T info, params string[] triggerEntityIds) where T : MostAutomationsBuildingInfo
     {
         info.TriggerEntityIds = triggerEntityIds;
         return info;
@@ -130,7 +130,7 @@ public static partial class AutomationBuilderExtensions
     /// <param name="execution"></param>
     /// <returns></returns>
     public static TypedAutomationBuildingInfo<Tstate, Tatt> WithExecution<Tstate, Tatt>(this TypedAutomationBuildingInfo<Tstate, Tatt> info,
-        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>> , CancellationToken, Task> execution)
+        Func<HaEntityStateChange<HaEntityState<Tstate, Tatt>>, CancellationToken, Task> execution)
     {
         info.Execution = execution;
         return info;
@@ -191,7 +191,7 @@ public static partial class AutomationBuilderExtensions
         conditional.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
         conditional.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
         conditional.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
-        
+
         conditional.IsActive = info.IsActive;
 
         return conditional;
@@ -208,18 +208,18 @@ public static partial class AutomationBuilderExtensions
     /// <exception cref="AutomationBuilderException"></exception>
     public static IConditionalAutomation<Tstate, Tatt> Build<Tstate, Tatt>(this TypedConditionalBuildingInfo<Tstate, Tatt> info)
     {
-        var conditional = new ConditionalAutomation<Tstate,Tatt>(
-            info.TriggerEntityIds ?? Enumerable.Empty<string>(), 
-            info.For ?? throw new AutomationBuilderException("must define for"), 
-            info.ContinuesToBeTrue ?? throw new AutomationBuilderException("must define ContinuesToBeTrue"), 
+        var conditional = new ConditionalAutomation<Tstate, Tatt>(
+            info.TriggerEntityIds ?? Enumerable.Empty<string>(),
+            info.For ?? throw new AutomationBuilderException("must define for"),
+            info.ContinuesToBeTrue ?? throw new AutomationBuilderException("must define ContinuesToBeTrue"),
             info.Execution ?? throw new AutomationBuilderException("must define execution"));
-        
+
         conditional.ShouldExecuteOnContinueError = info.ShouldExecuteOnContinueError;
         conditional.ShouldExecutePastEvents = info.ShouldExecutePastEvents;
         conditional.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
 
         conditional.SetMeta(GetMeta(info));
-        
+
         conditional.IsActive = info.IsActive;
 
         return conditional;
@@ -245,7 +245,7 @@ public static partial class AutomationBuilderExtensions
         auto.IsReschedulable = info.IsReschedulable;
 
         auto.IsActive = info.IsActive;
-                
+
         return auto;
     }
 
@@ -269,7 +269,7 @@ public static partial class AutomationBuilderExtensions
         );
         auto.EventTimings = info.EventTimings ?? EventTiming.PostStartup;
         auto.IsReschedulable = info.IsReschedulable;
-        
+
         auto.IsActive = info.IsActive;
 
         auto.SetMeta(GetMeta(info));
@@ -293,7 +293,8 @@ public static partial class AutomationBuilderExtensions
             throw new AutomationBuilderException("ForCondition specified, but ForTime is not");
         }
 
-        return new GetNextEventFromEntityState((sc, ct) => {
+        return new GetNextEventFromEntityState((sc, ct) =>
+        {
             if (info.WhileCondition(sc))
             {
                 return Task.FromResult<DateTimeOffset?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
@@ -318,7 +319,8 @@ public static partial class AutomationBuilderExtensions
             throw new AutomationBuilderException("ForCondition specified, but ForTime is not");
         }
 
-        return new GetNextEventFromEntityState<Tstate, Tatt>((sc, ct) => {
+        return new GetNextEventFromEntityState<Tstate, Tatt>((sc, ct) =>
+        {
             if (info.WhileCondition(sc))
             {
                 return Task.FromResult<DateTimeOffset?>(info.TimeProvider.GetLocalNow().LocalDateTime.Add(info.For.Value));
@@ -338,22 +340,22 @@ public static partial class AutomationBuilderExtensions
         SunAutomation auto = info.SunEvent switch
         {
             SunEventType.Dawn => new SunDawnAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Rise => new SunRiseAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Noon => new SunNoonAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Set => new SunSetAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Dusk => new SunDuskAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             SunEventType.Midnight => new SunMidnightAutomation(info.TimeProvider,
-                info.Execution ?? throw new AutomationBuilderException("execution must be specified"), 
+                info.Execution ?? throw new AutomationBuilderException("execution must be specified"),
                 info.Offset, info.EventTimings ?? EventTiming.Durable, info.ExecutePast),
             _ => throw new AutomationBuilderException("Unknown sun type. This should not be possible")
         };
@@ -425,4 +427,17 @@ public static partial class AutomationBuilderExtensions
     {
         return builder.CreateSimple<DateTime?, SceneControllerEvent>(enabledAtStartup);
     }
+    
+    /// <summary>
+    /// Stongly type for use with NFC tags
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="enabledAtStartup"></param>
+    /// <returns></returns>
+    public static TypedAutomationBuildingInfo<DateTime?, TagAttributes> CreateNfcTagAutomation(this IAutomationBuilder builder, bool enabledAtStartup = true)
+    {
+        return builder.CreateSimple<DateTime?, TagAttributes>(enabledAtStartup);
+    }
+    
+    
 }
