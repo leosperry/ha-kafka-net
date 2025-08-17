@@ -36,22 +36,22 @@ public static class StateChangeHelperExtensions
         return (change.Old?.IsHome() ?? allowOldNull) && !change.New.IsHome();
     }
 
-    public static bool Decreased<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change, T val) where T : struct, IComparisonOperators<T, T, bool>
+    public static bool Decreased<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change) where T : struct, IComparisonOperators<T, T, bool>
     {
         return change.Old is not null && change.New.State < change.Old.State;
     }
 
-    public static bool Decreased<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val) where T : struct, IComparisonOperators<T, T, bool>
+    public static bool Decreased<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change) where T : struct, IComparisonOperators<T, T, bool>
     {
         return change.Old is not null && change.New.State < change.Old.State;
     }
 
-    public static bool Increased<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change, T val) where T : struct, IComparisonOperators<T, T, bool>
+    public static bool Increased<T, _>(this HaEntityStateChange<HaEntityState<T?,_>> change) where T : struct, IComparisonOperators<T, T, bool>
     {
         return change.Old is not null && change.New.State > change.Old.State;
     }
 
-    public static bool Increased<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change, T val) where T : struct, IComparisonOperators<T, T, bool>
+    public static bool Increased<T, _>(this HaEntityStateChange<HaEntityState<T,_>> change) where T : struct, IComparisonOperators<T, T, bool>
     {
         return change.Old is not null && change.New.State > change.Old.State;
     }
